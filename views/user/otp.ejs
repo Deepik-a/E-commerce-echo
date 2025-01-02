@@ -1,0 +1,151 @@
+
+
+<style>
+
+.otp-field {
+  display: flex;
+  justify-content: center;
+  gap: 10px; 
+  flex-wrap: wrap; 
+}
+
+.otp-field input {
+  width: 40px; 
+  height: 40px; 
+  text-align: center; 
+  font-size: 18px;
+  border: 1px solid #ced4da;
+  border-radius: 4px; 
+  margin: 0; 
+}
+
+@media (max-width: 576px) {
+  .otp-field input {
+    width: 30px; 
+    height: 30px; 
+    font-size: 14px; 
+  }
+}
+
+
+</style>
+
+<section class="container-fluid d-block">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-6 col-lg-4">
+      <div class="card bg-white mb-5 mt-5 border-0" style="box-shadow: 0 12px 15px rgba(0, 0, 0, 0.02);">
+        <div class="card-body p-5 text-center">
+          <h4>Verify</h4>
+          <p>Your code was sent to you via <%= email %></p>
+          <form action="/otp" method="post" id="otp-form">
+            <div class="otp-field mb-4">
+              <input type="text" name="otp1" minlength="1" maxlength="1">
+              <input type="text" name="otp2" minlength="1" maxlength="1">
+              <input type="text" name="otp3" minlength="1" maxlength="1">
+              <input type="text" name="otp4" minlength="1" maxlength="1">
+              <input type="text" name="otp5" minlength="1" maxlength="1">
+            </div>
+            <input type="hidden" name="otp" id="otp">
+            <input type="hidden" name="otpTime" value="<%= otpTime %>" id="otpTime">
+            <button class="btn btn-primary mb-3" type="submit">
+             Verify
+            </button>
+          </form>
+          <p class="resend text-muted mb-0">
+            Didn't receive code? <a href="/resend" id="resend-link" class="disabled-link">Request again</a>
+          </p>
+          <!-- OTP Timer -->
+          <div id="otp-timer" class="mt-3">
+            <p id="timer-text">Time left: <span id="timer">02:00</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<script>
+
+  // Set the initial time in minutes and seconds
+  let time = 1* 60; // 2 minutes in seconds
+
+  // Function to format the time as MM:SS
+  function formatTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${String(minutes).padStart(1, '0')}:${String(secs).padStart(1, '0')}`;
+  }
+
+  // Function to update the timer
+  function updateTimer() {
+    const timerElement = document.getElementById('timer');
+    const resendLink = document.getElementById('resend-link');
+    if (time <= 0) {
+      clearInterval(timerInterval);
+      timerElement.textContent = '00:00';
+      // Enable the "Resend" link by removing the 'disabled-link' class
+      resendLink.classList.remove('disabled-link');
+      resendLink.classList.add('enabled-link');
+      resendLink.style.pointerEvents = 'auto'; // Make it clickable
+    } else {
+      timerElement.textContent = formatTime(time);
+      time -= 1;
+    }
+  }
+
+  // Update the timer every second
+  const timerInterval = setInterval(updateTimer, 1000);
+
+  // Initialize the timer immediately
+  updateTimer();
+
+  // Concatenate OTP values before form submission
+  document.getElementById('otp-form').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent default form submission
+
+    // Concatenate OTP values
+    const otpValues = Array.from(document.querySelectorAll('.otp-field input'))
+      .map(input => input.value.trim())
+      .join('');
+
+    // Set the concatenated OTP to the hidden input
+    document.getElementById('otp').value = otpValues;
+
+    // Optionally, validate OTP before submitting
+    if (otpValues.length === 5) { // Adjust length if needed
+      this.submit(); // Submit the form
+    } else {
+      alert('Please enter a valid OTP.');
+    }
+  });
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+<style>
+  .disabled-link {
+    pointer-events: none;
+    color: #ccc;
+  }
+
+  .enabled-link {
+    color: #007bff;
+    text-decoration: underline;
+  }
+</style>
+
+<%- include('footer') %>

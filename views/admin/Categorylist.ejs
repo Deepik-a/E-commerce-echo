@@ -1,0 +1,160 @@
+<%- include('sidebar') %>
+      
+    <div class="col-md-9">
+      <div class="bg-light rounded h-100 p-4">
+        <h6 class="mb-4">Category Management</h6>
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Category Name</th>
+                <th scope="col">Status</th> <!-- New Status Column -->
+                <th scope="col">Edit</th>
+                <th scope="col">List/Unlist</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% categories.forEach((category, index) => { %>
+                <tr>
+                  <th scope="row"><%= index + 1 %></th>
+                  <td><%= category.name %></td>
+            
+                  <!-- Display current status with badge -->
+                  <td>
+                    <span class="badge <%= category.isDeleted ? 'bg-danger' : 'bg-success' %>">
+                      <%= category.isDeleted ? 'Blocked' : 'Active' %>
+                    </span>
+                  </td>
+            
+                  <!-- Edit Category Form -->
+                  <td>
+                    <form class="edit-category-form" data-id="<%= category._id %>">
+                      <div class="form-group">
+                        <label for="categoryName-<%= category._id %>">Edit Category Name</label>
+                        <input type="text" id="categoryName-<%= category._id %>" name="name" value="<%= category.name %>" required class="form-control">
+                      </div>
+                      <button type="submit" class="btn btn-primary mt-2">Update Category</button>
+                    </form>
+                  </td>
+            
+                  <!-- Block/Unblock Button -->
+                  <td>
+                    <button 
+                      class=" <%= category.isDeleted ? 'btn-success' : 'btn-danger' %> block-unblock-btn"
+                      data-id="<%= category._id %>" 
+                      data-action="<%= category.isDeleted ? 'unblock' : 'block' %>">
+                      <%= category.isDeleted ? 'Unblock' : 'Block' %>
+                    </button>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    
+    <script>
+      // Reusable function for SweetAlert success
+      function showSuccessAlert(title, message, reload = false) {
+          Swal.fire({
+              icon: 'success',
+              title: title,
+              text: message,
+              showConfirmButton: true,
+          }).then(() => {
+              if (reload) location.reload();
+          });
+      }
+  
+      // Reusable function for SweetAlert error
+      function showErrorAlert(message) {
+          Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: message,
+              showConfirmButton: true,
+          });
+      }
+  
+   
+     
+  
+      // Handle Edit Category form submission
+      document.querySelectorAll('.edit-category-form').forEach(form => {
+          form.addEventListener('submit', async function(e) {
+              e.preventDefault();
+              const categoryId = this.dataset.id;
+              const name = this.querySelector(`input[name="name"]`).value;
+  
+              try {
+                  const response = await fetch(`/admin/editCategory/${categoryId}`, {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify({ name })
+                  });
+  
+                  if (response.ok) {
+                      showSuccessAlert('Category Updated', `The category name has been updated to "${name}".`, true);
+                  } else {
+                      const result = await response.json();
+                      throw new Error(result.message || 'Failed to update category');
+                  }
+              } catch (error) {
+                  showErrorAlert(error.message);
+              }
+          });
+      });
+
+
+
+       // Handle Block/Unblock functionality
+  document.querySelectorAll('.block-unblock-btn').forEach(button => {
+    button.addEventListener('click', async (e) => {
+      const categoryId = e.target.getAttribute('data-id');
+      const action = e.target.getAttribute('data-action'); // 'block' or 'unblock'
+
+      try {
+        const response = await fetch(`/admin/categories/${categoryId}/${action}`, {
+          method: 'POST',
+        });
+
+        const result = await response.json();
+        console.log('Response Data:', result);
+        if (response.ok) {
+          // Show SweetAlert based on action (block/unblock)
+          Swal.fire({
+            title: action === 'block' ? 'Blocked!' : 'Unblocked!',
+            text: `Category has been ${action}ed successfully.`,
+            icon: 'success',
+            confirmButtonText: 'OK'
+          }).then(() => {
+            // Reload the page to reflect the change
+            window.location.reload();
+          });
+        } else {
+          // Handle error
+          Swal.fire({
+            title: 'Error',
+            text: result.message || 'Something went wrong!',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+        }
+      } catch (error) {
+       
+        // Handle fetch error
+        Swal.fire({
+          title: 'Error',
+          text: 'Could not complete the request.',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      }
+    });
+  });
+  </script>
+  

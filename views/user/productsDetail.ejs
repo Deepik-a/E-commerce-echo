@@ -1,0 +1,236 @@
+
+    <title><%= product.name %> - Product Details</title>
+
+    <%- include('navbar') %>
+
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Product Detail</title>
+        <!-- Bootstrap 5 CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <!-- Font Awesome for icons -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+        <style>
+            :root {
+                --primary-color: #28a745;
+                --secondary-color: #6c757d;
+                --light-green: #e9f5e9;
+            }
+    
+            body {
+                background-color: #f8f9fa;
+                font-family: 'Inter', sans-serif;
+            }
+    
+            .product-container {
+                background-color: white;
+                border-radius: 15px;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+                padding: 30px;
+                margin-top: 50px;
+            }
+    
+            .product-image-carousel {
+                border-radius: 15px;
+                overflow: hidden;
+            }
+    
+            .carousel-control-prev,
+            .carousel-control-next {
+                background-color: rgba(0,0,0,0.1);
+                width: 40px;
+                height: 40px;
+                top: 50%;
+                border-radius: 50%;
+            }
+    
+            .product-pricing {
+                background-color: var(--light-green);
+                padding: 15px;
+                border-radius: 10px;
+            }
+    
+            .final-price {
+                color: var(--primary-color);
+                font-size: 1.5rem;
+                font-weight: 700;
+            }
+    
+            .discount-badge {
+                background-color: var(--primary-color);
+                color: white;
+                padding: 5px 10px;
+                border-radius: 5px;
+            }
+    
+            .btn-add-to-cart {
+                background-color: var(--primary-color);
+                border: none;
+                transition: all 0.3s ease;
+            }
+    
+            .btn-add-to-cart:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 4px 17px rgba(0, 0, 0, 0.15);
+            }
+    
+            .rating-stars .fa-star,
+            .rating-stars .fa-star-half-alt {
+                color: #ffc107;
+            }
+
+            .product-offers {
+    background-color: rgb(214, 239, 216); /* Light green background */
+    padding: 5px; /* Add padding inside the box */
+    border-radius: 8px; /* Rounded corners */
+   
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Light shadow for better visibility */
+}
+
+.offer-detail {
+    font-size: 20px; /* Adjust text size */
+    
+}
+
+.thunderbolt-symbol {
+    font-size: 40px;
+    color: #ff4d4d; /* Red color for the thunderbolt symbol */
+}
+
+.offer-text strong {
+    color: #d9534f; /* Red color for important text */
+}
+
+
+
+        </style>
+    </head>
+    <body>
+        <div class="container product-container">
+            <div class="row">
+                <!-- Left Column: Product Images Carousel -->
+                <div class="col-md-6">
+                    <div id="productCarousel<%= product._id %>" class="carousel slide product-image-carousel" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            <% if (product.imgArray.length > 0) { %>
+                                <% product.imgArray.forEach((img, index) => { %>
+                                    <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                                        <img class="d-block w-100" src="<%= '/uploads/' + img %>" alt="Product Image <%= index + 1 %>">
+                                       
+                                    </div>
+                                <% }) %>
+                            <% } else { %>
+                                <div class="carousel-item active">
+                                    <p class="text-center">No images available</p>
+                                </div>
+                            <% } %>
+                        </div>
+        
+                        <% if (product.imgArray.length > 1) { %>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel<%= product._id %>" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="sr-only">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#productCarousel<%= product._id %>" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="sr-only">Next</span>
+                            </button>
+                        <% } %>
+                    </div>
+        
+                    <!-- Zoom Button -->
+                    <div class="mt-3 text-center">
+                        <a href="/product/zoom/<%= product._id %>" class="btn btn-success">Zoom</a>
+                    </div>
+                </div>
+        
+                <!-- Right Column: Product Details -->
+                <div class="col-md-6 d-flex flex-column justify-content-center">
+                    <div class="card-body">
+                        <h2 class="card-title text-success mb-3"><%= product.name %></h2>
+        
+                        <!-- Price Section -->
+                        <div class="product-pricing d-flex align-items-center mb-3">
+                            <% if (product.discount > 0) { %>
+                                <div class="d-flex align-items-center gap-3">
+                                    <p class="final-price mb-0">$<%= product.finalPrice %></p>
+                                    <p class="original-price mb-0 text-muted text-decoration-line-through">$<%= product.price %></p>
+                                    <span class="discount-badge"><%= product.discount %>% OFF</span>
+                                </div>
+                            <% } else { %>
+                                <p class="final-price mb-0">$<%= product.finalPrice %></p>
+                            <% } %>
+                        </div>
+
+                        <!-- Offer Section -->
+<% if (applicableOffers && applicableOffers.length > 0) { %>
+    <div class="product-offers mt-4 mb-4 p-3" style="background-color: rgb(214, 239, 216); border-radius: 8px;">
+        
+        <% 
+            // Filter the applicableOffers to get product offers first
+            const productOffers = applicableOffers.filter(offer => offer.offerType === 'products');
+            const categoryOffers = applicableOffers.filter(offer => offer.offerType === 'Category');
+
+            // Show only the product offer if it exists
+            const offerToDisplay = productOffers.length > 0 ? productOffers[0] : categoryOffers[0];
+        %>
+
+        <% if (offerToDisplay) { %>
+            <div class="offer-detail d-flex align-items-center gap-2 text-danger">
+                <span class="thunderbolt-symbol">⚡</span>
+                <p class="offer-text mb-0">
+                    <strong><%= offerToDisplay.discountPercentage %>% OFF</strong> if you buy before 
+                    <strong><%= new Date(offerToDisplay.endDate).toLocaleDateString() %></strong> - <%= offerToDisplay.title %>
+                </p>
+            </div>
+        <% } %>
+        
+    </div>
+<% } %>
+
+
+        
+                        <!-- Rating -->
+                        <div class="rating-stars mb-3">
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                            <span class="ms-2 text-muted">4.5 (128 reviews)</span>
+                        </div>
+        
+                        <!-- Stock and Description -->
+                        <div class="mb-3">
+                            <p class="text-muted"><strong>Stock:</strong> <%= product.stock %> units available</p>
+                            <p class="text-secondary"><%= product.description %></p>
+                        </div>
+        
+                        <!-- Action Buttons -->
+                        <div class="d-flex gap-3">
+                            <form action="/cart/add/<%=product._id%>/<%= product.finalPrice %>" method="POST">
+                                <button type="submit" class="btn btn-add-to-cart btn-success">
+                                    <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                                </button>
+                            </form>
+                            
+                            <a href="/categories/<%= categoryName %>" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Products
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Bootstrap 5 JS and Popper -->
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    </body>
+    </html>
+
+    <%- include('footer') %>

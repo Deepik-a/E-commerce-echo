@@ -1,0 +1,128 @@
+<style>
+    body {
+    background-color: rgb(214, 239, 216);
+}
+
+.home-category-text {
+    font-family: 'Rochester', cursive;
+    padding: 2rem;
+}
+
+.home-category-items {
+    display: flex;
+    flex-wrap: wrap;
+  
+}
+
+.category-item {
+    display: flex;
+    justify-content: center;
+    padding: 0;
+    margin-bottom: 3rem;
+}
+
+.ourproducts {
+    color: #1A5319;
+    font-weight: 900;
+    margin-bottom: 20px;
+    font-size: 5vw; /* Responsive font-size based on viewport width */
+}
+
+@media (max-width: 1200px) {
+    .ourproducts {
+        font-size: 4vw; /* Slightly smaller for large screens */
+        margin-bottom: 18px;
+    }
+}
+
+@media (max-width: 992px) {
+    .ourproducts {
+        font-size: 3.5vw; /* Adjust font-size for medium screens */
+        margin-bottom: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .ourproducts {
+        font-size: 40px; /* Fixed size for tablets */
+        margin-bottom: 15px;
+    }
+}
+
+@media (max-width: 576px) {
+    .ourproducts {
+        font-size: 35px; /* Smaller font for mobile screens */
+        margin-bottom: 10px;
+    }
+}
+
+
+.category-item a {
+    text-decoration: none;
+}
+
+.product {
+    background: rgb(80, 141, 78);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.3s;
+    width: 100%;
+    max-width: 300px;
+    max-height: 500px;
+}
+
+.product img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.product p {
+    padding: 10px;
+    margin: 0;
+}
+
+.product:hover {
+    transform: scale(1.05);
+}
+
+</style>
+
+<!-------------------------------------------- Category ------------------------------------------------->
+<div class="container-fluid text-center my-4" id="Category">
+    <p class="ourproducts">Our Products</p>
+    <div class="row home-category-items">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 category-item">
+            <a href="/categories/Pillows">
+                <div class="product">
+                    <img src="/public/assets/pillow-bed.jpg" alt="Pillows" class="img-fluid">
+                    <p class="text-white">Pillows</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 category-item">
+            <a href="/categories/Mattresses">
+                <div class="product">
+                    <img src="/public/assets/view-3d-mattress-with-clouds.jpg" alt="Mattresses" class="img-fluid">
+                    <p class="text-white">Mattresses</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 category-item">
+            <a href="/categories/Beds">
+                <div class="product">
+                    <img src="/public/assets/1986.jpg" alt="Bed Furnishers" class="img-fluid">
+                    <p class="text-white">Bed Furnishers</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 category-item">
+            <a href="/categories/Chairs">
+                <div class="product">
+                    <img src="/public/assets/sofa.jpg" alt="Sofa-cum-Bed" class="img-fluid">
+                    <p class="text-white">Sofa-cum-Bed</p>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>

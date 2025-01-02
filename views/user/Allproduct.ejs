@@ -1,0 +1,238 @@
+<%-include('navbar') %>
+<%-include('navbar2') %>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+    body {
+        background-color: rgb(214, 239, 216);
+    }
+
+    .card-img-top {
+        object-fit: cover;
+        height: 400px;
+    }
+
+
+   
+
+    .dropdown-menu:hover {
+        background-color:  rgb(214, 239, 216); /* Dark green */
+    }
+
+    #filterButton {
+        background-color: rgb(26, 83, 25);
+        color: rgb(214, 239, 216);
+    }
+
+  
+
+    .no-results-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 50vh;
+
+       /* Ensures the message is centered without overriding the footer */
+    }
+
+    .no-results-message {
+        color: rgb(26, 83, 25);
+        font-size: 1.5em;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 100px;
+        margin-top: 100px;
+    }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+
+ <!-- Show No Results Message if there are no products -->
+ <% if (products.length === 0 && message) { %>
+    <p class="no-results-message"  style="color:rgb(26, 83, 25);"><%= message %></p>
+
+    <% } else { %>
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <!-- Filter Button -->
+        <button class="btn dropdown-toggle" id="filterButton" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Filter
+        </button>
+
+        <!-- Dropdown Menu for Categories -->
+        <ul id="categoryList" class="dropdown-menu" aria-labelledby="filterButton">
+            <% categories.forEach(category => { %>
+                <li><a class="dropdown-item" href="/categories/<%= category.name %>"><%= category.name %></a></li>
+            <% }) %>
+        </ul>
+
+        <!-- Sort Dropdown -->
+        <div class="dropdown">
+            <button style="background-color: rgb(26, 83, 25); color: rgb(214, 239, 216);" class="btn dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                Sort By
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="sortDropdown">
+                <!-- <li><a class="dropdown-item" href="/products?sort=popularity">Popularity</a></li> -->
+                <li><a class="dropdown-item" href="/products?sort=price_low_high">Price: Low to High</a></li>
+                <li><a class="dropdown-item" href="/products?sort=price_high_low">Price: High to Low</a></li>
+                <!-- <li><a class="dropdown-item" href="/products?sort=ratings">Average Ratings</a></li> -->
+                <!-- <li><a class="dropdown-item" href="/products?sort=featured">Featured</a></li> -->
+                <li><a class="dropdown-item" href="/products?sort=new_arrivals">New Arrivals</a></li>
+                <li><a class="dropdown-item" href="/products?sort=az">A - Z</a></li>
+                <li><a class="dropdown-item" href="/products?sort=za">Z - A</a></li>
+            </ul>
+        </div>
+
+       
+    </div>
+
+    <h1 style="color: rgb(26, 83, 25);">All Products</h1>
+
+   
+
+    <!-- Products List -->
+    <div class="row g-4">
+        <% products.forEach(product => { %>
+            <div class="col-md-4 d-flex align-items-stretch">
+                <div class="card mb-4">
+                    <img src="<%= '/uploads/' + product.imgArray[0] %>" class="card-img-top" alt="<%= product.name %>">
+
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title"><%= product.name %></h5>
+                         
+<!-- Price Section -->
+<div class="product-pricing d-flex align-items-center justify-content-between" style="gap: 10px;">
+    
+        <% if (product.discount > 0) { %>
+            <!-- Final Price after discount -->
+            <p class="final-price" style="font-weight: bold;">
+                $<%= product.finalPrice %>
+            </p>
+            <p class="original-price" style="text-decoration: line-through;">
+                $<%= product.price %> 
+            </p>
+            <p class="discount" style="background-color: rgb(191, 220, 190); color: rgb(26, 83, 25); font-weight: bold;">
+                <%= product.discount %>% OFF
+            </p>
+        <% } else { %>
+            <!-- Final Price when no discount is applied -->
+            <p class="final-price" style="font-weight: bold;">
+                $<%= product.finalPrice %>
+            </p>
+        <% } %>
+    
+    <!-- Wishlist Love Sign -->
+    <span>
+        <form class="wishlist-form" data-id="<%= product._id %>" style="display: inline;">
+            <button type="button" class="btn btn-link wishlist-btn" style="padding: 0; background: none; border: none;">
+                <i class="fas fa-heart" style="color: red;"></i>
+            </button>
+        </form>
+    </span>
+    
+    
+    
+</div>
+
+                  <!-- Check if Product is Active  and product has the required stock -->
+                  <% if (product.isActive) { %>
+                    <% if (product.stock > 0) { %>
+                        <p class="card-text">Stock: <%= product.stock %></p>
+                        <a href="/product/<%= product._id %>" class="btn btn-outline-success" style="background-color: rgb(26, 83, 25);color:rgb(214, 239, 216);">
+                            Detailed View
+                        </a>
+                    <% } else { %>
+                        <p class="card-text">Stock: 0 </p>
+                        <a href="#" class="btn btn-outline-danger" onclick="return false" style="background-color:red">
+                            Out of Stock
+                        </a>    
+                    <% } %>
+                <% } else { %>
+                    <!-- Product is not active -->
+                    <p class="card-text text-danger">Product Not Available</p>
+                    <a href="#" class="btn btn-outline-danger" onclick="return false" style="background-color:red;color: white;">
+                        Will Notify When Available
+                    </a>
+                <% } %>
+            </div>
+        </div>
+    </div>
+<% }) %>
+
+
+        
+    </div>
+
+</div>
+<% } %>
+<!-- jQuery is not required for Bootstrap 5 -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const wishlistForms = document.querySelectorAll('.wishlist-form');
+    
+        wishlistForms.forEach(form => {
+            form.querySelector('.wishlist-btn').addEventListener('click', function () {
+                const productId = form.getAttribute('data-id');
+    
+                // Perform an AJAX POST request to add the product to the wishlist
+                fetch(`/add-wishlist/${productId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ productId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Display success toast notification
+                        Swal.fire({
+                            toast: true,
+                            icon: 'success',
+                            title: 'Product added to wishlist!',
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                        });
+                    } else {
+                        // Display error toast notification if something goes wrong
+                        Swal.fire({
+                            toast: true,
+                            icon: 'error',
+                            title: 'Failed to add product to wishlist!',
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error adding to wishlist:', error);
+                    Swal.fire({
+                        toast: true,
+                        icon: 'error',
+                        title: 'An error occurred!',
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                    });
+                });
+            });
+        });
+    });
+    </script>
+    
+
+
+<%-include('footer') %>

@@ -1,0 +1,291 @@
+<style>
+
+    
+    .user-nav {
+        display: flex;
+        justify-content: center;
+        padding: 1rem;
+    }
+
+    .user-navbar {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        max-width: 1450px;
+        background:rgb(80, 141, 78);
+        padding: .5rem;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .user-navbar h3 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-left: 5vw;   
+       
+    }
+
+    .search-nav {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        background-color: rgb(214, 239, 216);
+        border-radius: 8px;
+        margin: 0 1rem;
+        flex-grow: 1;
+        max-width: 260px;
+    }
+
+    .form-input {
+        background-color: rgb(214, 239, 216);
+        padding: 0.5rem;
+        border: none;
+        border-radius: 5px;
+        font-size: 14px;
+        width: 100%;
+    }
+
+    .form-input::placeholder {
+        color: #1a1a1a;
+    }
+
+    .form-input:focus {
+        background-color: #fefeeb;
+        outline: none;
+    }
+
+    .user-profile-icon svg {
+        margin-right: 2rem;
+        color: #000000;
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+
+    .user-nav-icon {
+        display: flex;
+        list-style: none;
+        gap: 2rem;
+        margin-top: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .user-nav-icon li a {
+        color: #fefeeb;
+        text-decoration: none;
+        font-size: 1em;
+    }
+
+    .user-nav-icon li a:hover {
+        color: #BEBEB6;
+    }
+
+    .user-login-btn {
+        background: #fefeeb;
+        color: #232323;
+        margin-right: 1rem;
+    }
+
+    .user-login-btn:hover {
+        background: #f55;
+        color: #fefeeb;
+    }
+
+    .user-login-icon {
+        color: #fefeeb;
+        margin-right: 2rem;
+        cursor: pointer;
+    }
+
+    .sidebar {
+        height: 70%;
+        width: 250px;
+        position: fixed;
+        top: 0;
+        right: -300px;
+        background-color: #232323;
+        transition: right 0.3s ease;
+        box-shadow: 0 0 20px #000000;
+        z-index: 10;
+    }
+
+    .sidebar ul {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        list-style-type: none;
+        margin-top: 2rem;
+        margin: 0;
+        padding: 0;
+        gap: 1rem;
+        color: #000000;
+    }
+
+    .sidebar ul li {
+        width: 90%;
+        padding: 10px;
+        cursor: pointer;
+        border-radius: 10px;
+        font-weight: 700;
+        transition: .3s ease-in-out;
+    }
+
+    .sidebar ul li:hover {
+        border: 1px solid #fefeeb;
+    }
+
+    .sidebar ul li a {
+        display: block;
+        width: 100%;
+        text-decoration: none;
+        color: #fefeeb;
+    }
+
+    .toggle-btn {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+    }
+
+    #go-back-home {
+        background-color: #707070;
+        color: #ffffff;
+    }
+
+    .dropdown a {
+        color: #ffffff;
+        /* background: #232323; */
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: .5rem;
+    }
+
+    .dropdown-menu {
+      
+        border-radius: 10px;
+        background:rgb(80, 141, 78);
+        color: #070707;
+
+    }
+
+    .badge {
+        background-color: red;
+        color: rgb(4, 4, 4);
+        padding: 3px 7px;
+        border-radius: 50%;
+        font-size: 0.8em;
+        position: relative;
+        top: -10px;
+        right: 10px;
+    }
+
+    /* Responsive design */
+
+    @media (max-width: 768px) {
+        .user-navbar {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 1rem;
+            align-items: center
+        }
+        .search-nav{
+            max-width: 760px;
+        }
+
+        .user-navbar h3 {
+            margin: 2rem 0;
+            font-size: 1.2rem;
+            margin-left: 0;
+        }
+
+        .search-nav {
+            margin: 0 0 1rem 0;
+            width: 100%;
+            flex-grow: 0;
+        }
+
+        .user-nav-icon {
+            justify-content: center;
+            width: 100%;
+            gap: 1rem;
+        }
+
+        .user-login-btn {
+            margin-right: 0;
+            width: 100%;
+            text-align: center;
+        }
+        .footer-section.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo-img {
+    max-height: 50px; /* Adjust the size of the logo */
+}
+
+.header {
+    margin-left: 15px; /* Spacing between the logo and the text */
+    font-size: 24px; /* Adjust the font size if needed */
+}
+
+    }
+
+    @media (max-width: 480px) {
+        .user-navbar h3 {
+            font-size: 1rem;
+        }
+
+        .form-input {
+            font-size: 12px;
+        }
+
+        .user-nav-icon li a {
+            font-size: 0.9em;
+        }
+        .search-nav{
+            max-width: 400px;
+        }
+    }
+
+    .contact-link {
+    margin-right: 15px; /* Pushes the contact link to the left */
+}
+</style>
+
+
+<!-------------------------------------------- User Navbar  ------------------------------------------------->
+
+<div class="user-nav" style="width: 100%; margin: 0; padding: 0;">
+    <div class="user-navbar d-flex justify-content-between align-items-center" style="width: 100%; max-width: 100%; padding: 0;">
+        <div class="footer-section logo d-flex align-items-center">
+            <img src="/public/assets/logo.png" alt="logo" class="logo-img">
+            <h3 class="text-white header ms-3">ECHO EMPORIUM</h3>
+        </div>
+        <form action="/search" method="POST" class="search-nav d-flex">
+            <input type="text" name="search" class="form-input" placeholder="search">
+            <button type="submit" class="btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </form>
+        <ul class="user-nav-icon d-flex">
+            <li><a href="/">Home</a></li>
+         
+            
+            <!-- Cart Icon -->
+            <li><a href="/cart"><i class="fa-solid fa-cart-shopping"></i></a></li>
+            
+            <!-- Wishlist Icon -->
+            <li><a href="/wishlist"><i class="fa-solid fa-heart"></i></a></li>
+        
+           
+            <li class="contact-link"><a href="/logout">Logout</a></li>
+        </ul>
+        
+    </div>
+</div>
+
+   
+
+

@@ -1,0 +1,225 @@
+<%- include('navbar') %>
+<title>Login</title>
+    <!-- Include SweetAlert CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+
+<!-- SweetAlert message for displaying login alerts -->
+<% if (typeof alertMessage !== 'undefined' && alertMessage !== '') { %>
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: '<%= alertMessage %>',
+        });
+    </script>
+<% } %>
+
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+        <style>
+            .login-container {
+                display: flex;
+                align-items: center;
+                background-image: url('../../uploads/pexels-muhammad-khairul-iddin-adnan-267454-808510\ \(1\).jpg');
+                background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    box-sizing: border-box;
+            }
+    
+            .image-wrapper {
+                height: 100%;
+            }
+    
+            .image-wrapper img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+              
+            }
+    
+            .form-control:focus {
+                border-color: #508d4e;
+                box-shadow: 0 0 0 0.25rem rgba(80, 141, 78, 0.25);
+            }
+    
+            .login-card {
+                background: rgba(255, 255, 255, 0.95);
+        
+                box-shadow: 0 0 20px rgba(0,0,0,0.1);
+                padding: 2rem;
+                height: 100%;
+            }
+    
+            .equal-height-row {
+                display: flex;
+                align-items: stretch;
+                min-height: 600px;
+            }
+    
+            .equal-height-col {
+                display: flex;
+                flex-direction: column;
+            }
+    
+            .btn-custom {
+                background-color: #1A5319;
+                color: white;
+                transition: all 0.3s ease;
+            }
+    
+            .btn-custom:hover {
+                background-color: #1A5319;
+                color: aliceblue;
+                transform: translateY(-2px);
+            }
+    
+            .form-floating > label {
+                color: #666;
+            }
+    
+            .form-control {
+                border-radius: 10px;
+            }
+    
+            .separator {
+                display: flex;
+                align-items: center;
+                text-align: center;
+                color: #666;
+            }
+    
+            .separator::before,
+            .separator::after {
+                content: '';
+                flex: 1;
+                border-bottom: 1px solid #666;
+            }
+    
+            .separator:not(:empty)::before {
+                margin-right: 1em;
+            }
+    
+            .separator:not(:empty)::after {
+                margin-left: 1em;
+            }
+    
+            @media (max-width: 768px) {
+                .equal-height-row {
+                    flex-direction: column;
+                    min-height: auto;
+                }
+                
+                .image-wrapper {
+                    height: 300px;
+                    margin-bottom: 20px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="login-container">
+            <div class="container py-5">
+                <div class="equal-height-row justify-content-center">
+                    <div class="col-md-6 col-lg-6 animate__animated animate__fadeInLeft equal-height-col">
+                        <div class="image-wrapper">
+                            <img src="../../uploads/freepik__upload__27110.jpeg" alt="Luxury bed illustration">
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-5 animate__animated animate__fadeInRight equal-height-col">
+                        <div class="login-card">
+                            <h2 class="text-center mb-4">Welcome Back</h2>
+                            <form action="/login" method="post">
+                                <div class="form-floating mb-4">
+                                    <input type="email" class="form-control" id="form1Example13" name="email" value="tunotume.eginamam@jollyfree.com" placeholder="Email address" required>
+                                    <label for="form1Example13">Email address</label>
+                                </div>
+    
+                                <div class="form-floating mb-4">
+                                    <input type="password" class="form-control" id="form1Example23" name="password" value="Tunotume123eginamam@" placeholder="Password" required>
+                                    <label for="form1Example23">Password</label>
+                                </div>
+    
+                                <div class="d-flex justify-content-end mb-4">
+                                    <a href="/forgotpassword" class="text-decoration-none">Forgot password?</a>
+                                </div>
+    
+                                <button type="submit" class="btn btn-custom btn-lg w-100 mb-4 animate__animated animate__pulse">
+                                    Login
+                                </button>
+    
+                                <div class="text-center mb-4">
+                                    <p>Don't have an account? <a href="/signup" class="text-decoration-none">Sign up</a></p>
+                                </div>
+    
+                                <div class="separator mb-4">OR</div>
+    
+                                <a class="btn btn-lg w-100 d-flex align-items-center justify-content-center gap-2" style="background-color: #1A5319;color: aliceblue;" id="google" href="/auth/google" role="button">
+                                    <i class="fab fa-google"></i>
+                                    Continue with Google
+                                </a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+
+   
+
+    <!-- SweetAlert logic for showing blocked user alert -->
+    <script>
+        // Parse URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const errorType = urlParams.get('error');
+
+        // Show corresponding SweetAlert for blocked user or other errors
+        if (errorType === 'blocked') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Your account is blocked!',
+                text: 'Please contact support for more information.',
+            });
+        } else if (errorType === 'userNotFound') {
+            Swal.fire({
+                icon: 'error',
+                title: 'User not found!',
+                text: 'Please check your email and try again.',
+            });
+        } 
+        // else if (errorType === 'invalidPassword') {
+        //     Swal.fire({
+        //         icon: 'error',
+        //         title: 'Incorrect password!',
+        //         text: 'Please try again.',
+        //     });
+        // } 
+        else if (errorType === 'serverError') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Server error!',
+                text: 'Please try again later.',
+            });
+        }
+    </script>
+
+
+
+
+  <%- include('footer') %>

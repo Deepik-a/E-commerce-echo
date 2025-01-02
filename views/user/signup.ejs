@@ -1,0 +1,325 @@
+<%- include('navbar') %>
+
+
+<title>Signup</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        .signup-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            background-image: url('../../uploads/pexels-muhammad-khairul-iddin-adnan-267454-808510\ \(1\).jpg');
+                background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    box-sizing: border-box;
+        }
+
+        .equal-height-row {
+            display: flex;
+            align-items: stretch;
+            min-height: 600px;
+        }
+
+        .equal-height-col {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .image-wrapper {
+            height: 100%;
+        }
+
+        .image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+           
+        }
+
+        .signup-card {
+            background: rgba(255, 255, 255, 0.95);
+          
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            padding: 2rem;
+            height: 100%;
+        }
+
+        .form-control:focus {
+            border-color: #508d4e;
+            box-shadow: 0 0 0 0.25rem rgba(80, 141, 78, 0.25);
+        }
+
+        .form-control {
+            border-radius: 10px;
+            padding: 0.75rem;
+        }
+
+        .btn-custom {
+            background-color: #1A5319;
+            color: white;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-custom:hover {
+            background-color: #1A5319;
+            color: aliceblue;
+            transform: translateY(-2px);
+        }
+
+        .form-floating > label {
+            color: #666;
+            padding-left: 1rem;
+        }
+
+        .toggle-password {
+            cursor: pointer;
+            color: #666;
+        }
+
+        .toggle-password:hover {
+            color: #1A5319;
+        }
+
+        @media (max-width: 768px) {
+            .equal-height-row {
+                flex-direction: column;
+                min-height: auto;
+            }
+            
+            .image-wrapper {
+                height: 300px;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+
+    <div class="signup-container">
+        <div class="container py-5">
+            <div class="equal-height-row justify-content-center">
+                <div class="col-md-6 col-lg-6 animate__animated animate__fadeInLeft equal-height-col">
+                    <div class="image-wrapper">
+                        <img src="../../uploads/playful-family-having-funny-pillow-fight-bed.jpg" alt="Comfortable bed">
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-5 animate__animated animate__fadeInRight equal-height-col">
+                    <div class="signup-card">
+                        <h2 class="text-center mb-4">Create Account</h2>
+                        <form action="/signup" method="post" id="register-form">
+                            <div class="form-floating mb-4">
+                                <input type="text" name="name" id="name" class="form-control" placeholder="Name" />
+                                <label for="name">Name</label>
+                                <small id="nameError" class="text-danger"></small>
+                            </div>
+
+                            <div class="form-floating mb-4">
+                                <input type="email" name="email" id="email" class="form-control" placeholder="Email" />
+                                <label for="email">Email address</label>
+                                <small id="emailError" class="text-danger"></small>
+                            </div>
+
+                            <div class="form-floating mb-4">
+                                <input type="text" name="phone" id="phone" class="form-control" placeholder="Phone" />
+                                <label for="phone">Phone Number</label>
+                                <small id="phoneError" class="text-danger"></small>
+                            </div>
+
+                            <div class="form-floating mb-4 position-relative">
+                                <input type="password" name="password" id="password" class="form-control" placeholder="Password" />
+                                <label for="password">Password</label>
+                                <small id="passwordError" class="text-danger"></small>
+                                <span id="toggle-password-1" class="position-absolute top-50 end-0 translate-middle-y me-3 toggle-password">
+                                    <i class="bi bi-eye-slash"></i>
+                                </span>
+                            </div>
+
+                            <div class="form-floating mb-4 position-relative">
+                                <input type="password" name="confirmpassword" id="confirmpassword" class="form-control" placeholder="Confirm Password" />
+                                <label for="confirmpassword">Confirm Password</label>
+                                <small id="confirmPasswordError" class="text-danger"></small>
+                                <span id="toggle-password-2" class="position-absolute top-50 end-0 translate-middle-y me-3 toggle-password">
+                                    <i class="bi bi-eye-slash"></i>
+                                </span>
+                            </div>
+
+                            <button type="submit" class="btn btn-custom btn-lg w-100 animate__animated animate__pulse" id="register-btn">
+                                Sign Up
+                            </button>
+
+                            <div class="text-center mt-4">
+                                <p>Already have an account? <a href="/login" class="text-decoration-none">Login</a></p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+  <%- include('footer') %>
+
+
+  <!-----------------------------------------------------------validation--------------------------> 
+  <script>
+    // Clear error messages function
+    function clearErrors() {
+      document.getElementById('nameError').textContent = "";
+      document.getElementById('emailError').textContent = "";
+      document.getElementById('phoneError').textContent = "";
+      document.getElementById('passwordError').textContent = "";
+      document.getElementById('confirmPasswordError').textContent = "";
+    }
+    
+    // Toggle password visibility function
+    function togglePassword(id, toggle) {
+      const pass = document.getElementById(id);
+      const type = pass.getAttribute('type') === 'password' ? 'text' : 'password';
+      pass.setAttribute('type', type);
+      toggle.innerHTML = type === 'password' ? '<i class="bi bi-eye-slash"></i>' : '<i class="bi bi-eye"></i>';
+    }
+    
+    // Email validation function
+    function checkEmail(email) {
+      const re = /^\S+@\S+\.\S+$/;
+      return re.test(email);
+    }
+    
+    // Password validation function
+    function validatePassword(password) {
+      return password.length >= 8 &&
+             /[A-Z]/.test(password) &&
+             /[a-z]/.test(password) &&
+             /\d/.test(password) &&
+             /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password);
+    }
+    
+    // Phone validation function
+    function validatePhone(phone) {
+      const phoneRe = /^\d{10}$/;
+      return phoneRe.test(phone);
+    }
+    
+    // Event listener for form submission
+    document.getElementById('register-form').addEventListener('submit', function(event) {
+      // Prevent form submission initially
+      event.preventDefault();
+    
+      // Clear any previous errors
+      clearErrors();
+    
+      let hasError = false;
+    
+      // Get form values
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const confirmPassword = document.getElementById('confirmpassword').value.trim();
+    
+      // Validate Name
+      if (name === "") {
+        Swal.fire({
+          title: "Error",
+          text: "Name is required",
+          icon: "error"
+        });
+        hasError = true;
+      } else if (name.length < 5 || name.length > 25 || !isNaN(name)) {
+        Swal.fire({
+          title: "Error",
+          text: "Name must be between 5 and 25 characters long, and should not contain numbers",
+          icon: "error"
+        });
+        hasError = true;
+      }
+    
+      // Validate Email
+      if (email === "") {
+        Swal.fire({
+          title: "Error",
+          text: "Email is required",
+          icon: "error"
+        });
+        hasError = true;
+      } else if (!checkEmail(email)) {
+        Swal.fire({
+          title: "Error",
+          text: "Email must be valid",
+          icon: "error"
+        });
+        hasError = true;
+      }
+    
+      // Validate Phone
+      if (phone === "") {
+        Swal.fire({
+          title: "Error",
+          text: "Phone number is required",
+          icon: "error"
+        });
+        hasError = true;
+      } else if (!validatePhone(phone)) {
+        Swal.fire({
+          title: "Error",
+          text: "Phone number must be 10 digits",
+          icon: "error"
+        });
+        hasError = true;
+      }
+    
+      // Validate Password
+      if (password === "") {
+        Swal.fire({
+          title: "Error",
+          text: "Password is required",
+          icon: "error"
+        });
+        hasError = true;
+      } else if (!validatePassword(password)) {
+        Swal.fire({
+          title: "Error",
+          text: "Password must be at least 8 characters long, contain uppercase, lowercase, a number, and a special character",
+          icon: "error"
+        });
+        hasError = true;
+      }
+    
+      // Validate Confirm Password
+      if (confirmPassword === "") {
+        Swal.fire({
+          title: "Error",
+          text: "Confirm password is required",
+          icon: "error"
+        });
+        hasError = true;
+      } else if (password !== confirmPassword) {
+        Swal.fire({
+          title: "Error",
+          text: "Passwords do not match",
+          icon: "error"
+        });
+        hasError = true;
+      }
+    
+      // If no errors, submit the form
+      if (!hasError) {
+        document.getElementById('register-form').submit();
+      }
+    });
+    
+    // Event listeners for password toggling
+    document.getElementById('toggle-password-1').addEventListener('click', function() {
+      togglePassword('password', this);
+    });
+    
+    document.getElementById('toggle-password-2').addEventListener('click', function() {
+      togglePassword('confirmpassword', this);
+    });
+    </script>
+    
+    

@@ -1,0 +1,84 @@
+
+
+
+
+<%- include('sidebar') %>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+<!-- DataTables JS and Bootstrap integration -->
+<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css">
+
+<!-- Custom CSS for table styling -->
+<style>
+    .table {
+        background-color: #f8f9fa; /* Light background for better contrast */
+    }
+    .table th {
+        background-color: #007bff; /* Blue header background */
+        color: white; /* White text color for header */
+    }
+    .table td {
+        vertical-align: middle; /* Center align the content */
+    }
+    .action-buttons {
+        display: flex;
+        flex-direction: row;
+        gap: 5px; /* Space between buttons */
+    }
+    .action-buttons button {
+        width: 100px /* Make buttons full width */
+    }
+</style>
+
+<div class="row header" style="text-align:center;color:green">
+    <h3>Order Management</h3>
+</div>
+
+<table id="example" class="table table-striped" style="width:100%">
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>User</th>
+            <th>Items</th>
+            <th>Count</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+      <% orders.forEach(order => { %>
+          <tr>
+              <td><%= order._id %></td>
+              <td><%= order.userId.name %></td>
+              <td>
+                  <% order.items.forEach(item => { %>
+                     
+                  <% }) %>
+              </td>
+              <td>
+                  <% order.items.forEach(item => { %>
+                      <div><%= item.productCount %></div>
+                  <% }) %>
+              </td>
+              <td>
+                 
+                     
+
+                
+                    <!-- View Details Button -->
+                    <a href="/admin/orders/<%= order._id %>" class="btn btn-success btn-sm mt-2">View Details</a>
+                    
+                      
+                 
+              </td>
+          </tr>
+      <% }) %>
+  </tbody>
+</table>
+

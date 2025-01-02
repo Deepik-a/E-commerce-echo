@@ -1,0 +1,62 @@
+<style>
+    /* Background color for the entire navbar */
+.custom-navbar {
+    background-color: rgb(214, 239, 216); /* Light green shade for the background */
+    padding: 10px;
+    height:40px;
+    border-top: 1px solid #333;
+}
+
+/* Style for individual nav links (dark green) */
+.custom-navbar .navbar-nav .nav-link {
+    color: #2f6b2e; /* White text */
+    
+   /* Dark green for the nav links */
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin-right: 5px;
+    transition: background-color 0.3s ease-in-out;
+    height:40px;
+}
+
+/* Hover effect for nav links */
+.custom-navbar .navbar-nav .nav-link:hover {
+    background-color: #4b8f4a; /* Slightly brighter green on hover */
+    color: #fff; /* Keep text white on hover */
+}
+
+/* Navbar brand for mobile view */
+.navbar-brand {
+    color: #ffffff; /* White text for Echo Emporium */
+    font-weight: bold;
+    height:40px;
+}
+
+</style>
+<nav class="navbar navbar-expand-lg custom-navbar">
+    <div class="container-fluid">
+        <a class="navbar-brand d-block d-sm-block d-md-none d-lg-none" href="#">
+           Echo Emporium
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Home</a>
+                </li>
+
+                <!-- Categories List -->
+                <li class="nav-item">
+                    <a class="nav-link" href="/all-products">All Products</a>
+                </li>
+                <% categories.forEach((category) => { %>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories/<%= category.name %>"><%= category.name %></a>
+                    </li>
+                <% }); %>
+            </ul>
+        </div>
+    </div>
+</nav>

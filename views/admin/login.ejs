@@ -1,0 +1,94 @@
+<%- include('navbar') %>
+<style>
+    body {
+        background-color: rgb(214, 239, 216);
+        margin: 0;
+        font-family: 'Arial', sans-serif; /* Adjust font-family to match Echo Emporium */
+    }
+
+    .main-container {
+        min-height: calc(100vh - 100px); /* Adjust based on header and footer height */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .form-container {
+        background-color: white;
+        border: 1px solid #ddd; /* Light border around the container */
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        width: 100%;
+        max-width: 500px; /* Adjust width as needed */
+        margin: 0 auto; /* Center horizontally */
+    }
+
+    .form-title {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        color: rgb(80, 141, 78); /* Match the button color */
+    }
+
+    .form-control-lg {
+        height: calc(1.5em + .75rem + 2px);
+        padding: .75rem 1.25rem;
+        font-size: 1.25rem;
+        border-radius: .375rem;
+    }
+
+    .btn-custom {
+        background-color: rgb(80, 141, 78); /* Match the button color */
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        font-size: 1.25rem;
+        font-weight: bold;
+    }
+
+    .btn-custom:hover {
+        background-color: rgb(60, 120, 60); /* Slightly darker on hover */
+    }
+
+    .form-outline {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: bold;
+        color: rgb(60, 60, 60); /* Match text color */
+    }
+</style>
+
+<section class="main-container">
+    <div class="form-container">
+        <h1 class="form-title">ADMIN LOGIN</h1>
+        <div class="row d-flex align-items-center justify-content-center">
+            <div class="col-md-12 mb-4">
+                <img src="../../public/assets/logo.png" class="img-fluid" alt="Logo">
+            </div>
+            <form action="/admin/login" method="post">
+                <!-- Email input -->
+                <div class="form-outline">
+                    <input type="email" name="email" value="admin@gmail.com" id="form1Example13" class="form-control form-control-lg" />
+                    <label class="form-label" for="form1Example13">Email address</label>
+                </div>
+
+                <!-- Password input -->
+                <div class="form-outline">
+                    <input type="password"  value = "admin@123" name="password"id="form1Example23" class="form-control form-control-lg" />
+                    <label class="form-label" for="form1Example23">Password</label>
+                </div>
+
+                <!-- Submit button -->
+                <button type="submit" class="btn-custom btn-block">
+                    Login
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<%- include('footer') %>
+

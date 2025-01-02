@@ -1,0 +1,115 @@
+<!-- <style>
+    .carousel-inner {
+        padding: 2rem;
+    }
+
+    .carousel-item img {
+        border-radius: 10px;
+    }
+
+    .home-image {
+        display: flex;
+        justify-content: center;
+    }
+
+    .home-image img {
+        width: 95%;
+        border-radius: 10px;
+    }
+
+    @media (max-width: 576px) {
+        .carousel-inner {
+            padding: 1rem;
+        }
+    }
+</style>
+
+------------------------------------------ User Home Banner ------------------------------------------------->
+<!-- <div id="carouselFade" class="carousel slide carousel-fade" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        <div class="carousel-item">
+            <img src="/public/assets/banner2.jpeg" class="d-block w-100" alt="...">
+        </div>
+        <div class="carousel-item active">
+            <img src="/public/assets/banner 3.jpeg" class="d-block w-100" alt="...">
+        </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselFade" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselFade" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+
+</div> -->
+
+<!--------------------- line --------------------->
+<!-- <div class="home-line-div mt-5">
+    <hr>
+</div> -->
+
+<!--------------------------- Slide image after some time ----------------------------->
+<!-- <script>
+    $(document).ready(function () {
+        $('#carouselFade').carousel({
+            interval: 1000
+        });
+    });
+</script> --> 
+
+<style>
+    .home-video {
+        display: flex;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .home-video video {
+        width: 95%;
+        border-radius: 10px;
+    }
+
+    @media (max-width: 576px) {
+        .home-video {
+            padding: 1rem;
+        }
+    }
+
+    /*video*/
+    .home-video video:hover {
+        animation-play-state: paused; /* Pauses animation */
+    }
+</style>
+
+<!-------------------------------------------- User Home Video ------------------------------------------------->
+<!-- <div class="home-video">
+    <video controls>
+        <source src="/public/assets/Grey, White and Beige Bedding Company Ad Slideshow Video.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+</div> -->
+<div class="home-video animate__animated animate__fadeIn">
+    <video autoplay loop muted>
+        <source src="/public/assets/Grey, White and Beige Bedding Company Ad Slideshow Video.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+</div>
+
+
+<!--------------------- line ---------------------> 
+<!-- <div class="home-line-div mt-5">
+    <hr>
+</div> -->
+
+<!--------------------------- Optional: Autoplay & Mute -----------------------------> 
+<!-- 
+<script>
+    $(document).ready(function () {
+        $('video').get(0).play();
+        $('video').get(0).muted = true; // Optional: Mute the video for autoplay
+    });
+</script> 
+-->
