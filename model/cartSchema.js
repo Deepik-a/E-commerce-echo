@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const itemSchema = new mongoose.Schema({
     productId: {
+
         type: mongoose.Schema.Types.ObjectId,
         ref: 'products',
         required: true
@@ -48,4 +49,5 @@ default:false
     },
 });
 
+// this is exporting cartschema
 module.exports = mongoose.model('carts', cartSchema);
