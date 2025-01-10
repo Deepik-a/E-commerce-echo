@@ -93,19 +93,19 @@ console.log('hai')
             return res.json({ success: false, message: 'Invalid order ID' });
         }
         const order = await Order.findById(orderId);
-        order.orderStatus='Cancelled'
+        order.status='Cancelled'
             
         if (!order) {
             return res.json({ success: false, message: 'Order not found' });
         }
        if(action == 'cancel'){
         if(order.paid){
-            if (order.paymentMethod === 'razorpay' || order.paymentMethod === 'Wallet' ) {
+            if (order.paymentMethod === 'Razorpay' || order.paymentMethod === 'Wallet' ) {
                 const userWallet = await Wallet.findOne({ userID: order.userId });
                 if (userWallet) {
-                    userWallet.balance = (userWallet.balance || 0) + order.totalPrice;
+                    userWallet.balance = (userWallet.balance || 0) + order. payableAmount;
                     userWallet.transaction.push({
-                        wallet_amount: order.totalPrice,
+                        wallet_amount: order. payableAmount,
                         order_id: order.orderId,
                         transactionType: 'Credited',
                         transaction_date: new Date()
@@ -114,9 +114,9 @@ console.log('hai')
                 } else {
                     await Wallet.create({
                         userID: order.userId,
-                        balance: order.totalPrice,
+                        balance: order. payableAmount,
                         transaction: [{
-                            wallet_amount: order.totalPrice,
+                            wallet_amount: order. payableAmount,
                             order_id: order.orderId,
                             transactionType: 'Credited',
                             transaction_date: new Date()
@@ -132,7 +132,7 @@ console.log('hai')
 const item = order.items.find(item => item.productId.toString() === productId);
 
 if(item){
-    item.productStatus = action === 'return'?'Requested':'Cancelled';
+    item.status = action === 'return'?'Requested':'Cancelled';
     item.reasonForCancellation = action ==='cancel'?reason:null;
     item.reasonForReturn = action === 'return'?reason:null;
 }

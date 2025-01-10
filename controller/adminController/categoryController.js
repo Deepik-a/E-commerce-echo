@@ -27,16 +27,37 @@ const addCategory = async (req, res) => {
 
 
 
-const geteditCategories =async(req, res) => {
-    try {
-const categories = await categorySchema.find({});
-        res.render('admin/Categorylist',{categories})
-      
-    } catch (error) {
-        console.error('Error rendering edit category page:', error);
-        res.status(500).send('Internal Server Error');
-    }
+const geteditCategories = async (req, res) => {
+  try {
+      // Get page and limit from query parameters, with defaults
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 3;
+
+      // Calculate the number of documents to skip
+      const skip = (page - 1) * limit;
+
+      // Fetch paginated categories and the total count
+      const categories = await categorySchema
+          .find({})
+          .skip(skip)
+          .limit(limit);
+      const totalCategories = await categorySchema.countDocuments();
+
+      // Calculate total pages
+      const totalPages = Math.ceil(totalCategories / limit);
+
+      // Render the template with categories, pagination info
+      res.render('admin/Categorylist', {
+          categories,
+          currentPage: page,
+          totalPages,
+      });
+  } catch (error) {
+      console.error('Error rendering edit category page:', error);
+      res.status(500).send('Internal Server Error');
+  }
 };
+
 
 
 // Edit a category

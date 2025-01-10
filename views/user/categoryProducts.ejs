@@ -1,17 +1,12 @@
 
 <%- include('navbar') %>
+<%-include('navbar2') %>
 
 
 
+<h1 class="category-heading text-success text-center my-4"><%= categoryName %></h1>
 
-<h1 class="text-success text-center my-4"> <%= categoryName %></h1>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Category</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
     <style>
         :root {
             --primary-color: rgb(26, 83, 25);
@@ -35,26 +30,28 @@
         }
 
         .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 2rem;
-            padding: 2rem;
-            max-width: 1800px;
-            margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1200px; /* Constrain the grid width */
+    margin: 0 auto;
+    justify-content: center; /* Center the grid items when there's only one */
+}
 
-        }
+.product-card {
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    transition: all var(--transition-speed) ease;
+    transform-origin: center;
+    position: relative;
+    width: 100%;
+    max-width: 400px; /* Prevent the card from becoming too wide */
+    margin: 0 auto; /* Center a single card */
+}
 
-        .product-card {
-            background-color: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-            transition: all var(--transition-speed) ease;
-            transform-origin: center;
-            position: relative;
-            width: 100%;
-
-        }
 
         .product-card:hover {
             transform: scale(1.03);
@@ -74,7 +71,7 @@
             transition: transform var(--transition-speed) ease;
         }
 
-        .product-card:hover .carousel-image {
+        .product-card:hover   {
             transform: scale(1.1);
         }
 
@@ -85,6 +82,7 @@
 
         .product-name {
             color: var(--primary-color);
+         
             font-weight: 600;
             margin-bottom: 0.5rem;
             transition: color var(--transition-speed) ease;
@@ -181,82 +179,150 @@
             opacity: 0;
             animation-delay: calc(var(--index) * 0.1s);
         }
+
+        /* Default styling for larger screens */
+.category-heading {
+    font-size: 3rem; /* Large font size for desktop */
+    font-weight: bold;
+}
+
+/* Medium screens (tablets) */
+@media (max-width: 768px) {
+    .category-heading {
+        font-size: 2.5rem; /* Slightly smaller font size */
+    }
+}
+
+/* Small screens (mobile devices) */
+@media (max-width: 576px) {
+    .category-heading {
+        font-size: 2rem; /* Even smaller font size for small screens */
+    }
+}
+
+/* Styling for the "no products" container */
+.no-products-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 200px); /* Adjust height to fit between navbar and footer */
+    text-align: center;
+    background-color: #f9f9f9; /* Optional background color */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Styling for the heading text */
+.no-products-text {
+    font-size: 1.8rem;
+    color: #28a745;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Styling for the image */
+.no-products-image {
+    max-width: 70%; /* Restrict max width for responsiveness */
+    height: auto;
+    object-fit: cover;
+    border-radius: 8px; /* Optional for rounded corners */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Optional shadow */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .no-products-container {
+        padding: 10px;
+    }
+
+    .no-products-text {
+        font-size: 1.5rem;
+    }
+
+    .no-products-image {
+        max-width: 90%; /* Expand image width on smaller screens */
+    }
+}
+
+@media (max-width: 576px) {
+    .no-products-text {
+        font-size: 1.2rem;
+    }
+
+    .no-products-image {
+        max-width: 95%; /* Almost full width on very small screens */
+    }
+}
+
+
     </style>
-</head>
-<body>
-    <% if (products.length > 0) { %>
-        <div class="product-grid">
-            <% products.forEach((product, index) => { %>
-                <div class="product-card" style="--index: <%= index %>">
-                    <div class="product-carousel">
-                        <% if (product.imgArray.length > 0) { %>
-                            <% product.imgArray.forEach((img, imgIndex) => { %>
-                              
-                                <img 
-                                    class="carousel-image <%= imgIndex === 0 ? 'active' : '' %>" 
-                                    src="<%= '/uploads/' +   img%>"
-                                    alt="Product Image <%= imgIndex + 1 %>"
-                                >
-                            <% }) %>
-                        <% } else { %>
-                            <p class="text-center">No images available</p>
-                        <% } %>
-                    </div>
-
-                    <div class="product-details">
-                        <h5 class="product-name"><%= product.name %></h5>
-
-                        <div class="product-pricing">
-                            <% if (product.discount > 0) { %>
-                                <span class="final-price">$<%= product.finalPrice %></span>
-                                <span class="original-price">$<%= product.price %></span>
-                                <span class="discount-badge"><%= product.discount %>% OFF</span>
-                            <% } else { %>
-                                <span class="final-price">$<%= product.finalPrice %></span>
-                            <% } %>
-                            <form class="wishlist-form" data-id="<%= product._id %>">
-                                <span type="button" class="wishlist-btn">
-                                    <i class="fas fa-heart"></i>
-                                </span>
-                            </form>
-                        </div>
-
-                        <p class="stock-info">Stock: <%= product.stock %> units</p>
-
-                        <% if (product.stock > 0) { %>
-                            <a href="/product/<%= product._id %>" class="product-action">
-                                Detailed View
-                            </a>
-                        <% } else { %>
-                            <a href="#" class="product-action out-of-stock" onclick="return false;">
-                                Out of Stock
-                            </a>
-                        <% } %>
-                    </div>
+<% if (products.length > 0) { %>
+    <div class="product-grid">
+        <% products.forEach((product, index) => { %>
+            <div class="product-card" style="--index: <%= index %>">
+                <div class="product-carousel">
+                    <% if (product.imgArray.length > 0) { %>
+                        <% product.imgArray.forEach((img, imgIndex) => { %>
+                            <img 
+                                class="carousel-image <%= imgIndex === 0 ? 'active' : '' %>" 
+                                src="<%= '/uploads/' + img %>"
+                                alt="Product Image"
+                            >
+                        <% }) %>
+                    <% } else { %>
+                        <p class="text-center">No images available</p>
+                    <% } %>
                 </div>
-            <% }) %>
-        </div>
-    <% } else { %>
-        <p class="text-center text-success">No products found in this category</p>
-    <% } %>
 
-    <script>
-        // Simple carousel navigation (pure JS)
-        document.querySelectorAll('.product-carousel').forEach(carousel => {
-            const images = carousel.querySelectorAll('.carousel-image');
-            let currentIndex = 0;
+                <div class="product-details">
+                    <h5 class="product-name"><%= product.name %></h5>
 
-            if (images.length > 1) {
-                setInterval(() => {
-                    images[currentIndex].classList.remove('active');
-                    currentIndex = (currentIndex + 1) % images.length;
-                    images[currentIndex].classList.add('active');
-                }, 3000);
-            }
-        });
-    </script>
-</body>
-</html>
+                    <div class="product-pricing">
+                        <% if (product.discount > 0) { %>
+                            <span class="final-price">Rs <%= product.finalPrice %></span>
+                            <span class="original-price">Rs <%= product.price %></span>
+                            <span class="discount-badge"><%= product.discount %>% OFF</span>
+                        <% } else { %>
+                            <span class="final-price">Rs <%= product.finalPrice %></span>
+                        <% } %>
+                        <form class="wishlist-form" data-id="<%= product._id %>">
+                            <span type="button" class="wishlist-btn">
+                                <i class="fas fa-heart"></i>
+                            </span>
+                        </form>
+                    </div>
+
+                    <p class="stock-info">Stock: <%= product.stock %> units</p>
+
+                    <% if (product.stock > 0) { %>
+                        <a href="/product/<%= product._id %>" class="product-action">
+                            Detailed View
+                        </a>
+                    <% } else { %>
+                        <a href="#" class="product-action out-of-stock" onclick="return false;">
+                            Out of Stock
+                        </a>
+                    <% } %>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+<% } else { %>
+    <div class="no-products-container">
+        <p class="no-products-text">No products found in this category</p>
+        <img 
+            src="../../public/assets/freepik__upload__757.jpeg" 
+            alt="No products found" 
+            class="no-products-image"
+        />
+    </div>
+<% } %>
+
+
+
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {

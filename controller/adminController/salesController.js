@@ -143,9 +143,9 @@ const applyDateFilter = (filter) => {
             const worksheetData = salesData.map(data => ({
                 OrderID: data.orderId,
                 OrderDate: new Date(data.createdAt).toLocaleDateString('en-GB'),
-                OrderAmount: `₹${data.totalPrice.toFixed(2)}`,
+                OrderAmount: `₹${data.payableAmount.toFixed(2)}`,
                 CouponDeduction: `₹${data.couponDiscount.toFixed(2)}`,
-                PaymentStatus: data.orderStatus,
+                PaymentStatus: data.status,
                 PaymentMethod: data.paymentMethod,
             }));
 
@@ -214,7 +214,7 @@ const applyDateFilter = (filter) => {
                     new Date(data.createdAt).toLocaleDateString('en-GB'),
                     `₹${data.totalPrice.toFixed(2)}`,
                     `₹${data.couponDiscount.toFixed(2)}`,
-                    data.orderStatus,
+                    data.status,
                     data.paymentMethod
                 ];
 

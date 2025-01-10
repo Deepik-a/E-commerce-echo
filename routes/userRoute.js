@@ -150,7 +150,6 @@ route.post('/delete-wish/:id', checkUser , wishlistController.deleteWishlist );
 route.get('/product/:id', checkUser ,productController.getProductDetail)
 route.get('/all-products', checkUser ,productController.getAllProducts);
 route.get('/products',checkUser,productController.sortAllproducts)
-route.get('/product/zoom/:id',productController.imageZoom)
 route.get('/categories/:categoryName',checkUser , productController.getProductsByCategory);
 route.post('/search',checkUser,productController.searchbyProducts)
 

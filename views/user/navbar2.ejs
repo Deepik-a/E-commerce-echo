@@ -1,62 +1,175 @@
 <style>
-    /* Background color for the entire navbar */
-.custom-navbar {
-    background-color: rgb(214, 239, 216); /* Light green shade for the background */
-    padding: 10px;
-    height:40px;
-    border-top: 1px solid #333;
-}
-
-/* Style for individual nav links (dark green) */
-.custom-navbar .navbar-nav .nav-link {
-    color: #2f6b2e; /* White text */
+    /* Base navbar styles */
+    .echo-nav-wrapper {
+        background-color: rgb(214, 239, 216);
+        padding: 0;
+        min-height: 40px;
+        border-top: 1px solid #333;
+        position: relative;
+    }
     
-   /* Dark green for the nav links */
-    padding: 10px 20px;
-    border-radius: 5px;
-    margin-right: 5px;
-    transition: background-color 0.3s ease-in-out;
-    height:40px;
-}
-
-/* Hover effect for nav links */
-.custom-navbar .navbar-nav .nav-link:hover {
-    background-color: #4b8f4a; /* Slightly brighter green on hover */
-    color: #fff; /* Keep text white on hover */
-}
-
-/* Navbar brand for mobile view */
-.navbar-brand {
-    color: #ffffff; /* White text for Echo Emporium */
-    font-weight: bold;
-    height:40px;
-}
-
-</style>
-<nav class="navbar navbar-expand-lg custom-navbar">
-    <div class="container-fluid">
-        <a class="navbar-brand d-block d-sm-block d-md-none d-lg-none" href="#">
-           Echo Emporium
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link" href="/">Home</a>
-                </li>
-
-                <!-- Categories List -->
-                <li class="nav-item">
-                    <a class="nav-link" href="/all-products">All Products</a>
-                </li>
-                <% categories.forEach((category) => { %>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/categories/<%= category.name %>"><%= category.name %></a>
+    /* Container styles */
+    .echo-nav-wrapper .container-fluid {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0 15px;
+    }
+    
+    /* Navigation menu */
+    .echo-nav-wrapper .echo-nav-menu {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    
+    /* Link styles */
+    .echo-nav-wrapper .echo-nav-menu .echo-nav-link {
+        color: rgb(26, 83, 25);
+        padding: 10px 20px;
+        border-radius: 5px;
+        margin: 0 5px;
+        transition: all 0.3s ease-in-out;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    /* Hover effect */
+    .echo-nav-wrapper .echo-nav-menu .echo-nav-link:hover {
+        background-color: rgb(26, 83, 25);
+        color: rgb(214, 239, 216);
+    }
+    
+    /* Brand styling */
+    .echo-brand {
+        color: rgb(26, 83, 25);
+        font-weight: bold;
+        font-size: 1.2rem;
+        text-decoration: none;
+        display: none;
+    }
+    
+    /* Toggle button */
+    .navbar-toggler {
+        display: none;
+        border: 1px solid rgb(26, 83, 25);
+        padding: 5px 10px;
+        background-color: transparent;
+        border-radius: 4px;
+    }
+    
+    .navbar-toggler:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(26, 83, 25, 0.2);
+    }
+    
+    /* Responsive Design */
+    @media screen and (max-width: 991px) {
+        .echo-nav-wrapper {
+            padding: 10px 0;
+            height: auto;
+        }
+    
+        .echo-nav-wrapper .container-fluid {
+            justify-content: space-between;
+        }
+    
+        .echo-brand {
+            display: block;
+            padding: 5px 0;
+        }
+    
+        .navbar-toggler {
+            display: block;
+        }
+    
+        .navbar-collapse {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: rgb(214, 239, 216);
+            padding: 10px;
+            border-top: 1px solid rgba(26, 83, 25, 0.1);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+    
+        .echo-nav-wrapper .echo-nav-menu {
+            flex-direction: column;
+            align-items: stretch;
+        }
+    
+        .echo-nav-wrapper .echo-nav-menu .echo-nav-item {
+            width: 100%;
+            margin: 2px 0;
+        }
+    
+        .echo-nav-wrapper .echo-nav-menu .echo-nav-link {
+            width: 100%;
+            text-align: center;
+            margin: 0;
+            padding: 12px 20px;
+        }
+    }
+    
+    /* Small screens */
+    @media screen and (max-width: 576px) {
+        .echo-nav-wrapper .container-fluid {
+            padding: 0 10px;
+        }
+    
+        .echo-brand {
+            font-size: 1.1rem;
+        }
+    
+        .echo-nav-wrapper .echo-nav-menu .echo-nav-link {
+            padding: 10px 15px;
+            font-size: 0.95rem;
+        }
+    }
+    
+    /* Animation for mobile menu */
+    .navbar-collapse {
+        transition: all 0.3s ease-in-out;
+    }
+    
+    .navbar-collapse.show {
+        display: block;
+    }
+    
+    .navbar-collapse.collapsing {
+        height: 0;
+        overflow: hidden;
+    }
+    </style>
+    
+    <nav class="navbar navbar-expand-lg echo-nav-wrapper">
+        <div class="container-fluid">
+            <a class="echo-brand" href="#">
+                Echo Emporium
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#echoNavContent" aria-controls="echoNavContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="echoNavContent">
+                <ul class="navbar-nav echo-nav-menu">
+                    <li class="echo-nav-item">
+                        <a class="echo-nav-link" href="/">Home</a>
                     </li>
-                <% }); %>
-            </ul>
+                    <li class="echo-nav-item">
+                        <a class="echo-nav-link" href="/all-products">All Products</a>
+                    </li>
+                    <% categories.forEach((category) => { %>
+                        <li class="echo-nav-item">
+                            <a class="echo-nav-link" href="/categories/<%= category.name %>"><%= category.name %></a>
+                        </li>
+                    <% }); %>
+                </ul>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>

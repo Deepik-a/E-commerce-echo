@@ -174,7 +174,7 @@
       document.getElementById('passwordError').textContent = "";
       document.getElementById('confirmPasswordError').textContent = "";
     }
-    
+  
     // Toggle password visibility function
     function togglePassword(id, toggle) {
       const pass = document.getElementById(id);
@@ -182,13 +182,13 @@
       pass.setAttribute('type', type);
       toggle.innerHTML = type === 'password' ? '<i class="bi bi-eye-slash"></i>' : '<i class="bi bi-eye"></i>';
     }
-    
+  
     // Email validation function
     function checkEmail(email) {
       const re = /^\S+@\S+\.\S+$/;
       return re.test(email);
     }
-    
+  
     // Password validation function
     function validatePassword(password) {
       return password.length >= 8 &&
@@ -197,30 +197,30 @@
              /\d/.test(password) &&
              /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password);
     }
-    
+  
     // Phone validation function
     function validatePhone(phone) {
       const phoneRe = /^\d{10}$/;
       return phoneRe.test(phone);
     }
-    
+  
     // Event listener for form submission
-    document.getElementById('register-form').addEventListener('submit', function(event) {
+    document.getElementById('register-form').addEventListener('submit', async (event) => {
       // Prevent form submission initially
       event.preventDefault();
-    
+  
       // Clear any previous errors
       clearErrors();
-    
+  
       let hasError = false;
-    
+  
       // Get form values
       const name = document.getElementById('name').value.trim();
       const email = document.getElementById('email').value.trim();
       const phone = document.getElementById('phone').value.trim();
       const password = document.getElementById('password').value.trim();
       const confirmPassword = document.getElementById('confirmpassword').value.trim();
-    
+  
       // Validate Name
       if (name === "") {
         Swal.fire({
@@ -237,7 +237,7 @@
         });
         hasError = true;
       }
-    
+  
       // Validate Email
       if (email === "") {
         Swal.fire({
@@ -254,7 +254,7 @@
         });
         hasError = true;
       }
-    
+  
       // Validate Phone
       if (phone === "") {
         Swal.fire({
@@ -271,7 +271,7 @@
         });
         hasError = true;
       }
-    
+  
       // Validate Password
       if (password === "") {
         Swal.fire({
@@ -288,7 +288,7 @@
         });
         hasError = true;
       }
-    
+  
       // Validate Confirm Password
       if (confirmPassword === "") {
         Swal.fire({
@@ -305,21 +305,58 @@
         });
         hasError = true;
       }
-    
-      // If no errors, submit the form
+  
+      // If no errors, proceed with form submission via fetch
       if (!hasError) {
-        document.getElementById('register-form').submit();
+        const formData = { name, email, phone, password, confirmpassword: confirmPassword };
+  
+        try {
+          const response = await fetch("/signup", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+          });
+  
+          const result = await response.json();
+  
+          if (result.success) {
+            Swal.fire({
+              icon: "success",
+              title: "Signup Successful",
+              text: "Redirecting to OTP verification...",
+            }).then(() => {
+              window.location.href = result.redirectUrl; // Redirect to OTP verification
+            });
+          } else {
+            Swal.fire({
+              icon: "error",
+              title: "Signup Failed",
+              text: result.message,
+              footer: '<a href="/login">Already have an account? Login</a>',
+            });
+          }
+        } catch (error) {
+          console.error("Error during signup:", error);
+          Swal.fire({
+            icon: "error",
+            title: "Server Error",
+            text: "An unexpected error occurred. Please try again later.",
+          });
+        }
       }
     });
-    
+  
     // Event listeners for password toggling
     document.getElementById('toggle-password-1').addEventListener('click', function() {
       togglePassword('password', this);
     });
-    
+  
     document.getElementById('toggle-password-2').addEventListener('click', function() {
       togglePassword('confirmpassword', this);
     });
-    </script>
+  </script>
+  
     
     

@@ -1,84 +1,437 @@
 
-
-
-
 <%- include('sidebar') %>
+<!-- Tailwind CSS CDN -->
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
-<!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<div class="max-w mx-auto p-6 ml-64">
+    <div class="bg-white rounded-lg shadow">
+        <!-- Header -->
+        <div class="px-6 py-4 border-b border-gray-200 ml-64">
+            <div class="flex items-center justify-between">
+                <h1 class="text-3xl font-semibold text-gray-800">Order Management</h1>
+                <span class="px-3 py-1 text-lg bg-gray-100 text-gray-700 rounded-full">
+                    Total Orders: <%= orders.length %>
+                </span>
+            </div>
+        </div>
 
-<!-- DataTables JS and Bootstrap integration -->
-<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+        <!-- Table -->
+        <div class="overflow-x-auto">
+            <table class="w-full ml-64">
+                <thead>
+                    <tr class="bg-gray-50">
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Order ID
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Customer
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Items
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Status
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                           Details
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Actions
+                         </th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    <% orders.forEach(order => { %>
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-lg font-medium text-gray-900">
+                                <%= order._id %>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-lg text-gray-500">
+                                <%= order.userId.name %>
+                            </td>
+                            <td class="px-6 py-4 text-lg text-gray-500">
+                                <% order.items.forEach(item => { %>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="w-4 h-4 bg-blue-100 rounded-full flex items-center justify-center text-xs text-blue-600">
+                                            <%= item.productCount %>
+                                        </span>
+                                        <span><%= item.productId.name %></span>
+                                    </div>
+                                    
+                                    <!-- Status change buttons with irreversibility check -->
+                                    <% const statusOptions = ['Pending', 'Shipped', 'Delivered', 'Returned']; %>
+                                    <% const currentStatusIndex = statusOptions.indexOf(item.status); %>
+                                    
+                                    <% statusOptions.forEach((status, index) => { %>
+                                        <% if (item.status !== 'Cancelled' && item.status !== 'Requested' && item.status !== 'Rejected') { %> <!-- Add this check -->
+                                            <button 
+                                                onclick="updateStatus('<%= order._id %>', '<%= item.productId._id %>', '<%= status %>')"
+                                                class="px-3 py-1 text-xs rounded-md <%= status === item.status ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-800 hover:bg-gray-200' %>"
+                                                <%= index <= currentStatusIndex ? 'hidden' : '' %>>
+                                                <%= status %>
+                                            </button>
+                                        <% } %>
+                                    <% }) %>
+                                    
+                                <% }) %>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <% order.items.forEach(item => { %>
+                                    <% const statusColors = {
+                                        'Pending': 'bg-yellow-100 text-yellow-800',
+                                        'Shipped': 'bg-blue-100 text-blue-800',
+                                        'Confirmed': 'bg-green-100 text-green-800',
+                                        'Delivered': 'bg-purple-100 text-purple-800',
+                                        'Cancelled': 'bg-red-100 text-red-800',
+                                        'Returned': 'bg-gray-100 text-gray-800',
+                                        'Requested': 'bg-violet-100 text-violet-800'
+                                    } %>
+                                    <span class="px-3 py-1 text-xs rounded-full <%= statusColors[item.status] %>">
+                                        <%= item.status %>
+                                    </span>
+                                <% }) %>
+                            </td>
+                            <td class="px-4 py-4 flex space-x-2">
+                                <button onclick="viewOrder('<%= order._id %>')" 
+                                    class="inline-flex items-center px-3 py-2 border border-transparent text-lg leading-4 font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    View
+                                </button>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-lg text-gray-500">
+    <% order.items.forEach(item => { %>
+        <% if (item.status === 'Requested') { %>
+            <a href="/admin/viewReason/<%=order._id%>/<%=item.productId._id%>"><button 
+                class="px-4 py-2 text-lg font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500">
+                View Return Reason
+            </button></a>
+        <% } %>
+    <% }) %>
+</td>
 
-<!-- DataTables CSS -->
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css">
 
-<!-- Custom CSS for table styling -->
-<style>
-    .table {
-        background-color: #f8f9fa; /* Light background for better contrast */
-    }
-    .table th {
-        background-color: #007bff; /* Blue header background */
-        color: white; /* White text color for header */
-    }
-    .table td {
-        vertical-align: middle; /* Center align the content */
-    }
-    .action-buttons {
-        display: flex;
-        flex-direction: row;
-        gap: 5px; /* Space between buttons */
-    }
-    .action-buttons button {
-        width: 100px /* Make buttons full width */
-    }
-</style>
-
-<div class="row header" style="text-align:center;color:green">
-    <h3>Order Management</h3>
+                 
+                        </tr>
+                        
+                    <% }) %>
+                </tbody> 
+            </table>
+        </div>
+    </div>
 </div>
 
-<table id="example" class="table table-striped" style="width:100%">
-    <thead>
-        <tr>
-            <th>Order ID</th>
-            <th>User</th>
-            <th>Items</th>
-            <th>Count</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-      <% orders.forEach(order => { %>
-          <tr>
-              <td><%= order._id %></td>
-              <td><%= order.userId.name %></td>
-              <td>
-                  <% order.items.forEach(item => { %>
-                     
-                  <% }) %>
-              </td>
-              <td>
-                  <% order.items.forEach(item => { %>
-                      <div><%= item.productCount %></div>
-                  <% }) %>
-              </td>
-              <td>
-                 
-                     
 
-                
-                    <!-- View Details Button -->
-                    <a href="/admin/orders/<%= order._id %>" class="btn btn-success btn-sm mt-2">View Details</a>
-                    
-                      
-                 
-              </td>
-          </tr>
-      <% }) %>
-  </tbody>
-</table>
+<div class="mt-4 flex justify-center space-x-4">
+    <% if (currentPage > 1) { %>
+      <a href="?page=<%= currentPage - 1 %>&limit=10" class="bg-gray-200 text-black px-4 py-2 rounded hover:bg-gray-300">Previous</a>
+    <% } %>
+    
+    <% for (let i = 1; i <= totalPages; i++) { %>
+      <a href="?page=<%= i %>&limit=10" class="bg-gray-200 text-black px-4 py-2 rounded hover:bg-gray-300 <%= currentPage === i ? 'bg-gray-400' : '' %>">
+        <%= i %>
+      </a>
+    <% } %>
+    
+    <% if (currentPage < totalPages) { %>
+      <a href="?page=<%= currentPage + 1 %>&limit=10" class="bg-gray-200 text-black px-4 py-2 rounded hover:bg-gray-300">Next</a>
+    <% } %>
+  </div>
 
+
+<!-- Modal -->
+
+<div id="modalBackground" class="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity z-40 hidden"></div>
+<div id="orderModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+    <div class="relative w-full max-w-4xl bg-white rounded-xl shadow-2xl">
+        <!-- Header -->
+        <h2 class="text-2xl font-semibold text-gray-900 p-6 border-b border-gray-200">Order Details</h2>
+
+        <!-- Main Content -->
+        <div class="p-6">
+            <!-- Two Column Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <!-- Left Column -->
+                <div>
+                    <div class="mb-4">
+                        <p class="font-medium text-gray-900">Order ID: <span id="orderId" class="text-gray-700"></span></p>
+                        <p class="font-medium text-gray-900">Order Date: <span id="orderDate" class="text-gray-700"></span></p>
+                    </div>
+
+                    <div class="mt-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Shipping Address</h3>
+                        <p id="shippingAddress" class="text-gray-700"></p>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div>
+                    <div class="mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Payment Method</h3>
+                        <p id="paymentMethod" class="text-gray-700"></p>
+                    </div>
+                    <div class="mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Coupon Discount</h3>
+                        <p id="couponApplied" class="text-gray-700"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Items Table -->
+            <div class="mt-8">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Items Purchased</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th class="px-6 py-3 text-left text-lg font-medium text-gray-700">Product</th>
+                                <th class="px-6 py-3 text-left text-lg font-medium text-gray-700">Image</th>
+                                <th class="px-6 py-3 text-left text-lg font-medium text-gray-700">Quantity</th>
+                                <th class="px-6 py-3 text-left text-lg font-medium text-gray-700">Price</th>
+                                <th class="px-6 py-3 text-left text-lg font-medium text-gray-700">Discount</th>
+                                <th class="px-6 py-3 text-left text-lg font-medium text-gray-700">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemsPurchased" class="divide-y divide-gray-200">
+                            <!-- Items will be dynamically inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="mt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <!-- Total Price -->
+                <p class="text-lg md:mb-0">
+                    <span class="font-semibold text-gray-900">Total Price:</span>
+                    <span class="ml-2">&#8377;<span id="totalPrice" class="text-gray-900"></span></span>
+                </p>
+
+                <!-- Close Button -->
+                <button onclick="closeModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors duration-200">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<script>
+
+    function showReasonModal (orderId,productId,reason){
+        console.log('hai')
+        console.log(`orderId = ${orderId}`)
+        console.log(`productID = ${productId}`);
+        console.log(`reason = ${reason}`)
+    }
+    function viewOrder(orderId) {
+    // Show modal
+    document.getElementById('modalBackground').classList.remove('hidden');  
+    document.getElementById('orderModal').classList.remove('hidden');
+
+    // Fetch order details
+    fetch(`/admin/orders/${orderId}`)
+        .then(response => response.json())
+        .then(order => {
+            // Populate basic order details
+            document.getElementById('orderId').textContent = order.orderId || order._id;
+            document.getElementById('orderDate').textContent = new Date(order.createdAt).toLocaleDateString();
+            document.getElementById('shippingAddress').textContent =  order.address;
+   
+
+            document.getElementById('couponApplied').textContent = order.couponDiscount;
+            document.getElementById('paymentMethod').textContent = order.paymentMethod;
+            document.getElementById('totalPrice').textContent = order.totalPrice.toLocaleString();
+
+            // Clear existing items
+            const itemsTable = document.getElementById('itemsPurchased');
+            itemsTable.innerHTML = '';
+
+
+   
+            // Add items with status
+            order.items.forEach(item => {
+                console.log(`Processing item at index:`, item); 
+                const row = document.createElement('tr');
+                row.innerHTML = `
+            <tr class="hover:bg-gray-50 transition-colors">
+    <!-- Product Name -->
+    <td class="px-6 py-4">
+        <p class="text-lg text-gray-700 font-medium">${item.productId.name}</p>
+    </td>
+    
+    <!-- Product Image -->
+<td class="px-6 py-4">
+  <img src="/uploads/${item.productImage}" 
+       alt="Product image" 
+       class="w-16 h-16 object-cover rounded-lg shadow-sm hover:shadow-md transition-shadow">
+</td>
+
+    <!-- Product Count -->
+    <td class="px-6 py-4">
+        <span class="text-lg text-gray-700">${item.productCount}</span>
+    </td>
+    
+    <!-- Product Price -->
+    <td class="px-6 py-4">
+        <span class="text-lg font-medium text-gray-900">
+            ₹${item.productPrice} × ${item.productCount}
+        </span>
+    </td>
+    
+    <!-- Discount -->
+    <td class="px-6 py-4">
+        <span class="text-lg font-medium text-green-600">
+            ${item.productId.discount}%
+        </span>
+    </td>
+    
+    <!-- Status -->
+    <td class="px-6 py-4">
+        <div class="flex flex-col gap-2">
+            <span class="px-3 py-1 text-xs font-medium rounded-full inline-flex items-center justify-center ${getStatusClass(item.status)}">
+                ${item.status}
+            </span>
+            <span class="text-xs text-gray-500">
+                ${getStatusTimeline(item.status)}
+            </span>
+        </div>
+    </td>
+</tr>
+            
+                `;
+                itemsTable.appendChild(row);
+            });
+
+            // Add order status section
+            const orderStatusDiv = document.getElementById('orderStatus');
+            if (orderStatusDiv) {
+                orderStatusDiv.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <span class="px-3 py-1 text-xs font-medium rounded-full ${getStatusClass(order.status)}">
+                            ${order.status}
+                        </span>
+                        ${order.isCancel ? 
+                            '<span class="text-red-600 text-lg">(Order Cancelled)</span>' 
+                            : ''}
+                    </div>
+                `;
+            }
+        });
+}
+
+function getStatusClass(status) {
+    const statusClasses = {
+        'Pending': 'bg-yellow-100 text-yellow-800',
+        'Confirmed': 'bg-green-100 text-green-800',
+        'Shipped': 'bg-blue-100 text-blue-800',
+        'Delivered': 'bg-purple-100 text-purple-800',
+        'Cancelled': 'bg-red-100 text-red-800',
+        'Returned': 'bg-gray-100 text-gray-800'
+    };
+    return statusClasses[status] || 'bg-gray-100 text-gray-800';
+}
+
+function getStatusTimeline(currentStatus) {
+    const statuses = ['Pending', 'Confirmed', 'Shipped', 'Delivered'];
+    const currentIndex = statuses.indexOf(currentStatus);
+    
+    if (currentStatus === 'Cancelled' || currentStatus === 'Returned') {
+        return ''; // Don't show timeline for cancelled/returned items
+    }
+
+    return `
+        <div class="mt-2">
+            <div class="flex items-center space-x-2 text-xs">
+                ${statuses.map((status, index) => `
+                    <span class="${index <= currentIndex ? 'text-blue-600' : 'text-gray-400'}">
+                        ${status}
+                    </span>
+                    ${index < statuses.length - 1 ? `
+                        <span class="${index < currentIndex ? 'text-blue-600' : 'text-gray-300'}">→</span>
+                    ` : ''}
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+function closeModal() {
+    document.getElementById('modalBackground').classList.add('hidden');
+    document.getElementById('orderModal').classList.add('hidden');
+}
+
+
+function updateStatus(orderId, productId, newStatus) {
+        Swal.fire({
+            title: 'Change Status?',
+            text: `Are you sure you want to change the status to "${newStatus}"? Once changed, it cannot be reverted.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, change it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Send the status update via fetch (AJAX) to avoid page reload
+                fetch('/admin/orders/status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ orderId: orderId, productId: productId, status: newStatus })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire(
+                            'Updated!',
+                            'The order status has been updated and cannot be changed back.',
+                            'success'
+                        ).then(() => {
+                            // Reload or update the page to reflect the new status
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire('Error', 'There was an issue updating the status.', 'error');
+                    }
+                })
+                .catch(error => {
+                    Swal.fire('Error', 'Failed to update status.', 'error');
+                });
+            }
+        });
+    }
+    
+
+
+
+
+
+    </script>
+    <style>
+        /* Modal background */
+#modalBackground {
+    background-color: rgba(0, 0, 0, 0.5); /* Darken background */
+}
+
+/* Modal box */
+#orderModal {
+    max-width: 80%; /* Adjust width */
+    padding: 20px;
+    border-radius: 8px;
+}
+
+/* Close button */
+button {
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #2563EB; /* Darker blue on hover */
+}
+   
+   </style>
+  

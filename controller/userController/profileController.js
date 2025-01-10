@@ -18,7 +18,9 @@ const profile = async (req, res) => {
     if (!userDetail) {
       return res.redirect("/");
     }
-    res.render("user/userprofile", { userDetail ,index });
+     const fromCheckout = req.query.from === "checkout"
+   
+    res.render("user/userprofile", { userDetail ,index, fromCheckout });
   } catch (error) {
     console.log(`Error during profile page render ${error}`);
     res.status(404);

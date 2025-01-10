@@ -7,7 +7,7 @@ const orderSchema = new mongoose.Schema({
         required: true
     }, 
     orderId: {
-        type: String, // Optionally, you can use a unique order number generator
+        type: Number, // Optionally, you can use a unique order number generator
         required: true
     },
     items: [{
@@ -30,7 +30,7 @@ const orderSchema = new mongoose.Schema({
         // Add individual status for each product
         status: {
             type: String,
-            enum: ['Pending', 'Shipped', 'Delivered', 'Cancelled', 'Returned','Paid','Requested'],
+            enum: ['Paid','Shipped', 'Pending', 'Delivered', 'Returned', 'Cancelled','Requested','Rejected'],
             default: 'Pending' // Default status for individual product
         },
         reasonForCancellation:{

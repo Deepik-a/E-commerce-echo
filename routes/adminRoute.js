@@ -64,19 +64,32 @@ admin.post('/updateproduct/:id',isAdmin, uploads, productController.postEditProd
 //--------------------------------Order Management Routes----------------------------
 
 
-admin.get('/orders', orderController.listOrders);
-admin.post('/orders/item-status',orderController.changeProductStatus)
-admin.post('/orders/cancel', orderController.cancelOrder);
+// admin.get('/orders', orderController.listOrders);
+// admin.post('/orders/item-status',orderController.changeProductStatus)
+// admin.post('/orders/cancel', orderController.cancelOrder);
 // Route to view order details
-admin.get('/orders/:orderId', orderController.viewOrderDetails);
+// admin.get('/orders/:orderId', orderController.viewOrderDetails);
 
 
 //-------------------------------- Inventory Management Routes---------------------------------
 
 
 
-admin.get('/inventory', orderController.listInventory);
-admin.post('/inventory/update', orderController.updateStock);
+// admin.get('/inventory', orderController.listInventory);
+// admin.post('/inventory/update', orderController.updateStock);
+
+//------------------------------------------ order Management-----------------------------------------------------
+
+admin.get('/orders',isAdmin,orderController.listOrders);
+admin.post('/orders/status',orderController.changeOrderStatus);
+admin.get('/viewReason/:orderId/:productId',isAdmin,orderController.viewReturnReason);
+admin.post('/processReturn/:orderId/:productId',orderController.postViewReason)
+//admin_routes.post('/orders/cancel',orderController.cancelOrder);
+admin.get('/orders/:id',orderController.viewOrderDetails)
+
+
+
+
 
 
 

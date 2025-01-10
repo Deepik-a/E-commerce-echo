@@ -1,6 +1,5 @@
 
-<div>
-    
+
     <!-- include the sidebar partial  -->
     <%- include('sidebar') %>
  
@@ -28,7 +27,7 @@
  
      <!-- Table  -->
  
-     <div class="font-sans overflow-x-auto ml-8 mr-8 mt-12">
+     <div class="font-sans overflow-x-auto ml-64 mr-8 mt-12">
          <table class="min-w-full bg-white">
              <thead class=" bg-gray-200 whitespace-nowrap">
                  <tr>
@@ -65,7 +64,7 @@
  
                  <% products.forEach((product, index) => { %>
  
-                     <tr class="hover:bg-gray-50">
+                     <tr class="bg-gray-50">
                          <td class="p-4 text-[15px] font-semibold text-gray-800">
                              <%= ((currentPage - 1) * limit) + index + 1 %>
                          </td>

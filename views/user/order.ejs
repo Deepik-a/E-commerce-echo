@@ -152,13 +152,14 @@
           <% }) %>
           
         
-        
+     
         <!-- Modal for Cancel and Return Action -->
         <div id="cancelModal" class="hidden fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
             <div class="bg-white rounded-lg w-1/3 p-6">
                 <h2 class="text-lg font-semibold mb-4" id="modalTitle">Reason for Action</h2>
                 <form id="cancelForm">
                   <% orderDetails.forEach(order => { %>
+               
                     <input type="hidden" id="orderId" name="orderId" value="<%=order._id%>">
                     <input type="hidden" id="actionType" name="actionType" value="">
                     <input type="hidden" id="productId" value="<%=order.items.productId %>">
@@ -243,7 +244,7 @@
                 <!-- Left Column -->
                 <div>
                     <div class="mb-4">
-                        <p class="font-medium text-gray-900">Order ID: <span id="orderId" class="text-gray-700"></span></p>
+                        <p class="font-medium text-gray-900">Order ID: <span id="orderIds" class="text-gray-700"></span></p>
                         <p class="font-medium text-gray-900">Order Date: <span id="orderDate" class="text-gray-700"></span></p>
                     </div>
                     
@@ -325,17 +326,15 @@
     fetch(`/orders/${orderId}`)
     .then(response => response.json())
     .then(order => {
- console.log(`order = ${order}`);
- 
+  
                // Populate basic order details
-               document.getElementById('orderId').textContent = order.orderId || order._id;
-            console.log("hi,i am in the order",order)
+               document.getElementById('orderIds').textContent =order.orderId
             document.getElementById('orderDate').textContent = new Date(order.createdAt).toLocaleDateString();
             document.getElementById('shippingAddress').textContent = order.address;
     
 
             document.getElementById('paymentMethod').textContent = order.paymentMethod;
-            document.getElementById('couponApplied').textContent = `₹${order.couponDiscount}`
+            document.getElementById('couponApplied').textContent = `₹Rs {order.couponDiscount}`
            document.getElementById('totalPrice').textContent = order.payableAmount.toLocaleString();
 
             // Clear existing items
@@ -381,7 +380,7 @@
     <!-- Status -->
     <td class="px-6 py-4">
         <div class="flex flex-col gap-2">
-            <span class="px-3 py-1 text-xs font-medium rounded-full inline-flex items-center justify-center ${getStatusClass(item.productStatus)}">
+            <span class="px-3 py-1 text-xs font-medium rounded-full inline-flex items-center justify-center ${getStatusClass(item.status)}">
                 ${item.status}
             </span>
             <span class="text-xs text-gray-500">

@@ -1,28 +1,98 @@
 
+<%- include('sidebar.ejs') %>
 
-<div class="flex ml-64">
-  <%- include('sidebar.ejs') %>
+  <title>Sales Report</title>
+
   
-  <div class="container mx-auto px-4 py-8 flex-1">
-    <div class="mb-6">
-      <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-semibold text-gray-800">Sales Report</h1>
-        
-        <div class="flex gap-4">
-          <!-- Filter Dropdown -->
-          <div class="relative">
-            <select id="filterOption" class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+  <style>
+    /* Base styles */
+    body {
+      margin: 0;
+      font-family: 'Montserrat', 'Arial', sans-serif;
+      font-weight: 700;
+      background-color: #f3f4f6;
+    }
+
+  
+
+    /* Main content styles */
+    .main-content {
+      margin-left: 256px;
+      transition: margin-left 0.3s ease;
+      min-height: 100vh;
+      background-color: #f3f4f6;
+    }
+
+ 
+
+    /* Stats cards */
+    .stats-card {
+      background-color: #e6f3ff;
+      padding: 1.25rem;
+      border-radius: 0.5rem;
+      flex: 1;
+      text-align: center;
+      transition: background-color 0.3s;
+    }
+
+    .stats-card:hover {
+      background-color: #bfdbfe;
+    }
+
+    /* Table styles */
+    .table-container {
+      background-color: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      overflow-x: auto;
+    }
+
+    /* Responsive styles */
+    @media (max-width: 1024px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      
+      .sidebar.active {
+        transform: translateX(0);
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+
+      .toggle-btn {
+        display: block;
+      }
+
+      .stats-container {
+        flex-direction: column;
+      }
+
+      .stats-card {
+        margin-bottom: 1rem;
+      }
+    }
+  </style>
+
+
+
+  <div class="main-content">
+    <div class="container mx-auto px-4 py-8">
+      <div class="mb-6">
+        <div class="flex flex-wrap justify-between items-center mb-6">
+          <h1 style="font-size: 1.5rem; font-weight: 600; color: #1f2937;">Sales Report</h1>
+          
+          <div class="flex flex-wrap gap-4 mt-4 sm:mt-0">
+            <select id="filterOption" style="padding: 0.5rem 1rem; border: 1px solid #d1d5db; border-radius: 0.375rem; background-color: white;">
               <option value="">Filter</option>
               <option value="day">This Day</option>
               <option value="week">This Week</option>
               <option value="month">This Month</option>
               <option value="year">This Year</option>
             </select>
-          </div>
-          
-          <!-- Export Dropdown -->
-          <div class="relative">
-            <select id="export" class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            
+            <select id="export" style="padding: 0.5rem 1rem; border: 1px solid #d1d5db; border-radius: 0.375rem; background-color: white;">
               <option value="">Export Report</option>
               <option value="excel">Excel Sheet</option>
               <option value="pdf">PDF</option>
@@ -30,76 +100,75 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="bg-white h-28 flex justify-between items-center my-6 px-4 py-5 shadow-lg rounded-lg space-x-6">
-      <div class="flex-1 px-5 py-3 bg-gray-100 rounded-md flex flex-col justify-center items-center text-gray-700 font-medium shadow-sm hover:bg-gray-200 transition duration-300 ease-in-out">
-        <span class="text-xs uppercase tracking-wider text-gray-500">Overall Sales Count</span>
-        <span id="overallSalesCount" class="text-2xl font-semibold mt-1"><%= overallSalesCount %></span>
+      <div class="flex flex-wrap gap-4 my-6">
+        <div class="stats-card">
+          <span style="font-size: 0.75rem; text-transform: uppercase; color: #6b7280;">Overall Sales Count</span>
+          <span id="overallSalesCount" style="display: block; font-size: 1.5rem; font-weight: 600; margin-top: 0.25rem;"><%= overallSalesCount %></span>
+        </div>
+        
+        <div class="stats-card">
+          <span style="font-size: 0.75rem; text-transform: uppercase; color: #6b7280;">Overall Order Amount</span>
+          <span id="overallOrderAmount" style="display: block; font-size: 1.5rem; font-weight: 600; margin-top: 0.25rem;">₹ <%= overallOrderAmount.toFixed(2) %></span>
+        </div>
+        
+        <div class="stats-card">
+          <span style="font-size: 0.75rem; text-transform: uppercase; color: #6b7280;">Overall Coupon Discount</span>
+          <span id="totalCouponDiscount" style="display: block; font-size: 1.5rem; font-weight: 600; margin-top: 0.25rem;">₹ <%= totalCouponDiscount.toFixed(2) %></span>
+        </div>
       </div>
-      <div class="flex-1 px-5 py-3 bg-gray-100 rounded-md flex flex-col justify-center items-center text-gray-700 font-medium shadow-sm hover:bg-gray-200 transition duration-300 ease-in-out">
-        <span class="text-xs uppercase tracking-wider text-gray-500">Overall Order Amount</span>
-        <span id="overallOrderAmount" class="text-2xl font-semibold mt-1">₹ <%= overallOrderAmount.toFixed(2) %></span>
-      </div>
-      <div class="flex-1 px-5 py-3 bg-gray-100 rounded-md flex flex-col justify-center items-center text-gray-700 font-medium shadow-sm hover:bg-gray-200 transition duration-300 ease-in-out">
-        <span class="text-xs uppercase tracking-wider text-gray-500">Overall Coupon Discount</span>
-        <span id="totalCouponDiscount" class="text-2xl font-semibold mt-1">₹ <%= totalCouponDiscount.toFixed(2) %></span>
-      </div>
-    </div>
 
-    <!-- Sales Report Table -->
-    <div class="bg-white rounded-lg shadow-md overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User ID</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order Date</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order Amount</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Coupon Deduction</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Status</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Method</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          <% data.forEach(data =>{ %>
-          <tr class="hover:bg-gray-50">
-            <td class="px-6 py-4 text-sm text-gray-600"><%= data.orderId %></td>
-            <td class="px-6 py-4 text-sm text-gray-600"><%= data.userId.toString().substring(0, 4) + '...' + data.userId.toString().slice(-5) %></td>
-            <td class="px-6 py-4 text-sm text-gray-600"><%= new Date(data.createdAt).toLocaleDateString('en-GB') %></td>
-            <td class="px-6 py-4 text-sm text-gray-600">₹ <%= data.totalPrice.toFixed(2) %></td>
-            <td class="px-6 py-4 text-sm text-gray-600">₹ <%= data.couponDiscount.toFixed(2) %></td>
-            <td class="px-6 py-4 text-sm">
-              <span class="<%= data.status === 'Paid'%>px-6 py-4 text-sm text-gray-600">
-                <%= data.status %>
-              </span>
-            </td>
-            <td class="px-6 py-4 text-sm text-gray-600"><%= data.paymentMethod %></td>
-   
-          </tr>
-          <% }) %>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Pagination -->
-    <div class="flex justify-between items-center mt-6">
-      <div class="text-sm text-gray-600">
-        Showing <span class="font-medium" id="currentPage"><%= currentPage %></span> to 
-        <span class="font-medium" id="totalPages"><%= totalPages %></span> of 
-        <span class="font-medium" id="totalRecords"><%= totalRecordsCount %></span> results
+      <div class="table-container">
+        <table style="min-width: 100%; border-collapse: separate; border-spacing: 0;">
+          <thead style="background-color: #f9fafb;">
+            <tr>
+              <th style="padding: 0.75rem 1.5rem; text-align: left; font-size: 0.75rem; font-weight: 500; color: #6b7280; text-transform: uppercase;">Order ID</th>
+              <th style="padding: 0.75rem 1.5rem; text-align: left; font-size: 0.75rem; font-weight: 500; color: #6b7280; text-transform: uppercase;">User ID</th>
+              <th style="padding: 0.75rem 1.5rem; text-align: left; font-size: 0.75rem; font-weight: 500; color: #6b7280; text-transform: uppercase;">Order Date</th>
+              <th style="padding: 0.75rem 1.5rem; text-align: left; font-size: 0.75rem; font-weight: 500; color: #6b7280; text-transform: uppercase;">Order Amount</th>
+              <th style="padding: 0.75rem 1.5rem; text-align: left; font-size: 0.75rem; font-weight: 500; color: #6b7280; text-transform: uppercase;">Coupon Deduction</th>
+              <th style="padding: 0.75rem 1.5rem; text-align: left; font-size: 0.75rem; font-weight: 500; color: #6b7280; text-transform: uppercase;">Payment Status</th>
+              <th style="padding: 0.75rem 1.5rem; text-align: left; font-size: 0.75rem; font-weight: 500; color: #6b7280; text-transform: uppercase;">Payment Method</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% data.forEach(data =>{ %>
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+              <td style="padding: 1rem 1.5rem; font-size: 0.875rem; color: #4b5563;"><%= data.orderId %></td>
+              <td style="padding: 1rem 1.5rem; font-size: 0.875rem; color: #4b5563;"><%= data.userId.toString().substring(0, 4) + '...' + data.userId.toString().slice(-5) %></td>
+              <td style="padding: 1rem 1.5rem; font-size: 0.875rem; color: #4b5563;"><%= new Date(data.createdAt).toLocaleDateString('en-GB') %></td>
+              <td style="padding: 1rem 1.5rem; font-size: 0.875rem; color: #4b5563;">₹ <%= data.payableAmount.toFixed(2) %></td>
+              <td style="padding: 1rem 1.5rem; font-size: 0.875rem; color: #4b5563;">₹ <%= data.couponDiscount.toFixed(2) %></td>
+              <td style="padding: 1rem 1.5rem; font-size: 0.875rem; color: #4b5563;"><%= data.status %></td>
+              <td style="padding: 1rem 1.5rem; font-size: 0.875rem; color: #4b5563;"><%= data.paymentMethod %></td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
       </div>
-      <div class="inline-flex gap-2">
-        <button id="prevPage" class="px-4 py-2 border border-gray-300 rounded-md text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-          Previous
-        </button>
-        <button id="nextPage" class="px-4 py-2 border border-gray-300 rounded-md text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-          Next
-        </button>
+
+      <div class="flex flex-wrap justify-between items-center mt-6">
+        <div style="font-size: 0.875rem; color: #4b5563;">
+          Showing <span style="font-weight: 500;" id="currentPage"><%= currentPage %></span> to 
+          <span style="font-weight: 500;" id="totalPages"><%= totalPages %></span> of 
+          <span style="font-weight: 500;" id="totalRecords"><%= totalRecordsCount %></span> results
+        </div>
+        <div class="flex gap-2 mt-4 sm:mt-0">
+          <button id="prevPage" style="padding: 0.5rem 1rem; border: 1px solid #d1d5db; border-radius: 0.375rem; background-color: white; color: #4b5563;">
+            Previous
+          </button>
+          <button id="nextPage" style="padding: 0.5rem 1rem; border: 1px solid #d1d5db; border-radius: 0.375rem; background-color: white; color: #4b5563;">
+            Next
+          </button>
+        </div>
       </div>
     </div>
   </div>
-</div>
+
+
+
+
+
     <script>
      let currentPage = parseInt(document.getElementById('currentPage').innerHTML);
       let totalPages = parseInt(document.getElementById('totalPages').innerHTML);
@@ -164,14 +233,14 @@
         data.forEach(order => {
           const row = document.createElement('tr');
           row.innerHTML = `
-            <td class="px-6 py-4 text-sm text-gray-600">${order.orderId}</td>
-            <td class="px-6 py-4 text-sm text-gray-600">${order.userId.substring(0, 4) + '...' + order.userId.slice(-5)}</td>
-            <td class="px-6 py-4 text-sm text-gray-600">${new Date(order.createdAt).toLocaleDateString('en-GB')}</td>
-            <td class="px-6 py-4 text-sm text-gray-600">₹${order.totalPrice.toFixed(2)}</td>
-            <td class="px-6 py-4 text-sm text-gray-600">₹${order.couponDiscount.toFixed(2)}</td>
-          <td class="px-6 py-4 text-sm text-gray-600">${order.status}</td>
+            <td class="px-6 py-4 text-lg text-gray-600">${order.orderId}</td>
+            <td class="px-6 py-4 text-lg text-gray-600">${order.userId.substring(0, 4) + '...' + order.userId.slice(-5)}</td>
+            <td class="px-6 py-4 text-lg text-gray-600">${new Date(order.createdAt).toLocaleDateString('en-GB')}</td>
+            <td class="px-6 py-4 text-lg text-gray-600">₹${order.payableAmount.toFixed(2)}</td>
+            <td class="px-6 py-4 text-lg text-gray-600">₹${order.couponDiscount.toFixed(2)}</td>
+          <td class="px-6 py-4 text-lg text-gray-600">${order.status}</td>
 
-            <td class="px-6 py-4 text-sm text-gray-600">${order.paymentMethod}</td>
+            <td class="px-6 py-4 text-lg text-gray-600">${order.paymentMethod}</td>
          
           `;
           tBody.appendChild(row);

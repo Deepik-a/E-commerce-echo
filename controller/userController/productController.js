@@ -91,19 +91,6 @@ const getProductDetail = async (req, res) => {
 };
 
 
-const imageZoom= async (req, res) => {
-    try {
-        const product = await productSchema.findById(req.params.id);
-        if (!product) {
-            return res.status(404).send('Product not found');
-        }
-        res.render('user/zoom', { product }); // Rendering a new 'zoom.ejs' view
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Server error');
-    }
-};
-// productController.js
 
 
 
@@ -192,7 +179,6 @@ const searchbyProducts= async (req, res) => {
 module.exports = {
     getProductsByCategory,
     getProductDetail,
-    imageZoom,
     getAllProducts,
     sortAllproducts,
     searchbyProducts

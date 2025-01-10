@@ -1,59 +1,279 @@
 <%- include('sidebar') %>
+     
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Category Management</title>
+  <style>
+    /* Base styles */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f8f9fa;
+    }
+
+    /* Main content wrapper */
+    .main-content {
+      margin-left: 256px; /* Width of sidebar */
+      padding: 20px;
+      transition: margin-left 0.3s ease;
+    }
+
+    /* Category table styles */
+    .category-table {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .category-header {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-bottom: 2px solid #dee2e6;
+      border-radius: 8px 8px 0 0;
+    }
+
+    .category-header h5 {
+      margin: 0;
+      font-size: 1.25rem;
+      color: #333;
+    }
+
+    .table-responsive {
+      padding: 1rem;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 1rem;
+      text-align: left;
+    }
+
+    th {
+      background: #f8f9fa;
+      font-weight: 600;
+      color: #555;
+    }
+
+    /* Form styles */
+    .edit-category-form {
+      max-width: 250px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+    }
+
+    /* Button styles */
+    .btn {
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background: #0d6efd;
+      color: white;
+    }
+
+    .block-unblock-btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-danger {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .btn-success {
+      background-color: #198754;
+      color: white;
+    }
+
+    /* Badge styles */
+    .badge {
+      padding: 0.5em 0.8em;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+
+    .bg-danger {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .bg-success {
+      background-color: #198754;
+      color: white;
+    }
+
+    /* Responsive styles */
+    @media (max-width: 1024px) {
+      .main-content {
+        margin-left: 0;
+        padding: 60px 15px 15px; /* Added top padding for toggle button */
+      }
+
+      .table-responsive {
+        border: 0;
+      }
       
-    <div class="col-md-9">
-      <div class="bg-light rounded h-100 p-4">
-        <h6 class="mb-4">Category Management</h6>
-        <div class="table-responsive">
-          <table class="table table-bordered">
-            <thead>
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+      
+      thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+      }
+      
+      tr {
+        border: 1px solid #dee2e6;
+        margin-bottom: 1rem;
+        border-radius: 4px;
+        background: white;
+        padding: 0.5rem;
+      }
+      
+      td {
+        border: none;
+        position: relative;
+        padding: 0.5rem;
+        padding-left: 130px;
+        min-height: 30px;
+        margin-bottom: 0.5rem;
+      }
+      
+      td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0.5rem;
+        width: 120px;
+        font-weight: bold;
+        text-align: left;
+      }
+      
+      .edit-category-form {
+        max-width: 100%;
+      }
+
+      .block-unblock-btn {
+        width: 100%;
+        margin-top: 0.5rem;
+      }
+    }
+
+
+
+  </style>
+
+
+
+  <div class="main-content">
+    <div class="category-table">
+      <div class="category-header">
+        <h5>Category Management</h5>
+      </div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th width="5%">#</th>
+              <th width="20%">Category Name</th>
+              <th width="15%">Status</th>
+              <th width="35%">Edit</th>
+              <th width="25%">List/Unlist</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% categories.forEach((category, index) => { %>
               <tr>
-                <th scope="col">#</th>
-                <th scope="col">Category Name</th>
-                <th scope="col">Status</th> <!-- New Status Column -->
-                <th scope="col">Edit</th>
-                <th scope="col">List/Unlist</th>
+                <td data-label="#">
+                  <%= index + 1 %>
+                </td>
+                <td data-label="Category Name">
+                  <%= category.name %>
+                </td>
+                <td data-label="Status">
+                  <span class="badge <%= category.isDeleted ? 'bg-danger' : 'bg-success' %>">
+                    <%= category.isDeleted ? 'Blocked' : 'Active' %>
+                  </span>
+                </td>
+                <td data-label="Edit">
+                  <form class="edit-category-form" data-id="<%= category._id %>">
+                    <div class="form-group">
+                      <label for="categoryName-<%= category._id %>">Edit Category Name</label>
+                      <input type="text" 
+                             id="categoryName-<%= category._id %>" 
+                             name="name" 
+                             value="<%= category.name %>" 
+                             required 
+                             class="form-control">
+                      <button type="submit" class="btn btn-primary">Update Category</button>
+                    </div>
+                  </form>
+                </td>
+                <td data-label="List/Unlist">
+                  <button 
+                    class="block-unblock-btn <%= category.isDeleted ? 'btn-success' : 'btn-danger' %>"
+                    data-id="<%= category._id %>" 
+                    data-action="<%= category.isDeleted ? 'unblock' : 'block' %>">
+                    <%= category.isDeleted ? 'Unblock' : 'Block' %>
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              <% categories.forEach((category, index) => { %>
-                <tr>
-                  <th scope="row"><%= index + 1 %></th>
-                  <td><%= category.name %></td>
-            
-                  <!-- Display current status with badge -->
-                  <td>
-                    <span class="badge <%= category.isDeleted ? 'bg-danger' : 'bg-success' %>">
-                      <%= category.isDeleted ? 'Blocked' : 'Active' %>
-                    </span>
-                  </td>
-            
-                  <!-- Edit Category Form -->
-                  <td>
-                    <form class="edit-category-form" data-id="<%= category._id %>">
-                      <div class="form-group">
-                        <label for="categoryName-<%= category._id %>">Edit Category Name</label>
-                        <input type="text" id="categoryName-<%= category._id %>" name="name" value="<%= category.name %>" required class="form-control">
-                      </div>
-                      <button type="submit" class="btn btn-primary mt-2">Update Category</button>
-                    </form>
-                  </td>
-            
-                  <!-- Block/Unblock Button -->
-                  <td>
-                    <button 
-                      class=" <%= category.isDeleted ? 'btn-success' : 'btn-danger' %> block-unblock-btn"
-                      data-id="<%= category._id %>" 
-                      data-action="<%= category.isDeleted ? 'unblock' : 'block' %>">
-                      <%= category.isDeleted ? 'Unblock' : 'Block' %>
-                    </button>
-                  </td>
-                </tr>
-              <% }) %>
-            </tbody>
-          </table>
-        </div>
+            <% }) %>
+          </tbody>
+        </table>
       </div>
     </div>
+  </div>
+
+ 
+
+    
+       <!-- Pagination for the page -->
+    <nav aria-label="Page navigation" class="d-flex justify-content-center mt-4">
+      <ul class="pagination">
+        <!-- Previous Button -->
+        <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+          <a class="page-link" href="?page=<%= currentPage - 1 %>&limit=3" tabindex="-1">Previous</a>
+        </li>
+    
+        <!-- Page Numbers -->
+        <% for (let i = 1; i <= totalPages; i++) { %>
+          <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+            <a class="page-link" href="?page=<%= i %>&limit=3"><%= i %></a>
+          </li>
+        <% } %>
+    
+        <!-- Next Button -->
+        <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+          <a class="page-link" href="?page=<%= currentPage + 1 %>&limit=3">Next</a>
+        </li>
+      </ul>
+    </nav>
     
     <script>
       // Reusable function for SweetAlert success

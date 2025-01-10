@@ -2,235 +2,450 @@
     <title><%= product.name %> - Product Details</title>
 
     <%- include('navbar') %>
-
-
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Product Detail</title>
-        <!-- Bootstrap 5 CSS -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-        <!-- Font Awesome for icons -->
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-        <style>
-            :root {
-                --primary-color: #28a745;
-                --secondary-color: #6c757d;
-                --light-green: #e9f5e9;
-            }
+    <%-include('navbar2') %>
+    <style>
+        :root {
+            --primary-color: #28a745;
+            --secondary-color: #6c757d;
+            --light-green: #e9f5e9;
+        }
     
-            body {
-                background-color: #f8f9fa;
-                font-family: 'Inter', sans-serif;
-            }
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Inter', sans-serif;
+        }
     
+        .product-container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            padding: 30px;
+            margin-top: 50px;
+        }
+    
+        .product-gallery {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+    
+        .image-thumbnails {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 80px;
+        }
+    
+        .thumbnail-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: transform 0.3s;
+        }
+    
+        .thumbnail-img:hover {
+            transform: scale(1.1);
+        }
+    
+        .thumbnail-img.active {
+            border: 2px solid #28a745;
+        }
+    
+        .main-image {
+            flex-grow: 1;
+        }
+    
+        .main-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            object-fit: contain;
+        }
+    
+        .product-details {
+            padding-left: 30px;
+        }
+    
+        .product-pricing {
+            background-color: var(--light-green);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+    
+        .final-price {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+    
+        .discount-badge {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+    
+        .product-offers {
+            background-color: rgb(214, 239, 216);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    
+        .offer-detail {
+            font-size: 20px;
+        }
+    
+        .thunderbolt-symbol {
+            font-size: 40px;
+            color: #ff4d4d;
+        }
+    
+        .btn-add-to-cart {
+            background-color: var(--primary-color);
+            border: none;
+            transition: all 0.3s ease;
+        }
+    
+        .btn-add-to-cart:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 17px rgba(0, 0, 0, 0.15);
+        }
+    
+        /* Responsive Design */
+        @media (max-width: 992px) {
             .product-container {
-                background-color: white;
-                border-radius: 15px;
-                box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-                padding: 30px;
-                margin-top: 50px;
-            }
-    
-            .product-image-carousel {
-                border-radius: 15px;
-                overflow: hidden;
-            }
-    
-            .carousel-control-prev,
-            .carousel-control-next {
-                background-color: rgba(0,0,0,0.1);
-                width: 40px;
-                height: 40px;
-                top: 50%;
-                border-radius: 50%;
-            }
-    
-            .product-pricing {
-                background-color: var(--light-green);
                 padding: 15px;
-                border-radius: 10px;
+            }
+            
+            .product-gallery {
+                flex-direction: column-reverse;
             }
     
-            .final-price {
-                color: var(--primary-color);
-                font-size: 1.5rem;
-                font-weight: 700;
+            .image-thumbnails {
+                flex-direction: row;
+                width: 100%;
+                overflow-x: auto;
             }
     
-            .discount-badge {
-                background-color: var(--primary-color);
-                color: white;
-                padding: 5px 10px;
-                border-radius: 5px;
+            .thumbnail-img {
+                width: 60px;
+                height: 60px;
             }
     
-            .btn-add-to-cart {
-                background-color: var(--primary-color);
-                border: none;
-                transition: all 0.3s ease;
+            .product-details {
+                padding-left: 0;
+                margin-top: 20px;
+            }
+        }
+    
+        @media (max-width: 576px) {
+            .product-container {
+                margin-top: 20px;
             }
     
-            .btn-add-to-cart:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 4px 17px rgba(0, 0, 0, 0.15);
+            .offer-detail {
+                font-size: 16px;
             }
     
-            .rating-stars .fa-star,
-            .rating-stars .fa-star-half-alt {
-                color: #ffc107;
+            .thunderbolt-symbol {
+                font-size: 30px;
             }
+        }
 
-            .product-offers {
-    background-color: rgb(214, 239, 216); /* Light green background */
-    padding: 5px; /* Add padding inside the box */
-    border-radius: 8px; /* Rounded corners */
-   
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Light shadow for better visibility */
+        /* General reset */
+* {
+  box-sizing: border-box;
 }
 
-.offer-detail {
-    font-size: 20px; /* Adjust text size */
+/* Container for the image */
+.product-gallery {
+  position: relative;
+}
+
+/* Thumbnails Styling */
+.image-thumbnails {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.thumbnail-img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.thumbnail-img.active {
+  border: 2px solid #007bff;
+}
+
+/* Main Image Section Styling */
+.main-image {
+  position: relative;
+  max-width: 100%;
+}
+
+.img-fluid {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Magnifier Styling */
+.magnifier {
+  position: absolute;
+  border: 2px solid #ccc;
+  width: 150px;
+  height: 150px;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: contain;
+  z-index: 10;
+  display: none;
+}
+
+/* For better visual feedback when hovering over thumbnails */
+.thumbnail-img:hover {
+  transform: scale(1.1);
+}
+
+
+                .product-details {
+                    background-color: white;
+                    transition: all 0.3s ease;
+                }
+                
+                .product-details:hover {
+                    transform: translateY(-5px);
+                }
+            
+                .btn:hover {
+                    opacity: 0.9;
+                    transform: translateY(-2px);
+                }
+            
+                .offer-detail {
+                    transition: all 0.3s ease;
+                }
+            
+                .offer-detail:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                }
+            
+                .stock-info {
+                    transition: all 0.3s ease;
+                }
+            
+                .stock-info:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                }
+       
+
+    </style>
     
-}
+    <div class="container product-container">
+        <div class="row">
+            <!-- Left Column: Product Images -->
+            <div class="col-md-6">
+                <div class="product-gallery">
+                  
+                  <!-- Thumbnails Section -->
+                  <div class="image-thumbnails">
+                    <% if (product.imgArray.length > 0) { %>
+                      <% product.imgArray.forEach((img, index) => { %>
+                        <img class="thumbnail-img <%= index === 0 ? 'active' : '' %>"
+                             src="<%= '/uploads/' + img %>"
+                             alt="Thumbnail Image <%= index + 1 %>"
+                             data-index="<%= index %>"
+                             class="thumbnail" 
+                             onclick="changeMainImage('<%= '/uploads/' + img %>');">
+                      <% }) %>
+                    <% } else { %>
+                      <p>No images available</p>
+                    <% } %>
+                  </div>
+              
+                  <!-- Main Image Section -->
+                  <div class="main-image" id="image-container">
+                    <img id="mainImage" src="<%= '/uploads/' + product.imgArray[0] %>" 
+                         alt="Main Product Image" class="img-fluid" />
+                  </div>
+              
+                  <!-- Magnifier Element -->
+                  <div id="magnifier" class="magnifier" style="display:none;"></div>
+                </div>
+              </div>
+              
 
-.thunderbolt-symbol {
-    font-size: 40px;
-    color: #ff4d4d; /* Red color for the thunderbolt symbol */
-}
-
-.offer-text strong {
-    color: #d9534f; /* Red color for important text */
-}
-
-
-
-        </style>
-    </head>
-    <body>
-        <div class="container product-container">
-            <div class="row">
-                <!-- Left Column: Product Images Carousel -->
-                <div class="col-md-6">
-                    <div id="productCarousel<%= product._id %>" class="carousel slide product-image-carousel" data-bs-ride="carousel">
-                        <div class="carousel-inner">
-                            <% if (product.imgArray.length > 0) { %>
-                                <% product.imgArray.forEach((img, index) => { %>
-                                    <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
-                                        <img class="d-block w-100" src="<%= '/uploads/' + img %>" alt="Product Image <%= index + 1 %>">
-                                       
-                                    </div>
-                                <% }) %>
-                            <% } else { %>
-                                <div class="carousel-item active">
-                                    <p class="text-center">No images available</p>
-                                </div>
-                            <% } %>
-                        </div>
-        
-                        <% if (product.imgArray.length > 1) { %>
-                            <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel<%= product._id %>" data-bs-slide="prev">
-                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                <span class="sr-only">Previous</span>
-                            </button>
-                            <button class="carousel-control-next" type="button" data-bs-target="#productCarousel<%= product._id %>" data-bs-slide="next">
-                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                <span class="sr-only">Next</span>
-                            </button>
+    
+            <!-- Right Column: Product Details -->
+            <div class="col-md-6">
+                <div class="product-details p-4 shadow-sm rounded">
+                    <!-- Product Name with enhanced styling -->
+                    <h1 class="product-title mb-4" style="color: rgb(26, 83, 25); font-size: 2.5rem; font-weight: 700; border-bottom: 3px solid rgb(80, 141, 78); padding-bottom: 15px;">
+                        <%= product.name %>
+                    </h1>
+            
+                    <!-- Enhanced Price Section -->
+                    <div class="product-pricing mb-4">
+                        <% if (product.discount > 0) { %>
+                            <div class="d-flex align-items-center gap-3">
+                                <p class="final-price" style="font-size: 2rem; font-weight: 700; color: rgb(26, 83, 25); margin: 0;">
+                                    Rs <%= product.finalPrice %>
+                                </p>
+                                <p class="mb-0 text-muted text-decoration-line-through" style="font-size: 1.2rem;">
+                                    Rs <%= product.price %>
+                                </p>
+                                <span class="discount-badge" style="background-color: rgb(80, 141, 78); color: white; padding: 5px 10px; border-radius: 5px; font-weight: 600;">
+                                    <%= product.discount %>% OFF
+                                </span>
+                            </div>
+                        <% } else { %>
+                            <p class="final-price" style="font-size: 2rem; font-weight: 700; color: rgb(26, 83, 25); margin: 0;">
+                                Rs <%= product.finalPrice %>
+                            </p>
                         <% } %>
                     </div>
-        
-                    <!-- Zoom Button -->
-                    <div class="mt-3 text-center">
-                        <a href="/product/zoom/<%= product._id %>" class="btn btn-success">Zoom</a>
-                    </div>
-                </div>
-        
-                <!-- Right Column: Product Details -->
-                <div class="col-md-6 d-flex flex-column justify-content-center">
-                    <div class="card-body">
-                        <h2 class="card-title text-success mb-3"><%= product.name %></h2>
-        
-                        <!-- Price Section -->
-                        <div class="product-pricing d-flex align-items-center mb-3">
-                            <% if (product.discount > 0) { %>
-                                <div class="d-flex align-items-center gap-3">
-                                    <p class="final-price mb-0">$<%= product.finalPrice %></p>
-                                    <p class="original-price mb-0 text-muted text-decoration-line-through">$<%= product.price %></p>
-                                    <span class="discount-badge"><%= product.discount %>% OFF</span>
+            
+                    <!-- Enhanced Offer Section -->
+                    <% if (applicableOffers && applicableOffers.length > 0) { %>
+                        <div class="product-offers mb-4">
+                            <% 
+                                const productOffers = applicableOffers.filter(offer => offer.offerType === 'products');
+                                const categoryOffers = applicableOffers.filter(offer => offer.offerType === 'Category');
+                                const offerToDisplay = productOffers.length > 0 ? productOffers[0] : categoryOffers[0];
+                            %>
+                            
+                            <% if (offerToDisplay) { %>
+                                <div class="offer-detail" style="background-color: #fff3f3; border: 1px dashed #ff4444; padding: 15px; border-radius: 8px;">
+                                    <div class="d-flex align-items-center gap-2 text-danger">
+                                        <span class="thunderbolt-symbol" style="font-size: 1.5rem;">⚡</span>
+                                        <p class="offer-text mb-0" style="font-size: 1.1rem;">
+                                            <strong><%= offerToDisplay.discountPercentage %>% OFF</strong> if you buy before 
+                                            <strong><%= new Date(offerToDisplay.endDate).toLocaleDateString() %></strong>
+                                            <br>
+                                            <span style="color: #666;"><%= offerToDisplay.title %></span>
+                                        </p>
+                                    </div>
                                 </div>
-                            <% } else { %>
-                                <p class="final-price mb-0">$<%= product.finalPrice %></p>
                             <% } %>
                         </div>
-
-                        <!-- Offer Section -->
-<% if (applicableOffers && applicableOffers.length > 0) { %>
-    <div class="product-offers mt-4 mb-4 p-3" style="background-color: rgb(214, 239, 216); border-radius: 8px;">
-        
-        <% 
-            // Filter the applicableOffers to get product offers first
-            const productOffers = applicableOffers.filter(offer => offer.offerType === 'products');
-            const categoryOffers = applicableOffers.filter(offer => offer.offerType === 'Category');
-
-            // Show only the product offer if it exists
-            const offerToDisplay = productOffers.length > 0 ? productOffers[0] : categoryOffers[0];
-        %>
-
-        <% if (offerToDisplay) { %>
-            <div class="offer-detail d-flex align-items-center gap-2 text-danger">
-                <span class="thunderbolt-symbol">⚡</span>
-                <p class="offer-text mb-0">
-                    <strong><%= offerToDisplay.discountPercentage %>% OFF</strong> if you buy before 
-                    <strong><%= new Date(offerToDisplay.endDate).toLocaleDateString() %></strong> - <%= offerToDisplay.title %>
-                </p>
-            </div>
-        <% } %>
-        
-    </div>
-<% } %>
-
-
-        
-                        <!-- Rating -->
-                        <div class="rating-stars mb-3">
+                    <% } %>
+            
+                    <!-- Enhanced Rating -->
+                    <div class="rating-section mb-4" style="background-color: #f8f9fa; padding: 15px; border-radius: 8px;">
+                        <div class="rating-stars" style="font-size: 1.2rem; color: #ffd700;">
                             <i class="fa fa-star"></i>
                             <i class="fa fa-star"></i>
                             <i class="fa fa-star"></i>
                             <i class="fa fa-star"></i>
                             <i class="fas fa-star-half-alt"></i>
-                            <span class="ms-2 text-muted">4.5 (128 reviews)</span>
+                            <span class="ms-2" style="color: rgb(26, 83, 25); font-weight: 600;">4.5</span>
                         </div>
-        
-                        <!-- Stock and Description -->
-                        <div class="mb-3">
-                            <p class="text-muted"><strong>Stock:</strong> <%= product.stock %> units available</p>
-                            <p class="text-secondary"><%= product.description %></p>
+                        <p class="mb-0 mt-2" style="color: #666;">Based on <strong>128 verified reviews</strong></p>
+                    </div>
+            
+                    <!-- Enhanced Stock and Description -->
+                    <div class="mb-4">
+                        <div class="stock-info mb-3" style="display: inline-block; background-color: #e8f5e9; padding: 8px 15px; border-radius: 20px;">
+                            <p class="mb-0" style="color: rgb(26, 83, 25);"><strong>Stock:</strong> <%= product.stock %> units available</p>
                         </div>
-        
-                        <!-- Action Buttons -->
-                        <div class="d-flex gap-3">
-                            <form action="/cart/add/<%=product._id%>/<%= product.finalPrice %>" method="POST">
-                                <button type="submit" class="btn btn-add-to-cart btn-success">
-                                    <i class="fas fa-shopping-cart me-2"></i>Add to Cart
-                                </button>
-                            </form>
-                            
-                            <a href="/categories/<%= categoryName %>" class="btn btn-outline-secondary">
-                                <i class="fas fa-arrow-left me-2"></i>Back to Products
-                            </a>
-                        </div>
+                        <p class="description mt-3" style="color: #444; line-height: 1.6; font-size: 1.1rem;">
+                            <%= product.description %>
+                        </p>
+                    </div>
+            
+                    <!-- Enhanced Action Buttons -->
+                    <div class="d-flex gap-3">
+                        <form action="/cart/add/<%=product._id%>/<%= product.finalPrice %>" method="POST" style="flex: 1;">
+                            <button type="submit" class="btn w-100" style="background-color: rgb(26, 83, 25); color: white; padding: 12px; font-size: 1.1rem; transition: all 0.3s ease;">
+                                <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                            </button>
+                        </form>
+                        
+                        <a href="/categories/<%= categoryName %>" class="btn" style="background-color: rgb(80, 141, 78); color: white; padding: 12px; font-size: 1.1rem; transition: all 0.3s ease;">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Products
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
-    
+    </div>
         <!-- Bootstrap 5 JS and Popper -->
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-    </body>
-    </html>
+ <script>
+
+
+//IMAGE SELECT
+
+    document.querySelectorAll('.thumbnail-img').forEach((thumbnail) => {
+    thumbnail.addEventListener('click', (e) => {
+        // Update the main image when a thumbnail is clicked
+        const mainImage = document.getElementById('mainImage');
+        mainImage.src = e.target.src;
+        
+        // Highlight the active thumbnail
+        document.querySelectorAll('.thumbnail-img').forEach((thumb) => {
+            thumb.classList.remove('active');
+        });
+        e.target.classList.add('active');
+    });
+});
+
+
+//IMAGE ZOOM
+
+document.addEventListener('DOMContentLoaded', function() {
+  const mainImage = document.getElementById('mainImage');
+  const magnifier = document.getElementById('magnifier');
+  const imageContainer = document.getElementById('image-container');
+
+  // Change main image when a thumbnail is clicked
+  function changeMainImage(imageSrc) {
+    mainImage.src = imageSrc;
+    magnifier.style.display = 'none'; // Hide magnifier on new image load
+  }
+
+  if (imageContainer) {
+    imageContainer.addEventListener('mousemove', function(e) {
+      const { left, top, width, height } = imageContainer.getBoundingClientRect();
+      const x = e.pageX - left - window.pageXOffset;
+      const y = e.pageY - top - window.pageYOffset;
+
+      magnifier.style.display = 'block';
+      magnifier.style.left = x - magnifier.offsetWidth / 2 + 'px';
+      magnifier.style.top = y - magnifier.offsetHeight / 2 + 'px';
+
+      if (x < 0 || y < 0 || x > width || y > height) {
+        magnifier.style.display = 'none';
+      } else {
+        const zoomLevel = 2;
+        const offsetX = -(x * zoomLevel - magnifier.offsetWidth / 2);
+        const offsetY = -(y * zoomLevel - magnifier.offsetHeight / 2);
+
+        magnifier.style.backgroundImage = `url(${mainImage.src})`;
+        magnifier.style.backgroundSize = `${mainImage.width * zoomLevel}px ${mainImage.height * zoomLevel}px`;
+        magnifier.style.backgroundPosition = `${offsetX}px ${offsetY}px`;
+      }
+    });
+
+    imageContainer.addEventListener('mouseleave', function() {
+      magnifier.style.display = 'none';
+    });
+  }
+});
+
+
+
+ </script>
 
     <%- include('footer') %>

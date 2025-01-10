@@ -60,17 +60,7 @@
            
         }
 
-        .sidebar {
-            width: 250px;
-            background-color: white;
-            border-right: 1px solid #e0e0e0;
-            overflow-y: auto;
-            padding: 20px;
-            position: fixed;
-            left: 0;
-            top: 70px;
-            bottom: 0;
-        }
+     
 
         .content-area {
             margin-left: 250px;
@@ -108,17 +98,7 @@
             transition: background-color 0.3s ease;
         }
 
-        .account-menu-item:hover {
-            background-color:#D6EFD8;
-            color:#1A5319
-        }
-
-        .account-menu-item i {
-            margin-right: 12px;
-            color: var(--primary-color);
-            width: 20px;
-            text-align: center;
-        }
+   
         
         .address-section {
             max-width: 1000px;
@@ -144,11 +124,7 @@
                 flex-direction: column;
             }
 
-            .sidebar {
-                width: 100%;
-                position: static;
-                height: auto;
-            }
+         
 
             .content-area {
                 margin-left: 0;
@@ -167,6 +143,153 @@
 .d-flex.justify-content-end {
     margin-left: auto; /* Ensures buttons are pushed to the right */
 }
+/* Styling the breadcrumb container */
+
+
+/* Styling each breadcrumb item */
+.breadcrumb-item {
+  font-weight: bold;  /* Apply bold effect */
+  color: #1A5319;     /* Apply the desired color */
+}
+
+.breadcrumb-item a {
+  color: #1A5319; /* Set link color */
+  text-decoration: none;  /* Remove underline from links */
+  transition: color 0.3s ease;  /* Smooth transition for hover effect */
+}
+
+/* Add hover effect for breadcrumb links */
+.breadcrumb-item a:hover {
+  color: #145f21; /* Slightly darker shade for hover effect */
+}
+
+/* Active breadcrumb item style */
+.breadcrumb-item.active {
+  color: #1A5319;  /* Active item color (same as normal, can be adjusted) */
+  font-weight: bold; /* Keep it bold */
+}
+/* Base sidebar-eco styles - keeping your existing styles */
+.sidebar-eco {
+    width: 250px;
+    background-color: white;
+    border-right: 1px solid #e0e0e0;
+    overflow-y: auto;
+    padding: 20px;
+    position: fixed;
+    left: 0;
+    top: 70px;
+    bottom: 0;
+    transition: all 0.3s ease;
+}
+
+.account-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.account-menu-header {
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.account-menu-header h5 {
+    color: var(--text-dark);
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.account-menu-item {
+    text-decoration: none;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    transition: background-color 0.3s ease;
+    border-radius: 8px;
+}
+
+.account-menu-item:hover {
+    background-color: var(--background-light);
+    color: var(--primary-color);
+}
+
+.account-menu-item i {
+    margin-right: 12px;
+    color: var(--primary-color);
+    width: 20px;
+    text-align: center;
+}
+
+/* Enhanced responsive styles */
+@media (max-width: 1024px) {
+    .sidebar-eco {
+        width: 220px;
+    }
+    
+    .content-area {
+        margin-left: 220px;
+    }
+}
+
+@media (max-width: 768px) {
+    .profile-container {
+        margin-top: 70px;
+    }
+    
+    .sidebar-eco {
+        width: 100%;
+        position: relative;
+        top: 0;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid #e0e0e0;
+        padding: 15px;
+    }
+    
+    .content-area {
+        margin-left: 0;
+        padding: 15px;
+    }
+    
+    .account-menu {
+        gap: 10px;
+    }
+    
+    .account-menu-item {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .account-menu-header h5 {
+        font-size: 1.1rem;
+    }
+    
+    .account-menu-item {
+        font-size: 0.9rem;
+        padding: 8px 10px;
+    }
+    
+    .account-menu-item i {
+        margin-right: 10px;
+    }
+    
+    .sidebar-eco {
+        padding: 12px;
+    }
+}
+
+/* Add a hamburger menu for mobile */
+@media (max-width: 768px) {
+    .sidebar-eco.collapsed {
+        display: none;
+    }
+    
+    .sidebar-eco.expanded {
+        display: block;
+    }
+}
 
     </style>
 <!-- Bootstrap CSS -->
@@ -180,6 +303,7 @@
 
 <!-- Include Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+
 
 
 
@@ -257,8 +381,9 @@
 
 
     <div class="profile-container">
-        <!-- Sidebar -->
-        <div class="sidebar">
+        
+        <!-- sidebar-eco -->
+        <div class="sidebar-eco">
             <div class="account-menu">
                 <div class="account-menu-header mb-3">
                     <h5>My Account</h5>
@@ -287,10 +412,19 @@
 
 
         <div class="content-area">
+            
+            <% if (fromCheckout) { %>
+                <nav aria-label="breadcrumb" class="breadcrumb-container">
+                  <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/checkout">Checkout</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Profile</li>
+                  </ol>
+                </nav>
+              <% } %>
             <div class="address-section">
 
                 <!-- Add Address Form -->
-
 
                 <div class="address-card">
                     <h4 class="mb-4">Add New Address</h4>

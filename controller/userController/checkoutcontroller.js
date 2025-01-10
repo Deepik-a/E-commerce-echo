@@ -358,18 +358,29 @@ exports.applyCoupon = async (req, res) => {
         let discountedTotal = total;
         let couponDiscount = coupon.discountValue;
 
-        if (coupon.discountType === "Fixed") {
-            discountedTotal = total - couponDiscount;
-        } else if (coupon.discountType === 'Percentage') {
-            const discountAmount = (couponDiscount / 100) * total;
-            couponDiscount = Math.min(discountAmount, coupon.maxDiscountAmount || discountAmount); // Apply max discount if specified
-            discountedTotal = total - couponDiscount;
-        }
+    let discountAmount = 0; // Declare discountAmount outside the block
 
-        cart.payableAmount = discountedTotal;
-        cart.isCouponApplied = true;
-        cart.couponDiscount = couponDiscount;
-        cart.couponId = couponCode;
+if (coupon.discountType === 'Fixed') {
+    discountedTotal = total - couponDiscount;
+} else if (coupon.discountType === 'Percentage') {
+    // Calculate the discount amount for percentage-based discount
+    discountAmount = (coupon.discountValue / 100) * total; 
+    console.log("imp from apply coupont b", discountAmount)
+    // Apply max discount if specified
+    couponDiscount = Math.min(discountAmount, coupon.maxDiscountAmount || discountAmount); 
+
+    discountedTotal = total - couponDiscount;
+}
+
+cart.payableAmount = discountedTotal;
+cart.isCouponApplied = true;
+cart.couponDiscount = couponDiscount;
+cart.couponId = couponCode;
+
+
+
+
+        
 
         await cart.save();
 
@@ -388,11 +399,16 @@ exports.applyCoupon = async (req, res) => {
 
 exports.removeCoupon = async (req, res) => {
     try {
+        // Check if the user is authenticated
         const user = await User.findOne({ _id: req.session.user });
         if (!user) {
-            return res.redirect("/login");
+            return res.status(401).json({
+                status: "error",
+                message: "User not authenticated. Please log in."
+            });
         }
 
+        // Find the cart for the user
         const cart = await Cart.findOne({ userId: req.session.user });
         if (!cart) {
             return res.status(404).json({
@@ -401,6 +417,7 @@ exports.removeCoupon = async (req, res) => {
             });
         }
 
+        // If no coupon is applied, return an error
         if (!cart.isCouponApplied) {
             return res.status(400).json({
                 status: "error",
@@ -409,25 +426,31 @@ exports.removeCoupon = async (req, res) => {
         }
 
         // Reset cart coupon details
-        cart.payableAmount = cart.totalPrice;
+        cart.payableAmount = cart.totalPrice; // Reset the payable amount to the total price
         cart.isCouponApplied = false;
         cart.couponDiscount = 0;
         cart.couponId = null;
 
+        // Save the cart with updated details
         await cart.save();
 
+        // Send a successful response with the updated total
         return res.status(200).json({
             status: "success",
             message: "Coupon removed successfully.",
-            total: cart.payableAmount,
+            total: cart.payableAmount, // Send the updated payable amount
         });
     } catch (error) {
         console.error(`Error from removeCoupon: ${error.message}`);
+        // Return an error response if something goes wrong
         return res.status(500).json({
-            error: "An error occurred while removing the coupon.",
+            status: "error",
+            message: "An error occurred while removing the coupon.",
+            error: error.message, // Include the error message for better debugging
         });
     }
 };
+
 
 
 //to render the coupon page in user side

@@ -28,8 +28,6 @@ const signup = (req, res) => {
 };
 
 const signupPost = async (req, res) => {
-  console.log(req.body)
-
   try {
     const details = {
       name: req.body.name,
@@ -37,31 +35,41 @@ const signupPost = async (req, res) => {
       password: await bcrypt.hash(req.body.password, 10),
       confirmpassword: await bcrypt.hash(req.body.confirmpassword, 10),
       phone: req.body.phone,
-
     };
 
     const check = await userSchema.findOne({ email: details.email });
 
     if (check) {
-      res.render("user/signup");
+      return res.status(400).json({
+        success: false,
+        message: "User already exists. Please login.",
+      });
     } else {
-     const otp= generateotp()
-      sendOTP(details.email,otp);
+      const otp = generateotp();
+      sendOTP(details.email, otp);
       req.session.otp = otp;
       req.session.otpTime = Date.now();
       req.session.email = details.email;
       req.session.name = details.name;
       req.session.phone = details.phone;
       req.session.password = details.password;
-      console.log(`Submitted OTP: ${req.body.otp}`);
-      console.log(`Session OTP: ${req.session.otp}`);
-      res.redirect("/otp");
+
+            // Hash password before storing in session
+            const hashedPassword = await bcrypt.hash(details.password, 10);
+            details.password = hashedPassword;
+            req.session. details =  details;
+
+      return res.status(200).json({
+        success: true,
+        redirectUrl: "/otp",
+      });
     }
   } catch (error) {
-    console.log(`error while renderin the page ${error}`);
+    res.status(500).json({
+      success: false,
+      message: "An unexpected error occurred. Please try again later.",
+    });
   }
-
-
 };
 
 
@@ -77,35 +85,45 @@ const otp=(req,res)=>{
 
 //------------------------------------ verify the otp -------------------------------
 
-const otppost=async(req,res)=>{
-  // console.log("entered post");
-  try{
-    console.log("entered try");
-    if(req.body.otp===req.session.otp){
-      console.log("entered 1st if");
-      const details = {
-        name: req.session.name,
-        email: req.session.email,
-        password: await bcrypt.hash(req.session.password, 10),
-        phone: req.session.phone,
-      };
-    await userSchema.insertMany([details])
-    .then(()=>{
-      console.log(`new user registeres successfully`)
-      res.redirect('/login')
-    }).catch((error)=>{
-      console.log(`error while user signup ${error}`)
-    })
-    console.log("entered await");
-    }else{
-      res.redirect('/otp')
-    }
- 
-  }catch (error) {
-    console.log(`error while renderin the page ${error}`);
-  }
+const otppost = async (req, res) => {
+  try {
+    const { otp: submittedOtp } = req.body;
+    const { otp: storedOtp, otpTime, otpExpiry, name, email, password, phone } = req.session;
 
-}
+    const verifyOtp = (submittedOtp, storedOtp) => submittedOtp === storedOtp;
+
+    if (!verifyOtp(submittedOtp, storedOtp)) {
+      // Calculate remaining time for OTP
+      const currentTime = new Date().getTime();
+      const timeElapsed = currentTime - otpTime;
+      const timeLeft = Math.max(0, otpExpiry - timeElapsed / 1000);
+
+      if (timeLeft <= 0) {
+        // OTP expired
+        return res.json({ success: false, message: 'OTP expired. Please request a new one.', redirectUrl: '/resend' });
+      }
+      return res.json({ success: false, message: 'Invalid OTP.', timer: timeLeft });
+    }
+
+    // OTP is valid, create a new user
+    const userDetails = {
+      name,
+      email,
+      password: await bcrypt.hash(password, 10), // Hash password
+      phone,
+    };
+
+    await userSchema.insertMany([userDetails]);
+    console.log('New user registered successfully');
+    return res.json({ success: true, message: 'OTP verified successfully.', redirectUrl: '/login' });
+  } catch (error) {
+    console.error(`Error during OTP processing: ${error}`);
+    return res.json({ success: false, message: 'An unexpected error occurred. Please try again.', redirectUrl: '/otp' });
+  }
+};
+
+
+
 
 
 //-------------------------------------- Otp Resent ---------------------------------

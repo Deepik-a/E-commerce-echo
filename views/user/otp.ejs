@@ -1,43 +1,81 @@
 
-
+<%- include('navbar') %>
 <style>
+/* Background image */
+.containereco-fluid {
+  background-image: url('../../public/assets/bedroom-with-green-wall-bed-with-pillow-plant-it.jpg'); /* Replace with your image path */
+  background-size: cover;
+  background-position: center;
+  min-height: 75vh; /* Ensures the background spans full height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
+/* OTP field styles */
 .otp-field {
   display: flex;
   justify-content: center;
-  gap: 10px; 
-  flex-wrap: wrap; 
+  gap: 10px;
+  flex-wrap: wrap;
+
 }
 
 .otp-field input {
-  width: 40px; 
-  height: 40px; 
-  text-align: center; 
+  width: 40px;
+  height: 40px;
+  text-align: center;
   font-size: 18px;
   border: 1px solid #ced4da;
-  border-radius: 4px; 
-  margin: 0; 
+  border-radius: 4px;
+  margin: 0;
 }
 
 @media (max-width: 576px) {
   .otp-field input {
-    width: 30px; 
-    height: 30px; 
-    font-size: 14px; 
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
   }
 }
 
+/* Disabled link styling */
+.disabled-link {
+  pointer-events: none;
+  color: grey;
+}
+
+  .resend a {
+    color: gray; /* Initial color */
+    text-decoration: none;
+    pointer-events: none; /* Disabled state */
+  }
+
+  .resend a.enabled-link {
+    color: blue; /* Activated color */
+    pointer-events: auto; /* Enable clicking */
+  }
+
+  #verify {
+    margin: 0 auto; /* Center the button */
+    display: block;
+  }
+
+  #otp-timer {
+    margin-top: 20px; /* Add spacing for consistency */
+  }
+</style>
 
 </style>
 
-<section class="container-fluid d-block">
+<section class="containereco-fluid d-block">
   <div class="row justify-content-center">
     <div class="col-12 col-md-6 col-lg-4">
       <div class="card bg-white mb-5 mt-5 border-0" style="box-shadow: 0 12px 15px rgba(0, 0, 0, 0.02);">
         <div class="card-body p-5 text-center">
           <h4>Verify</h4>
           <p>Your code was sent to you via <%= email %></p>
-          <form action="/otp" method="post" id="otp-form">
+          <form id="otp-form">
             <div class="otp-field mb-4">
               <input type="text" name="otp1" minlength="1" maxlength="1">
               <input type="text" name="otp2" minlength="1" maxlength="1">
@@ -45,10 +83,9 @@
               <input type="text" name="otp4" minlength="1" maxlength="1">
               <input type="text" name="otp5" minlength="1" maxlength="1">
             </div>
-            <input type="hidden" name="otp" id="otp">
             <input type="hidden" name="otpTime" value="<%= otpTime %>" id="otpTime">
-            <button class="btn btn-primary mb-3" type="submit">
-             Verify
+            <button id="verify" class="btn btn-primary mb-3" type="submit">
+              Verify
             </button>
           </form>
           <p class="resend text-muted mb-0">
@@ -63,89 +100,112 @@
     </div>
   </div>
 </section>
-
-
-
 <script>
+  // Timer configuration
+  const otpTimeLimit = 60; // Timer in seconds
 
-  // Set the initial time in minutes and seconds
-  let time = 1* 60; // 2 minutes in seconds
-
-  // Function to format the time as MM:SS
-  function formatTime(seconds) {
+  // Function to format time as MM:SS
+  const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${String(minutes).padStart(1, '0')}:${String(secs).padStart(1, '0')}`;
-  }
+    return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  };
 
-  // Function to update the timer
-  function updateTimer() {
+  const initializeTimer = () => {
     const timerElement = document.getElementById('timer');
     const resendLink = document.getElementById('resend-link');
-    if (time <= 0) {
+    const verifyButton = document.getElementById('verify');
+
+    let timeLeft = otpTimeLimit;
+
+    // Update timer display
+    const updateTimer = () => {
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        timerElement.textContent = '00:00';
+        verifyButton.style.display = 'none'; // Hide Verify button
+        resendLink.classList.add('enabled-link'); // Turn link blue
+        resendLink.classList.remove('disabled-link'); // Remove disabled styling
+      } else {
+        timerElement.textContent = formatTime(timeLeft);
+        timeLeft -= 1;
+      }
+    };
+
+    // Start the timer
+    const timerInterval = setInterval(updateTimer, 1000);
+    updateTimer();
+
+    // Handle Resend Click
+    resendLink.addEventListener('click', (e) => {
+      e.preventDefault();
       clearInterval(timerInterval);
-      timerElement.textContent = '00:00';
-      // Enable the "Resend" link by removing the 'disabled-link' class
-      resendLink.classList.remove('disabled-link');
-      resendLink.classList.add('enabled-link');
-      resendLink.style.pointerEvents = 'auto'; // Make it clickable
-    } else {
-      timerElement.textContent = formatTime(time);
-      time -= 1;
-    }
-  }
+      timeLeft = otpTimeLimit; // Reset timer
+      resendLink.classList.remove('enabled-link'); // Reset link styling
+      resendLink.classList.add('disabled-link'); // Add disabled styling
+      verifyButton.style.display = 'block'; // Show Verify button
+      initializeTimer(); // Restart timer
+    });
+  };
 
-  // Update the timer every second
-  const timerInterval = setInterval(updateTimer, 1000);
+  // Start the timer on page load
+  initializeTimer();
+  // Handle OTP Form Submission
+  document.getElementById('otp-form').addEventListener('submit', async (event) => {
+    event.preventDefault();
 
-  // Initialize the timer immediately
-  updateTimer();
-
-  // Concatenate OTP values before form submission
-  document.getElementById('otp-form').addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevent default form submission
-
-    // Concatenate OTP values
+    // Collect OTP values
     const otpValues = Array.from(document.querySelectorAll('.otp-field input'))
-      .map(input => input.value.trim())
+      .map((input) => input.value.trim())
       .join('');
 
-    // Set the concatenated OTP to the hidden input
-    document.getElementById('otp').value = otpValues;
+    if (otpValues.length === 5) {
+      try {
+        const response = await fetch('/otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ otp: otpValues }),
+        });
 
-    // Optionally, validate OTP before submitting
-    if (otpValues.length === 5) { // Adjust length if needed
-      this.submit(); // Submit the form
+        const result = await response.json();
+
+        if (result.success) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: result.message,
+          }).then(() => {
+            if (result.redirectUrl) window.location.href = result.redirectUrl;
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: result.message,
+          });
+        }
+      } catch (error) {
+        console.error('Error during OTP verification:', error);
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Something went wrong. Please try again.' });
+      }
     } else {
-      alert('Please enter a valid OTP.');
+      Swal.fire({ icon: 'warning', title: 'Warning', text: 'Please enter a valid OTP.' });
     }
   });
-  </script>
 
-
-
-
-
-
-
-
-
-
-
-
-
+  // Auto-move between OTP input fields
+  document.querySelectorAll('.otp-field input').forEach((input, index, inputs) => {
+    input.addEventListener('input', () => {
+      if (input.value.length === 1 && index < inputs.length - 1) inputs[index + 1].focus();
+      if (input.value.length === 0 && index > 0) inputs[index - 1].focus();
+    });
+  });
 </script>
 
-<style>
-  .disabled-link {
-    pointer-events: none;
-    color: #ccc;
-  }
 
-  .enabled-link {
-    color: #007bff;
-    text-decoration: underline;
-  }
-</style>
+
+
+
+
 
 <%- include('footer') %>
