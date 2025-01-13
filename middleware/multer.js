@@ -31,27 +31,3 @@ const multerUpload = uploads.array('newImages', 10);
 
 module.exports = multerUpload;
 
-
-
-// ==================
-// Multer Setup for File Uploads
-// ==================
-
-// const multer = require('multer');
-//  const path = require('path');
-
-// // Configure storage settings
-// const storage = multer.diskStorage({
-//     destination: function (req, file, cb) {
-//         cb(null, path.join(__dirname, '../uploads')); // Directory to save uploaded images
-//     },
-//     filename: function (req, file, cb) {
-//         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-//         //         cb(null, uniqueSuffix + `-${file.originalname}`); // Create unique file name using timestamp
-//     }
-// });
-
-// // Initialize multer with specified storage settings
-// const uploads = multer({ storage: storage });
-
-// module.exports = uploads.array('newImages', 10); // Allows up to 10 files with 'newImages' as the field name

@@ -85,7 +85,13 @@ const orderSchema = new mongoose.Schema({
         enum: ['Pending', 'Shipped', 'Paid', 'Delivered', 'Cancelled', 'Returned'],
         default: 'Pending' // Default status when the order is placed
     },
-}, {
+    paid:{
+        type:Boolean,
+        default:false
+    },
+},
+
+{
     timestamps: true // Adds createdAt and updatedAt automatically
 });
 

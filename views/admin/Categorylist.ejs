@@ -1,10 +1,6 @@
 <%- include('sidebar') %>
      
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Category Management</title>
   <style>
     /* Base styles */
@@ -228,7 +224,7 @@
                              id="categoryName-<%= category._id %>" 
                              name="name" 
                              value="<%= category.name %>" 
-                             required 
+                           
                              class="form-control">
                       <button type="submit" class="btn btn-primary">Update Category</button>
                     </div>
@@ -301,80 +297,141 @@
    
      
   
-      // Handle Edit Category form submission
-      document.querySelectorAll('.edit-category-form').forEach(form => {
-          form.addEventListener('submit', async function(e) {
-              e.preventDefault();
-              const categoryId = this.dataset.id;
-              const name = this.querySelector(`input[name="name"]`).value;
-  
-              try {
-                  const response = await fetch(`/admin/editCategory/${categoryId}`, {
-                      method: 'POST',
-                      headers: {
-                          'Content-Type': 'application/json'
-                      },
-                      body: JSON.stringify({ name })
-                  });
-  
-                  if (response.ok) {
-                      showSuccessAlert('Category Updated', `The category name has been updated to "${name}".`, true);
-                  } else {
-                      const result = await response.json();
-                      throw new Error(result.message || 'Failed to update category');
-                  }
-              } catch (error) {
-                  showErrorAlert(error.message);
-              }
-          });
-      });
+    // Handle Edit Category form submission
+document.querySelectorAll('.edit-category-form').forEach(form => {
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const categoryId = this.dataset.id;
+        const name = this.querySelector(`input[name="name"]`).value.trim();
+
+        // Client-side validation before making the API call
+        if (!name) {
+            showErrorAlert('Category name cannot be empty!');
+            return;
+        }
+
+        if (/^\d+$/.test(name)) {
+            showErrorAlert('Category name cannot contain only numbers!');
+            return;
+        }
+
+        if (/[^a-zA-Z0-9\s-]/.test(name)) {
+            showErrorAlert('Category name contains invalid characters!');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/admin/editCategory/${categoryId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                showSuccessAlert('Category Updated', `The category name has been updated to "${name}".`, true);
+            } else {
+                // Handle backend error messages like duplicate names
+                showErrorAlert(result.message || 'Failed to update category');
+            }
+        } catch (error) {
+            showErrorAlert(error.message || 'An unexpected error occurred');
+        }
+    });
+});
+
+// Helper functions for showing alerts
+function showSuccessAlert(title, text, reload = false) {
+    Swal.fire({
+        icon: 'success',
+        title: title,
+        text: text,
+    }).then(() => {
+        if (reload) {
+            window.location.reload();
+        }
+    });
+}
+
+function showErrorAlert(message) {
+    Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: message,
+    });
+}
+
+
 
 
 
        // Handle Block/Unblock functionality
-  document.querySelectorAll('.block-unblock-btn').forEach(button => {
+ // Handle Block/Unblock functionality
+document.querySelectorAll('.block-unblock-btn').forEach(button => {
     button.addEventListener('click', async (e) => {
-      const categoryId = e.target.getAttribute('data-id');
-      const action = e.target.getAttribute('data-action'); // 'block' or 'unblock'
+        const categoryId = e.target.getAttribute('data-id');
+        const action = e.target.getAttribute('data-action'); // 'block' or 'unblock'
 
-      try {
-        const response = await fetch(`/admin/categories/${categoryId}/${action}`, {
-          method: 'POST',
+        // Show confirmation dialog
+        const result = await Swal.fire({
+            title: `Are you sure you want to ${action} this category?`,
+            text: `This action will ${action} the category and it will ${action === 'block' ? 'no longer be accessible' : 'become accessible again.'}`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: action === 'block' ? '#d33' : '#3085d6',
+            cancelButtonColor: '#aaa',
+            confirmButtonText: action === 'block' ? 'Yes, Block it!' : 'Yes, Unblock it!',
+            cancelButtonText: 'Cancel',
         });
 
-        const result = await response.json();
-        console.log('Response Data:', result);
-        if (response.ok) {
-          // Show SweetAlert based on action (block/unblock)
-          Swal.fire({
-            title: action === 'block' ? 'Blocked!' : 'Unblocked!',
-            text: `Category has been ${action}ed successfully.`,
-            icon: 'success',
-            confirmButtonText: 'OK'
-          }).then(() => {
-            // Reload the page to reflect the change
-            window.location.reload();
-          });
+        if (result.isConfirmed) {
+            try {
+                const response = await fetch(`/admin/categories/${categoryId}/${action}`, {
+                    method: 'POST',
+                });
+
+                const result = await response.json();
+                console.log('Response Data:', result);
+
+                if (response.ok) {
+                    // Show success alert
+                    Swal.fire({
+                        title: action === 'block' ? 'Blocked!' : 'Unblocked!',
+                        text: `Category has been ${action}ed successfully.`,
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        // Reload the page to reflect the change
+                        window.location.reload();
+                    });
+                } else {
+                    // Show error alert
+                    Swal.fire({
+                        title: 'Error',
+                        text: result.message || 'Something went wrong!',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            } catch (error) {
+                // Handle fetch error
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Could not complete the request.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
         } else {
-          // Handle error
-          Swal.fire({
-            title: 'Error',
-            text: result.message || 'Something went wrong!',
-            icon: 'error',
-            confirmButtonText: 'OK'
-          });
+            // If canceled, do nothing
+            console.log('Action canceled by user.');
         }
-      } catch (error) {
-       
-        // Handle fetch error
-        Swal.fire({
-          title: 'Error',
-          text: 'Could not complete the request.',
-          icon: 'error',
-          confirmButtonText: 'OK'
-        });
-      }
     });
-  });
+});
+
   </script>
   

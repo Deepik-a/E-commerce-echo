@@ -174,62 +174,65 @@
 				text-align: right;
 			}
 		</style>
+<div class="wishlist-container">
+    <div class="wishlist-header">
+        <h1 class="wishlist-title">My Wishlist</h1>
+    </div>
+    
+    <% if (products && products.length > 0) { %>
+		
+        <table class="wishlist-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Stock Status</th>
+                    <th class="text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% products.forEach(function(item) { %>
+                    <tr>
+                        <td>
+							
+                            <div class="product-info">
+                                <img src="<%= '/uploads/' + item.imgArray[0] %>" alt="<%= item.name %>" class="product-image">
+                                <span class="product-name"><%= item.name %></span>
+                            </div>
+                        </td>
+                        <td class="price">$<%= item.finalPrice %></td>
+                        <td>
+                            <span class="stock-status <%= item.stock > 0 ? 'in-stock' : 'out-of-stock' %>">
+                                <%= item.stock > 0 ? 'In Stock' : 'Out of Stock' %>
+                            </span>
+                        </td>
+                        <td class="action-buttons">
+                            <% if (item.stock > 0) { %>
+                                <form action="/cart/add/<%= item._id %>/<%= item.finalPrice %>" method="POST">
+                                    <button type="submit" class="btn btn-add-to-cart">Add to Cart</button>
+                                </form>
+                            <% } %>
+                            <button type="button" class="btn btn-remove delete-btn" data-id="<%= item._id %>">
+                                <i class="far fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    <% } else { %>
+        <div class="empty-wishlist-container">
+            <div class="empty-wishlist-heading">
+                <h2>Your wishlist is currently empty</h2>
+            </div>
+            <div class="empty-wishlist-background">
+                <img src="../../public/assets/freepik__upload__757.jpeg" alt="Empty Wishlist Background">
+            </div>
+        </div>
+    <% } %>
+</div>
 
-		<div class="wishlist-container">
-			<div class="wishlist-header">
-				<h1 class="wishlist-title">My Wishlist</h1>
-			</div>
-			
-			<table class="wishlist-table">
-				<thead>
-					<tr>
-						<th>Product</th>
-						<th>Price</th>
-						<th>Stock Status</th>
-						<th class="text-right">Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					<% if (products && products.products.length > 0) { %>
-				
-						<% products.products.forEach(function(item) { %>
-						<tr>
-							<td>
-								<div class="product-info">
-								
-									<img src="<%= '/uploads/' +   item.productID.imgArray[0]%>" alt="<%= item.productID.name %>" class="product-image">
-									<span class="product-name"><%= item.productID.name %></span>
-								</div>
-							</td>
-							<td class="price">$<%= item.productID.finalPrice %></td>
-							<td>
-								<span class="stock-status <%= item.productID.stock > 0 ? 'in-stock' : 'out-of-stock' %>">
-									<%= item.productID.stock > 0 ? 'In Stock' : 'Out of Stock' %>
-								</span>
-							</td>
-							<td class="action-buttons">
-								<% if (item.productID.stock > 0) { %>
-									<form action="/cart/add/<%= item.productID._id %>/<%= item.productID.finalPrice %>" method="POST">
-										<button type="submit" class="btn btn-add-to-cart">Add to Cart</button>
-									</form>
-								<% } %>
-								<button type="button" class="btn btn-remove delete-btn" data-id="<%= item.productID._id %>">
-									<i class="far fa-trash-alt"></i>
-								</button>
-							</td>
-						</tr>
-						<% }); %>
-					<% } else { %>
-						<tr>
-							<td colspan="4" class="empty-wishlist">
-								Your wishlist is empty
-							</td>
-						</tr>
-					<% } %>
-				</tbody>
-			</table>
-		</div>
-	
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 	document.addEventListener('DOMContentLoaded', function () {

@@ -10,16 +10,7 @@ const admin=(req,res)=>{
 
 
 
-// const adminlogin=(req,res)=>{
-//     try{
-// if(req.session.admin){
-//     res.redirect('/admin/home')
-// }else
-// res.redirect('/admin/login')
-//     }catch(error){
-//         console.log(`error from admin login ${error}`)    
-//     }
-// }
+
 
 const blockUser = async (req, res) => {
     try {
@@ -89,7 +80,18 @@ const getCategories = async (req, res) => {
 
 
 
-
+const logout = (req, res) => {
+    try {
+      req.session.destroy(error => {
+        if (error) {
+          console.log(`error while logout ${error}`)
+        }
+      })
+      res.redirect('/admin/login')
+    } catch (error) {
+      console.log(`error while logout user ${error}`)
+    }
+  }
 
 
 
@@ -103,5 +105,6 @@ module.exports={
     unblockUser,
     blockUser,
     adminloginpost,
-    getCategories
+    getCategories,
+    logout
 }

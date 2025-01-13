@@ -13,7 +13,7 @@ const getProductsByCategory = async (req, res) => {
    
 
       // First, find the category by its name
-      const category = await categorySchema.findOne({ name: categoryName });
+      const category = await categorySchema.findOne({ name: categoryName,isDeleted:false });
       if (!category) {
           return res.status(404).send('Category not found');
       }
@@ -39,11 +39,15 @@ const getProductDetail = async (req, res) => {
     try {
         console.log("entered product detail")
         const productId = req.params.id; // Get product ID from URL params
-        const product = await productSchema.findById(productId).populate('category'); // Fetch product and populate category
+       // Fetch product and populate category with a filter for isDeleted: false
+       const product = await productSchema.findById(productId).populate({
+        path: 'category',
+        match: { isDeleted: false }, // Only include categories where isDeleted is false
+    });
 
-        if (!product) {
-            return res.status(404).render('404', { message: 'Product not found' });
-        }
+    if (!product || !product.category) {
+        return res.status(404).render('404', { message: 'Product or category not found' });
+    }
 
         const currentDate = new Date();
 
@@ -97,17 +101,28 @@ const getProductDetail = async (req, res) => {
 // Controller to fetch all products
 const getAllProducts = async (req, res) => {
     try {
-        console.log("getAllProducts")
-        const products = await productSchema.find({ isActive: true}); // Fetch all products from the database
+        console.log("Fetching all products...");
+
+        // Fetch all products that are active and have a valid category (not deleted)
+        const products = await productSchema.find({
+            isActive: true,
+        }).populate('category');  // Populating the category
+
+        // Filter products where category is not deleted
+        const filteredProducts = products.filter(product => product.category && !product.category.isDeleted);
+
+        console.log("Fetched Products:", filteredProducts);
+
         const categories = await categorySchema.find({ isDeleted: false });
-        console.log("products",products)
-        console.log("products.imgarray",products.imgArray)
-        res.render('user/AllProduct', { products,categories }); 
+        res.render('user/AllProduct', { products: filteredProducts, categories });
     } catch (error) {
         console.log('Error fetching products: ', error);
         res.status(500).send('Error fetching products');
     }
 };
+
+
+
 
 const sortAllproducts= async (req, res) => {
     console.log("sortAllProducts")

@@ -68,7 +68,10 @@ app.set('layout', 'layouts/layout');
 
 
 const port=process.env.PORT || 3000
-
+// app.use((req, res, next) => {
+//     req.session.user = "tunotume.eginamam@jollyfree.com";
+//     next();
+// })
 
 app.use('/',userRoutes)
 app.use('/admin',adminRoutes)

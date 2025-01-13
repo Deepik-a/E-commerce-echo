@@ -1,5 +1,6 @@
 
 
+<%- include('sidebar') %>
 
 <style>
     .category {
@@ -7,6 +8,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        margin-left: 50px; 
     }
 
     .search-container {
@@ -41,19 +43,34 @@
     }
 
     .table tbody tr td {
-        padding: 18px 2px;
+        padding: 18px 0px;
         text-align: left;
         background: #9ed7e7;
         color: #0a0df1;
+       
+    }
+    
+    .table-container {
+        padding-left: 30px; /* Adds padding inside the container */
+        margin-left: 230px; /* Adds margin outside the container */
+        width: calc(100% - 30px); /* Ensures proper alignment if width is an issue */
+    }
+
+    .table {
+        margin-left: 0; /* Reset margin if necessary */
+    }
+    #formatCategory{
+        padding-left: 30px; /* Adds padding inside the container */
+        margin-left: 150px; /* Adds margin outside the container */
+        width: calc(100% - 30px); /* Ensures proper alignment if width is an issue */   
     }
 </style>
 
 
-<%- include('sidebar') %>
 
 
       <!------------------------------------- Coupon page Header -------------------------------------------------------->
-<div class="col-12 category">
+<div class="col-12 category" id="formatCategory">
     <div class="search-container d-flex justify-content-between align-items-center gap-2 p-3">
         <div class="d-flex align-items-center gap-3">
             <h2 class="text-white mx-5">
@@ -317,61 +334,129 @@ document.getElementById('editDiscountType').addEventListener('change', function(
     }
 });
 
-// To trigger the correct visibility on modal load (for editing)
-function loadCouponData(coupon) {
-    document.getElementById('editCouponId').value = coupon.id;
-    document.getElementById('editCode').value = coupon.code;
-    document.getElementById('editDiscountType').value = coupon.discountType;
-    document.getElementById('editDiscountValue').value = coupon.discountValue;
-    document.getElementById('editusageCount').value = coupon.usageCount;
-    document.getElementById('editStartDate').value = coupon.startDate;
-    document.getElementById('editEndDate').value = coupon.endDate;
-    document.getElementById('editMinimumOrderAmount').value = coupon.minimumOrderAmount;
-    document.getElementById('editMaxOrderAmount').value = coupon.maxDiscountAmount|| '';
+document.getElementById('addCouponForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
 
-    // Trigger the change event to show/hide the Max Order Amount field
-    document.getElementById('editDiscountType').dispatchEvent(new Event('change'));
-}
+    // Validation Logic
+    const code = document.getElementById('code').value.trim();
+    const discountValue = document.getElementById('discountValue').value.trim();
+    const usageCount = document.getElementById('usageCount').value.trim();
+    const startDate = new Date(document.getElementById('startDate').value);
+    const endDate = new Date(document.getElementById('endDate').value);
+    const currentDate = new Date();
+    const minimumOrderAmount = document.getElementById('minimumOrderAmount').value.trim();
+    
+    // Validation for Coupon Code
+    if (!code || code.length < 8) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Coupon Code must be at least 8 characters long.',
+        });
+        return;
+    }
+    if (/[^a-zA-Z0-9]/.test(code)) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Coupon Code must contain only alphabets and numbers.',
+        });
+        return;
+    }
 
-
-            document.getElementById('addCouponForm').addEventListener('submit', async function (e) {
-                e.preventDefault();
-                const formData = new FormData(this);
-                const data = Object.fromEntries(formData.entries());
-                try {
-                    const response = await fetch('/admin/addcoupon', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(data),
-                    });
-                    const result = await response.json();
-                    if (response.ok) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success',
-                            text: result.message,
-                        }).then(() => {
-                            this.reset();
-                            location.reload();
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: result.message,
-                        });
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'An error occurred while adding the coupon.',
-                    });
-                }
+    // Validation for Discount Value (Fixed)
+    const discountType = document.getElementById('discountType').value;
+    if (discountType === 'Fixed') {
+        if (discountValue < 1 || discountValue > 100) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Discount Value for Fixed must be between 1 and 100.',
             });
+            return;
+        }
+    }
+
+    // Validation for Usage Count
+    if (usageCount < 1 || usageCount > 10) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Coupon Usage Count must be between 1 and 10.',
+        });
+        return;
+    }
+
+    // Validation for Start Date - must be today or any date after today
+    const today = currentDate.setHours(0, 0, 0, 0); // Set to midnight
+    if (startDate < today) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Start Date must be today or a date after today.',
+        });
+        return;
+    }
+
+    // Validation for End Date
+    const endDates = new Date(document.getElementById('endDate').value);
+    if (endDates <= startDate) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'End Date must be later than Start Date.',
+        });
+        return;
+    }
+
+    // Validation for Minimum Order Amount
+    if (minimumOrderAmount.length === 0 || minimumOrderAmount <= 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Minimum Order Amount is required and should be greater than 0.',
+        });
+        return;
+    }
+
+    // If all validations pass, proceed with form submission
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+        const response = await fetch('/admin/addcoupon', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+        const result = await response.json();
+        if (response.ok) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: result.message,
+            }).then(() => {
+                this.reset();
+                location.reload();
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: result.message,
+            });
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred while adding the coupon.',
+        });
+    }
+});
 
             //--------------------------- Edit coupon ---------------------------
 

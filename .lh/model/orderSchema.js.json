@@ -1,0 +1,34 @@
+{
+    "sourceFile": "model/orderSchema.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 4,
+            "patches": [
+                {
+                    "date": 1736659231569,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1736670004690,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -85,9 +85,9 @@\n         enum: ['Pending', 'Shipped', 'Paid', 'Delivered', 'Cancelled', 'Returned'],\r\n         default: 'Pending' // Default status when the order is placed\r\n     },\r\n },\r\n- {\r\n+pi{\r\n     timestamps: true // Adds createdAt and updatedAt automatically\r\n });\r\n \r\n // Calculate totalQuantity dynamically\r\n"
+                },
+                {
+                    "date": 1736670005154,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -85,9 +85,9 @@\n         enum: ['Pending', 'Shipped', 'Paid', 'Delivered', 'Cancelled', 'Returned'],\r\n         default: 'Pending' // Default status when the order is placed\r\n     },\r\n },\r\n-pi{\r\n+p{\r\n     timestamps: true // Adds createdAt and updatedAt automatically\r\n });\r\n \r\n // Calculate totalQuantity dynamically\r\n"
+                },
+                {
+                    "date": 1736670010557,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -85,9 +85,13 @@\n         enum: ['Pending', 'Shipped', 'Paid', 'Delivered', 'Cancelled', 'Returned'],\r\n         default: 'Pending' // Default status when the order is placed\r\n     },\r\n },\r\n-p{\r\n+paid:{\r\n+    type:Boolean,\r\n+    default:false\r\n+},\r\n+{\r\n     timestamps: true // Adds createdAt and updatedAt automatically\r\n });\r\n \r\n // Calculate totalQuantity dynamically\r\n"
+                },
+                {
+                    "date": 1736670033764,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -85,12 +85,9 @@\n         enum: ['Pending', 'Shipped', 'Paid', 'Delivered', 'Cancelled', 'Returned'],\r\n         default: 'Pending' // Default status when the order is placed\r\n     },\r\n },\r\n-paid:{\r\n-    type:Boolean,\r\n-    default:false\r\n-},\r\n+\r\n {\r\n     timestamps: true // Adds createdAt and updatedAt automatically\r\n });\r\n \r\n"
+                }
+            ],
+            "date": 1736659231569,
+            "name": "Commit-0",
+            "content": "const mongoose = require('mongoose');\r\n\r\nconst orderSchema = new mongoose.Schema({\r\n    userId: {\r\n        type: mongoose.Schema.Types.ObjectId,\r\n        ref: 'echoemporium2', // Reference to the User collection\r\n        required: true\r\n    }, \r\n    orderId: {\r\n        type: Number, // Optionally, you can use a unique order number generator\r\n        required: true\r\n    },\r\n    items: [{\r\n        productId: {\r\n            type: mongoose.Schema.Types.ObjectId,\r\n            ref: 'products', // Reference to the Products collection\r\n            required: true\r\n        },\r\n        productCount: {\r\n            type: Number,\r\n            required: true\r\n        },\r\n        productPrice: {\r\n            type: Number,\r\n            required: true\r\n        },\r\n        productImage: {\r\n            type: String,\r\n        },     \r\n        // Add individual status for each product\r\n        status: {\r\n            type: String,\r\n            enum: ['Paid','Shipped', 'Pending', 'Delivered', 'Returned', 'Cancelled','Requested','Rejected'],\r\n            default: 'Pending' // Default status for individual product\r\n        },\r\n        reasonForCancellation:{\r\n            type:'String'\r\n        },\r\n        reasonForReturn:{\r\n            type:'String'\r\n        }\r\n    }],\r\n    totalPrice: {\r\n        type: Number,\r\n        required: true\r\n    },\r\n    totalQuantity: {\r\n        type: Number,\r\n        default: 0, // Optional: Can be calculated dynamically\r\n    },\r\n    address: {\r\n        type: String,\r\n        required: true\r\n    },\r\n    isCancel: {\r\n        type: Boolean,\r\n        default: false\r\n    },\r\n    paymentMethod: {\r\n        type: String,\r\n        required: true,\r\n        enum: ['Cash on Delivery', 'Razorpay', 'Wallet'], // Valid payment methods\r\n    },\r\n    paymentId: {\r\n        type: String,\r\n        required: false, // Only required if payment method is Razorpay or wallet\r\n    },\r\n    paymentStatus: {\r\n        type: String,\r\n        required: false, // Only required if payment method is Razorpay or wallet\r\n    },\r\n     payableAmount:{\r\n            type:Number,\r\n            default:0\r\n        },\r\n    couponCode: {\r\n        type: String,\r\n    },\r\n    couponDiscount: {\r\n        type: Number,\r\n        default: 0\r\n    },\r\n    status: {\r\n        type: String,\r\n        enum: ['Pending', 'Shipped', 'Paid', 'Delivered', 'Cancelled', 'Returned'],\r\n        default: 'Pending' // Default status when the order is placed\r\n    },\r\n},\r\n {\r\n    timestamps: true // Adds createdAt and updatedAt automatically\r\n});\r\n\r\n// Calculate totalQuantity dynamically\r\norderSchema.methods.calculateTotalQuantity = function() {\r\n    this.totalQuantity = this.items.reduce((acc, item) => acc + item.productCount, 0);\r\n};\r\n\r\n// Update order status based on payment method and status\r\norderSchema.pre('save', function(next) {\r\n    if (this.paymentMethod === 'Razorpay' && this.paymentStatus === 'Paid') {\r\n        this.status = 'Paid'; // Set the order status to 'Paid' if Razorpay is used and payment is successful\r\n    }\r\n    next();\r\n});\r\n\r\nmodule.exports = mongoose.model('orders', orderSchema);\r\n\r\n\r\n"
+        }
+    ]
+}

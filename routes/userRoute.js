@@ -14,7 +14,6 @@ route.use(loadCategoriesMiddleware);
 const userController=require("../controller/userController/userController")
 const User=require("../model/userSchema")
 const productController=require("../controller/userController/productController")
-const categoryController=require("../controller/userController/categoryController")
 const profileController=require('../controller/userController/profileController')
 const cartController=require('../controller/userController/cartController')
 const navbarController=require('../controller/userController/navbarcontroller')
@@ -37,19 +36,14 @@ route.get('/' ,checkUser,navbarController.home);
 /*-------------------------------------signup-----------------*/
 route.get('/signup',checkUser,userController.signup)
 route.post('/signup',checkUser,userController.signupPost)
-
-
 route.get('/otp',checkUser,userController.otp)
 route.post('/otp',checkUser,userController.otppost)
-
 route.get('/resend',checkUser,userController.otpResend)
-
-
 route.get('/login',checkUser,userController.login)
-
 route.post('/login',checkUser,userController.loginpost)
-
 route.get('/logout',checkUser,userController.logout)
+
+
 //------------------------ login using google ------------------------
 
 
@@ -121,32 +115,16 @@ route.post('/cart/increment',checkUser ,cartController.increment);
 route.post('/cart/decrement',checkUser ,cartController.decrement);
 
 
-// //---------------------------------- wishlist------------------------
-
-// route.get('/wishlist',wishlistController.wishlistPage)
-
-
-
-// //---------------------------------- Order  ------------------------
-
-
-
-
-
-
 
 //------------------------------- Wishlist ---------------------------
 
 route.get('/wishlist', checkUser, wishlistController.wishlistpage );
-
 route.post('/add-wishlist/:id', checkUser, wishlistController.addWishlist );
-
 route.post('/delete-wish/:id', checkUser , wishlistController.deleteWishlist );
 
 
 
 //---------------------------------- Category and main page------------------------
-// route.get('/categories', checkUser ,categoryController.getAllCategories);
 route.get('/product/:id', checkUser ,productController.getProductDetail)
 route.get('/all-products', checkUser ,productController.getAllProducts);
 route.get('/products',checkUser,productController.sortAllproducts)
@@ -177,9 +155,13 @@ route.get('/failed-order',checkUser,checkOutController.failedOrder)
 route.post('/place-order/:address/:payment',checkOutController.placeOrder)
 route.get('/conform-order',checkUser,checkOutController.orderConformPage)
 route.get('/orders',orderController.orderPage)
+
+
 //--------------------------------------Razorpay----------------------------------
 
 route.post('/payment-render/:amount',checkOutController.paymentRender)
+route.post('/retryRazorPay',orderController.retryRazorPay)
+route.post('/retryPayment',orderController.retryPayment)
 
 //--------------------------------------Coupon----------------------------------
 

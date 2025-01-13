@@ -38,8 +38,8 @@ transporter.sendMail(mailOptions,(err,info)=>{
     }
 })
 
-
-
+console.log(sendOTP)
+console.log('email sent sucessfully')
 }
 
 module.exports=sendOTP

@@ -17,15 +17,23 @@ const wishlistpage = async (req, res) => {
         const userId = req.session.user;
         console.log('userId', userId);
 
-        // Ensure you're querying with the correct field name as per your schema
         const wishlist = await wishlistSchema.findOne({ user: userId }).populate('products.productID');
         console.log("wishlist1", wishlist);
-
+        
         if (wishlist) {
-            res.render('user/wishlist', { title: "Wishlist", products: wishlist, user: req.session.user });
+            if (wishlist.products && wishlist.products.length > 0) {
+                const populatedProducts = wishlist.products.map(item => item.productID); 
+                console.log("populatedProducts",populatedProducts)
+                res.render('user/wishlist', { title: "Wishlist", products: populatedProducts, user: req.session.user });
+            } else {
+                // Empty wishlist
+                res.render('user/wishlist', { title: "Wishlist", products: [], message: "Your wishlist is currently empty", user: req.session.user });
+            }
         } else {
-            res.render('user/wishlist', { title: "Wishlist", products: [], user: req.session.user });
+            res.render('user/wishlist', { title: "Wishlist", products: [], message: "Your wishlist is currently empty", user: req.session.user });
         }
+        
+        
     } catch (error) {
         console.log(`Error while rendering wishlist page ${error}`);
         res.status(400);
@@ -68,11 +76,13 @@ const addWishlist = async (req, res) => {
         if (wishlist) {
             console.log('Wishlist found for user');
             
-            //const productExists = wishlist.products.some((item) => item.productID.toString() === productID.toString());
+          
+            
             const productExists = wishlist.products.some((item) => {
-                console.log("Checking productID:", item.productID.toString(), "against", productID.toString());
-                return item.productID.toString() === productID.toString();
+return item.productID._id.equals(new mongoose.Types.ObjectId(productID));
             });
+
+
             console.log(' productExists', productExists);
             if (productExists) {
                 return res.status(400).json({ error: "Product already in wishlist" });

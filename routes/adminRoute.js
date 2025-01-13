@@ -17,8 +17,8 @@ const isAdmin = require('../middleware/adminSession');
 
 //--------------------------------admin login----------------------------
 admin.get('/login',adminController.admin)
-// admin.get('/login',adminController.adminlogin)
 admin.post('/login',adminController.adminloginpost)
+admin.get('/logout',isAdmin,adminController.logout)
 
 
 
@@ -39,20 +39,8 @@ admin.post('/categories/:id/unblock',isAdmin,categoryController.unblockCategory)
 admin.get('/categories', isAdmin,categoryController.getCategoriesForUser);
 
 
-// //--------------------------------ProductManagment----------------------------
-//admin.get('/addProduct', isAdmin,productController.getProduct);
-// admin.post('/addProduct', multerUpload,productController.addProduct);
-// admin.post('/addProduct',isAdmin,productController.addProduct);
-//admin.get('/editProduct', isAdmin,productController.geteditProduct);
-// admin.post('/editProduct/:id',isAdmin, productController.editProduct);
-// admin.delete('/remove-image',isAdmin,productController.Imageremove)
-//admin.post('/listProduct/:id', isAdmin,productController.listProduct);
-//admin.post('/unlistProduct/:id',isAdmin, productController.unlistProduct);
-//admin.post('/products/:id/block',isAdmin,productController.BlockUnblock);
-//admin.get('/updateproduct/:id',isAdmin,productController.getUpdateProduct);
-//admin.post('/updateproduct/:id',isAdmin,uploads,productController.postEditProduct);
 
-// --- Product Management ---
+//--------------------------------ProductManagment----------------------------
 admin.get('/products',isAdmin, productController.getAllProducts);
 admin.get('/addproduct',isAdmin, productController.getAddProduct);
 admin.post('/addproduct',isAdmin, uploads, productController.postAddProduct);
@@ -61,22 +49,6 @@ admin.get('/updateproduct/:id',isAdmin, productController.getUpdateProduct);
 admin.post('/updateproduct/:id',isAdmin, uploads, productController.postEditProduct);
 
 
-//--------------------------------Order Management Routes----------------------------
-
-
-// admin.get('/orders', orderController.listOrders);
-// admin.post('/orders/item-status',orderController.changeProductStatus)
-// admin.post('/orders/cancel', orderController.cancelOrder);
-// Route to view order details
-// admin.get('/orders/:orderId', orderController.viewOrderDetails);
-
-
-//-------------------------------- Inventory Management Routes---------------------------------
-
-
-
-// admin.get('/inventory', orderController.listInventory);
-// admin.post('/inventory/update', orderController.updateStock);
 
 //------------------------------------------ order Management-----------------------------------------------------
 
@@ -84,28 +56,19 @@ admin.get('/orders',isAdmin,orderController.listOrders);
 admin.post('/orders/status',orderController.changeOrderStatus);
 admin.get('/viewReason/:orderId/:productId',isAdmin,orderController.viewReturnReason);
 admin.post('/processReturn/:orderId/:productId',orderController.postViewReason)
-//admin_routes.post('/orders/cancel',orderController.cancelOrder);
 admin.get('/orders/:id',orderController.viewOrderDetails)
 
 
-
-
-
-
+//------------------------------------------ Coupon Management-----------------------------------------------------
 
 admin.get('/coupons/:id?',  couponController.getCoupons);
-
 admin.post('/addcoupon',  couponController.addCoupon);
-
 admin.post('/editcoupon/:id',  couponController.editCoupon);
-
 admin.get('/statuscoupon',  couponController.toggleCouponStatus);
-
 admin.delete('/deletecoupon/:id',  couponController.deleteCoupon);
 
 
 //-------------------------------- Offer Management---------------------------------
-
 
 admin.get('/offer-management',isAdmin, offerController.getOffers);
 admin.post('/offer-management',isAdmin, offerController.addOffer);
@@ -116,9 +79,7 @@ admin.delete('/offer-management/:offerId',isAdmin, offerController.deleteOffer);
 
 //------------------------------------------sales-----------------------------------------------------
 
-
 admin.get('/salesReport',isAdmin,saleController.sales)
-admin.get('/salesReoprtView',isAdmin,saleController.salesReoprtView);
 admin.get('/exportReport',isAdmin,saleController.exportReport)
 
 

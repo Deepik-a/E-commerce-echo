@@ -29,14 +29,28 @@ const signup = (req, res) => {
 
 const signupPost = async (req, res) => {
   try {
+    // Destructure values from the request body
+    const { name, email, password, confirmpassword, phone } = req.body;
+
+    // Check if the passwords match
+    if (password !== confirmpassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Passwords do not match. Please try again.",
+      });
+    }
+
+    // Hash the password once before storing it in the database
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const details = {
-      name: req.body.name,
-      email: req.body.email,
-      password: await bcrypt.hash(req.body.password, 10),
-      confirmpassword: await bcrypt.hash(req.body.confirmpassword, 10),
-      phone: req.body.phone,
+      name,
+      email,
+      password: hashedPassword, // Store the hashed password
+      phone,
     };
 
+    // Check if the user already exists
     const check = await userSchema.findOne({ email: details.email });
 
     if (check) {
@@ -45,32 +59,35 @@ const signupPost = async (req, res) => {
         message: "User already exists. Please login.",
       });
     } else {
+      // Generate OTP
       const otp = generateotp();
       sendOTP(details.email, otp);
+
+      // Store OTP and user details in the session
       req.session.otp = otp;
       req.session.otpTime = Date.now();
       req.session.email = details.email;
       req.session.name = details.name;
       req.session.phone = details.phone;
-      req.session.password = details.password;
+      req.session.password = details.password; // Store the hashed password
 
-            // Hash password before storing in session
-            const hashedPassword = await bcrypt.hash(details.password, 10);
-            details.password = hashedPassword;
-            req.session. details =  details;
+      // Store the user details in session for further use (such as OTP validation)
+      req.session.details = details;
 
       return res.status(200).json({
         success: true,
-        redirectUrl: "/otp",
+        redirectUrl: "/otp", // Redirect to OTP verification page
       });
     }
   } catch (error) {
+    console.error("Error during signup:", error);
     res.status(500).json({
       success: false,
       message: "An unexpected error occurred. Please try again later.",
     });
   }
 };
+
 
 
 const otp=(req,res)=>{
@@ -106,10 +123,11 @@ const otppost = async (req, res) => {
     }
 
     // OTP is valid, create a new user
+    console.log(password);
     const userDetails = {
       name,
       email,
-      password: await bcrypt.hash(password, 10), // Hash password
+      password: password, // Hash password
       phone,
     };
 
@@ -127,21 +145,32 @@ const otppost = async (req, res) => {
 
 
 //-------------------------------------- Otp Resent ---------------------------------
+const otpResend = async (req, res) => {
+  try {
+    console.log("Entered otpResend function");
+    const email = req.session.email;
 
-const otpResend=(req,res)=>{
+    if (!email) {
+      console.log("No email found in session");
+      return res.status(400).json({ success: false, message: "Session expired. Please login again." });
+    }
 
-  try{
-const email=req.session.email
-const otp=generateotp()
-sendOTP(email,otp)
-req.session.otp=otp
-req.session.otpTime=Date.now()
-console.log("OTP sent succesfully");
-res.redirect('/otp')
-  }catch(error){
-    console.log(`error while resend otp ${error}`)
+    console.log("Email from session:", email);
+
+    const otp = generateotp(); // Generate a new OTP
+    await sendOTP(email, otp); // Send the OTP to the email
+
+    req.session.otp = otp; // Store the OTP in session
+    req.session.otpTime = Date.now(); // Update the OTP time
+
+    console.log("OTP sent successfully:", otp);
+    return res.status(200).json({ success: true, message: "OTP resent successfully." });
+  } catch (error) {
+    console.error(`Error while resending OTP: ${error}`);
+    return res.status(500).json({ success: false, message: "An error occurred while resending OTP." });
   }
-}
+};
+
 
 
 // GET login page
@@ -151,7 +180,15 @@ const login = async (req, res) => {
 
     if (req.session.user) {
       // Fetch products only if the user is logged in
-      const products = await productSchema.find({ isActive: true });
+    
+      const product = await productSchema.find({
+                  isActive: true,
+              }).populate('category');  // Populating the category
+      
+              // Filter products where category is not deleted
+              const products = product.filter(product => product.category && !product.category.isDeleted);
+      
+              console.log("Fetched Products:", products);
 
       // Render Landingpage with user session data
       return res.render('user/Landingpage', {
@@ -169,49 +206,49 @@ const login = async (req, res) => {
   }
 };
 
-// POST login form handler
+
+
 const loginpost = async (req, res) => {
   try {
+    console.log("entered logi post")
     const { email, password } = req.body;
 
     // Find user by email
     const user = await userSchema.findOne({ email });
     if (!user) {
       // Redirect if the user does not exist
-      return res.redirect('/login?error=userNotFound');
+      return res.status(400).json({ message: 'User not found!' });
     }
 
     // Check if the user is blocked
     if (user.isBlocked) {
-      return res.redirect('/login?error=blocked');
+      return res.status(400).json({ message: 'Your account is blocked. Please contact support.' });
     }
-
+    console.log("password",password)
+    console.log("user.password",user.password)
+    console.log(user.email)
+    console.log(email)
+ 
     // Check if the password is correct
-    // const isMatch = await bcrypt.compare(password, user.password); // Assuming bcrypt is used
-    // if (!isMatch) {
-    //   return res.redirect('/login?error=invalidPassword');
-    // }
-
+    const isMatch = await bcrypt.compare(password, user.password); 
+    console.log("isMatch",isMatch) // Compare entered password with stored hash
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Incorrect password! Please try again.' });
+    }
+   
     // Set session for the logged-in user
     req.session.user = user;
-
-    // Fetch categories and products
-    const categories = await categorySchema.find({ isDeleted: false });
-    const products = await productSchema.find({ isActive: true });
-
-    // Debugging
-    console.log('User found and session set:', user);
-    console.log('Categories:', categories);
-    console.log('Products:', products);
-
+        
+    res.json({ message: 'Login successful!'});
     // Redirect to the landing page after successful login
-    res.render('user/Landingpage', { categories, user, products });
+
   } catch (error) {
     console.error(`Error during login: ${error.message}`);
     // Redirect to login with a generic error
-    res.redirect('/login?error=serverError');
+    res.status(500).json({ message: 'Server error, please try again later.' })
   }
 };
+
 
 
 const logout = (req, res) => {
@@ -227,30 +264,6 @@ const logout = (req, res) => {
   }
 }
 
-
-// //-------------------------------------- google auth -----------------------------------
-
-// const googleAuth = (req, res) => {
- 
-//   try {
-//     passport.authenticate('google', {
-//       scope: ['email', 'profile']
-//     })
-//   } catch (err) {
-//     console.log(`Error on google authentication ${err}`)
-//   }
-// }
-
-
-// //----------------------------------- google auth callback  ----------------------------
-
-// const googleAuthCallback = (req, res, next) => {
-//   console.log("googleAuthCallback") 
-//     passport.authenticate('google', { failureRedirect: '/' }),
-//     (req, res) => {
-//       res.render("user/home");
-//     };
-// }
 
 
 

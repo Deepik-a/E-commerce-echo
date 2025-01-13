@@ -5,6 +5,7 @@ const PDFDocument = require('pdfkit')
 
 
 const applyDateFilter = (filter) => {
+    console.log(" entered apply date filter")
     const now = new Date();
     let dateFilter = {};
   
@@ -41,6 +42,8 @@ const applyDateFilter = (filter) => {
   
     return dateFilter;  
   };
+
+
   exports.sales = async (req, res) => {
     try {
         const filter = req.query.filter || ''; 
@@ -164,10 +167,10 @@ const applyDateFilter = (filter) => {
             const doc = new PDFDocument();
             res.setHeader('Content-Disposition', 'attachment; filename="sales_report.pdf"');
             res.setHeader('Content-Type', 'application/pdf');
-            doc.pipe(res);
+            doc.pipe(res); //Streams the PDF content to the client.
 
             // Document title
-            doc.fontSize(20).font('Helvetica-Bold').text('CoveHive Sales Report', { align: 'center' });
+            doc.fontSize(20).font('Helvetica-Bold').text('EchoEmporium Sales Report', { align: 'center' });
             doc.moveDown(2);
 
             // Table configuration
@@ -212,7 +215,7 @@ const applyDateFilter = (filter) => {
                     data.orderId,
                     truncatedUserId,
                     new Date(data.createdAt).toLocaleDateString('en-GB'),
-                    `₹${data.totalPrice.toFixed(2)}`,
+                    `₹${data.payableAmount.toFixed(2)}`,
                     `₹${data.couponDiscount.toFixed(2)}`,
                     data.status,
                     data.paymentMethod
@@ -241,22 +244,5 @@ const applyDateFilter = (filter) => {
 };
   
 
-exports.salesReoprtView = async (req, res) => {
-    try {
-     
-      const { orderId } = req.query;
-       console.log(req.query);
-        
-      const order = await Order.findOne({ _id: orderId }).populate("items.productId");
-     console.log(`order from hhere = ${order}`)
-      console.log(`order = ${order}`)
-  
-      res.render("admin/saleReportView", {
-        title: "Order Details",
-        order: order,
-      });
-    } catch (error) {
-      console.log("error in orderview ", error);
-    }
-  };
+
   

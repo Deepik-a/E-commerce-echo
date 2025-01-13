@@ -68,7 +68,7 @@
             <!-- Add Category Form -->
             <form id="categoryForm" method="post">
                 <div class="mb-3">
-                    <input type="text" name="name" class="form-control" placeholder="Enter category name" required>
+                    <input type="text" name="name" class="form-control" placeholder="Enter category name">
                 </div>
                 <div class="d-grid">
                     <button type="submit" class="btn btn-primary">Add Category</button>
@@ -102,41 +102,45 @@
             });
         });
         document.getElementById('categoryForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+    e.preventDefault();
 
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData);
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData);
 
-            try {
-                const response = await fetch('/admin/addCategory', {
-                    method: 'post',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                });
-                const result = await response.json();
-
-                if (response.ok) {
-                    // Show SweetAlert success message
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Category Added',
-                        text: result.message,
-                    }).then(() => {
-                        // Redirect after alert is acknowledged
-                        window.location.href = '/admin/editCategory';
-                    });
-                } else {
-                    throw new Error(result.message);
-                }
-            } catch (error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Failed to add category. Please try again later.',
-                });
-            }
+    try {
+        const response = await fetch('/admin/addCategory', {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
         });
-        </script>
-   
+
+        const result = await response.json();
+
+        if (response.ok) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Category Added',
+                text: result.message,
+            }).then(() => {
+                window.location.href = '/admin/editCategory';
+            });
+        } else {
+            // Show error message returned by the backend
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: result.message, // Specific backend error message
+            });
+        }
+    } catch (error) {
+        console.error('Fetch error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to add category. Please try again later.',
+        });
+    }
+});
+</script>

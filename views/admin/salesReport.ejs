@@ -139,7 +139,7 @@
               <td style="padding: 1rem 1.5rem; font-size: 0.875rem; color: #4b5563;"><%= new Date(data.createdAt).toLocaleDateString('en-GB') %></td>
               <td style="padding: 1rem 1.5rem; font-size: 0.875rem; color: #4b5563;">₹ <%= data.payableAmount.toFixed(2) %></td>
               <td style="padding: 1rem 1.5rem; font-size: 0.875rem; color: #4b5563;">₹ <%= data.couponDiscount.toFixed(2) %></td>
-              <td style="padding: 1rem 1.5rem; font-size: 0.875rem; color: #4b5563;"><%= data.status %></td>
+              <td style="padding: 1rem 1.5rem; font-size: 0.875rem; color: #4b5563;"><%= data.paymentStatus %></td>
               <td style="padding: 1rem 1.5rem; font-size: 0.875rem; color: #4b5563;"><%= data.paymentMethod %></td>
             </tr>
             <% }) %>

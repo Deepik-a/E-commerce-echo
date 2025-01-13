@@ -2,26 +2,44 @@ const categorySchema = require('../../model/categorySchema');
 
 // Add a category
 const addCategory = async (req, res) => {
-    try {
-        const { name } = req.body;
+  try {
+      const { name } = req.body;
 
-        // Check if category already exists
-        const existingCategory = await categorySchema.findOne({ name });
+      // Validate the name
+      if (!name || typeof name !== 'string' || name.trim().length === 0) {
+          return res.status(400).json({ message: 'Category name cannot be empty' });
+      }
 
-        if (existingCategory) {
-            // Send error response if category already exists
-            return res.status(400).json({ message: 'Category already exists' });
-        }
-        const newCategory = new categorySchema({ name });
-        await newCategory.save();
-        
-        // Send success response
-        return res.status(200).json({ message: 'Category added successfully' });
-    } catch (error) {
-        console.log(`Error while adding category: ${error}`);
-        // Send error response
-        return res.status(500).json({ message: 'Failed to add category' });
-    }
+      // Disallow names that are only numbers
+      const isOnlyNumbers = /^\d+$/.test(name.trim());
+      if (isOnlyNumbers) {
+          return res.status(400).json({ message: 'Category name cannot contain only numbers' });
+      }
+
+      // Disallow invalid characters
+      const invalidCharsRegex = /[^a-zA-Z0-9\s-]/;
+      if (invalidCharsRegex.test(name)) {
+          return res.status(400).json({ message: 'Category name contains invalid characters' });
+      }
+
+      // Check if category already exists
+      const existingCategory = await categorySchema.findOne({
+          name: { $regex: `^${name}$`, $options: 'i' }
+      });
+
+      if (existingCategory) {
+          return res.status(400).json({ message: 'Category already exists' });
+      }
+
+      // Create the new category
+      const newCategory = new categorySchema({ name });
+      await newCategory.save();
+
+      return res.status(200).json({ message: 'Category added successfully' });
+  } catch (error) {
+      console.error(`Error while adding category: ${error}`);
+      return res.status(500).json({ message: 'Failed to add category' });
+  }
 };
 
 
@@ -66,24 +84,56 @@ const editCategory = async (req, res) => {
         const { id } = req.params;
         const { name } = req.body;
 
+        // Validate the name
+        if (!name || typeof name !== 'string' || name.trim().length === 0) {
+            return res.status(400).json({ message: 'Category name cannot be empty' });
+        }
+
+        // Disallow names that are only numbers
+        const isOnlyNumbers = /^\d+$/.test(name.trim());
+        if (isOnlyNumbers) {
+            return res.status(400).json({ message: 'Category name cannot contain only numbers' });
+        }
+
+        // Disallow invalid characters
+        const invalidCharsRegex = /[^a-zA-Z0-9\s-]/;
+        if (invalidCharsRegex.test(name)) {
+            return res.status(400).json({ message: 'Category name contains invalid characters' });
+        }
+
+        // Check if a category with the same name (case-insensitive) already exists
+        const existingCategory = await categorySchema.findOne({
+            name: { $regex: `^${name}$`, $options: 'i' },
+        });
+
+        if (existingCategory && existingCategory._id.toString() !== id) {
+            return res.status(400).json({ message: 'Category with this name already exists' });
+        }
+
         // Update the category by ID
-        const updatedCategory = await categorySchema.findByIdAndUpdate(id, { name }, { new: true });
+        const updatedCategory = await categorySchema.findByIdAndUpdate(
+            id,
+            { name },
+            { new: true }
+        );
 
         if (!updatedCategory) {
             return res.status(404).json({ message: 'Category not found' });
         }
 
         // Send JSON response on successful update
-        res.status(200).json({ message: 'Category updated successfully', category: updatedCategory });
+        return res.status(200).json({
+            message: 'Category updated successfully',
+            category: updatedCategory,
+        });
 
     } catch (error) {
-        console.log(`Error while editing category: ${error}`);
-        
+        console.error(`Error while editing category: ${error}`);
         // Send JSON response on error
-        res.status(500).json({ message: 'An error occurred while updating the category' });
-   
+        return res.status(500).json({ message: 'An error occurred while updating the category' });
     }
 };
+
 
 
 // Render the edit form for a specific category

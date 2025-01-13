@@ -262,7 +262,7 @@
                     </div>
                     <div class="mb-4">
                       <h3 class="text-lg font-semibold text-gray-900 mb-2">Coupon discount</h3>
-                      <p id="couponApplied" class="text-gray-700"></p>
+                      <p id="couponApplied" class="text-gray-700"></p> 
                   </div> 
                 </div>
                 <div>
@@ -334,7 +334,7 @@
     
 
             document.getElementById('paymentMethod').textContent = order.paymentMethod;
-            document.getElementById('couponApplied').textContent = `₹Rs {order.couponDiscount}`
+            document.getElementById('couponApplied').textContent =  `Rs ${order.couponDiscount}`
            document.getElementById('totalPrice').textContent = order.payableAmount.toLocaleString();
 
             // Clear existing items
@@ -537,6 +537,82 @@ try {
 }
 }
 
+
+async function retryPayment(orderId){
+  console.log(`orderId = ${orderId}`)
+  try {
+                    const res = await fetch('/retryRazorPay', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ orderId })
+                    });
+
+                    if (res.ok) {
+                        const retryPaymentData = await res.json();
+                        const options = {
+                            key: 'rzp_test_KDYrLJHnu3O9Ip',
+                            amount: retryPaymentData.amount,
+                            currency: "INR",
+                            name: "Echo Emporium",
+                            order_id: retryPaymentData.razorpayOrderId.id,
+                            handler: async function (response) {
+                                try {
+                                    const resData = {
+                                        orderId,
+                                        razorpayOrderId: response.razorpay_order_id,
+                                        paymentId: response.razorpay_payment_id,
+                                    };
+                                    const payment = await fetch('/retryPayment', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify(resData)
+                                    });
+
+                                    if (payment.ok) {
+                                        const paymentData = await payment.json();
+                                        window.location.href = "/conform-order";
+                                    } else {
+                                        const error = await payment.text();
+                                        showError(error);
+                                    }
+                                } catch (error) {
+                                    console.error(`Handler error: ${error}`);
+                                }
+                            },
+                            prefill: {
+                                name: retryPaymentData.address.building,
+                                email: retryPaymentData.address.street,
+                                contact: retryPaymentData.address.pincode
+                            },
+                            notes: {
+                                address: retryPaymentData.address
+                            },
+                            theme: {
+                                color: "#3399cc"
+                            },
+                            "modal": {
+                                "ondismiss": function () {
+                                    window.location.href = '/orders';
+                                }
+                            }
+                        };
+                        const rzp1 = new Razorpay(options);
+                        rzp1.on('payment.failed', function (response) {
+                            showError('Payment Failure');
+                        });
+                        rzp1.open();
+                    } else {
+                        const error = await res.text();
+                        showError(error);
+                    }
+                } catch (error) {
+                    console.error(`Error from retry payment fetch: ${error}`);
+                }
+              }
 </script>
 
 <%- include('footer') %>

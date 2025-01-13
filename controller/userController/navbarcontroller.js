@@ -21,7 +21,14 @@ const home = async (req, res) => {
         return res.redirect('/account-blocked'); // Redirect to the blocked account page
       }
     }
-    const products = await productSchema.find({  isActive: true })
+   const product = await productSchema.find({
+               isActive: true,
+           }).populate('category');  // Populating the category
+   
+           // Filter products where category is not deleted
+           const products = product.filter(product => product.category && !product.category.isDeleted);
+   
+   
        
     const categories=await categorySchema.find({isDeleted:false})
     res.render('user/home', { categories, products, user: req.session.user})
