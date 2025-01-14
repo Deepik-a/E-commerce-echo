@@ -4,9 +4,9 @@ const Coupon = require('../../model/couponSchema');
 
 const getCoupons = async (req, res) => {
     const search = req.query.search || '';
-    const page = parseInt(req.query.page) || 1; // Get the current page from the query string (default to page 1)
-    const limit = 10; // Define the number of coupons per page
-    const skip = (page - 1) * limit; // Skip the previous pages' coupons
+    const page = parseInt(req.query.page) || 1; 
+    const limit = 4; 
+    const skip = (page - 1) * limit; 
 
     try {
         if (req.params.id) {
@@ -17,15 +17,15 @@ const getCoupons = async (req, res) => {
             return res.json(coupon);
         }
 
-        // Fetch the coupons with pagination and search filter
+      
         const coupons = await Coupon.find({ code: { $regex: search, $options: 'i' } })
             .skip(skip)
             .limit(limit);
 
-        // Get the total count of coupons for pagination
+        
         const count = await Coupon.countDocuments({ code: { $regex: search, $options: 'i' } });
 
-        // Calculate the total number of pages
+  
         const totalPages = Math.ceil(count / limit);
 
         // Render the page with pagination data

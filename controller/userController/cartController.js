@@ -11,10 +11,10 @@ const findOffer = async (cart) => {
         return { cartItems: [] };
     }
 
-    const currentDate = new Date(); // Use Date object for comparisons
+    const currentDate = new Date(); 
 
     // Process each cart item
-    const cartItems = await Promise.all(
+    const cartItems = await Promise.all(  //multiple asynchronous operations
         cart.items.map(async (item) => {
             // Fetch product details for the item
             const product = await Product.findById(item.productId).populate('category');
@@ -95,7 +95,7 @@ const addToCart = async (req, res) => {
     console.log("Entered addToCart");
     const userId = req.session.user;
     if (!userId) {
-        res.locals.alertMessage = "User is not logged in, please log in again.";
+        res.locals.alertMessage = "User is not logged in, please log in again."; //request specific
         return res.redirect('/cart');
     }
 

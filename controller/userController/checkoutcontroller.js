@@ -142,8 +142,9 @@ const addresses = user ? user.address : []
 exports.paymentRender = async (req, res) => {
     try {
         console.log("entered payment render")
-        const totalAmount = req.params.amount;
-        console.log(`Received totalAmount: ${totalAmount}`); // Log totalAmount
+        const totalAmounts = req.params.amount;
+        const totalAmount=Math.floor(totalAmounts )
+        console.log(`Received totalAmount: ${totalAmount}`); 
 
         if (!totalAmount) {
             console.error('Amount parameter is missing');
@@ -151,30 +152,32 @@ exports.paymentRender = async (req, res) => {
         }
 
         const instance = new Razorpay({
-            key_id: "rzp_test_KDYrLJHnu3O9Ip", // Your Razorpay key_id
-            key_secret: "bcOjtnHN19lrbqBWdS35Ee7J" // Your Razorpay key_secret
+            key_id: "rzp_test_KDYrLJHnu3O9Ip", 
+            key_secret: "bcOjtnHN19lrbqBWdS35Ee7J" 
         });
 
         const options = {
-            amount: totalAmount*100, // Amount in smallest currency unit (e.g., paise for INR)
+            amount: totalAmount*100,
             currency: 'INR',
             receipt: "receipt#1"
         };
 
-        console.log('Order creation options:', options); // Log the options used for order creation
+        console.log('Order creation options:', options); 
 
+
+        //razorpay order craetion
         instance.orders.create(options, (error, order) => {
             if (error) {
-                console.error(`Failed to create order:`, error); // Log detailed error
+                console.error(`Failed to create order:`, error); 
                 return res.status(500).json({ error: `Failed to create order: ${error.message}` });
             }
 
-            console.log('Order created successfully:', order); // Log the order details
+            console.log('Order created successfully:', order); 
             return res.status(200).json({ orderID: order.id });
         });
 
     } catch (error) {
-        console.error(`Error on orders in checkout:`, error); // Log detailed error in catch block
+        console.error(`Error on orders in checkout:`, error); 
         return res.status(500).json({ error: 'Internal server error' });
     }
 };
@@ -515,7 +518,7 @@ console.log("entered failed order paymentMethod",paymentMethod)
         }
 
         // Calculate prices safely
-        const totalPrices = cartItems.payableAmount || 0; // Default to 0 if undefined
+        const totalPrices = cartItems.payableAmount > 0 ? cartItems.payableAmount : cartItems.totalPrice // Ensure payableAmount is set correctly
         const discountPrice = cartItems.discountPrice || 0; // Default to 0 if undefined
 
         // Ensure valid total and discount
@@ -536,6 +539,7 @@ console.log("entered failed order paymentMethod",paymentMethod)
         isCouponApplied: cartItems.isCouponApplied,
             address: `${user.address[addressIndex].building}, ${user.address[addressIndex].street}, ${user.address[addressIndex].city}, ${user.address[addressIndex].state}, ${user.address[addressIndex].country}, ${user.address[addressIndex].pincode}`,
             paymentMethod:"Razorpay",
+            paymentStatus:"Pending",
             paymentId: null,
             isCancelled: false,
         });
@@ -544,13 +548,13 @@ console.log("entered failed order paymentMethod",paymentMethod)
         await newOrder.save();
         
         // Clear the user's cart
-        // cart.items = [];
-        // cart.payableAmount = 0;
-        // cart.isCouponApplied = false;
-        // cart.couponDiscount = 0;
-        // cart.couponId = null;
-        // cart.totalPrice = 0;
-        // await cart.save();
+        cartItems.items = [];
+        cartItems.payableAmount = 0;
+        cartItems.isCouponApplied = false;
+        cartItems.couponDiscount = 0;
+        cartItems.couponId = null;
+        cartItems.totalPrice = 0;
+        await cart.save();
 
 
         // Render failed order page

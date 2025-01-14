@@ -238,7 +238,7 @@
             <td class="px-6 py-4 text-lg text-gray-600">${new Date(order.createdAt).toLocaleDateString('en-GB')}</td>
             <td class="px-6 py-4 text-lg text-gray-600">₹${order.payableAmount.toFixed(2)}</td>
             <td class="px-6 py-4 text-lg text-gray-600">₹${order.couponDiscount.toFixed(2)}</td>
-          <td class="px-6 py-4 text-lg text-gray-600">${order.status}</td>
+          <td class="px-6 py-4 text-lg text-gray-600">${order.paymentStatus}</td>
 
             <td class="px-6 py-4 text-lg text-gray-600">${order.paymentMethod}</td>
          
@@ -308,7 +308,7 @@
         .then(response=>response.blob())
         .then(blob=>{
     
-            const url = window.URL.createObjectURL(blob);
+            const url = window.URL.createObjectURL(blob); // Blob object, representing binary data like a file.
             const a = document.createElement('a');
             a.href = url
     

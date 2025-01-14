@@ -1,70 +1,148 @@
 
 
 <%- include('sidebar') %>
-
 <style>
     .category {
-        width: 85%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-left: 50px; 
-    }
+    width: 85%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 50px;
+}
 
-    .search-container {
-        border-radius: 10px;
-        margin: 24px;
-        background: #2b7aaf;
-        width: 95%;
-    }
+.coupon-action a {
+    text-decoration: none;
+}
 
-    .coupon-action a {
-        text-decoration: none;
-    }
+.modal-content {
+    background: #b4dfee;
+    color: #101feb;
+}
 
-    .modal-content {
-        background: #b4dfee;
-        color: #101feb;
-    }
+.form-control {
+    background: #9cd6e7;
+    color: #2d08b4;
+    width: 100%;
+}
 
-    .form-control {
-        background: #9cd6e7;
-        color: #2d08b4;
-        width: 100%;
-    }
+.form-control::placeholder {
+    color: #1132d6;
+}
 
-    .form-control::placeholder {
-        color: #1132d6;
-    }
+.form-control:focus {
+    background: #a0d3e9;
+    color: #330fe5;
+}
 
-    .form-control:focus {
-        background: #a0d3e9;
-        color: #330fe5;
-    }
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
 
-    .table tbody tr td {
-        padding: 18px 0px;
-        text-align: left;
-        background: #9ed7e7;
-        color: #0a0df1;
-       
+.pagination-box {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.pagination {
+    display: flex;
+    list-style-type: none;
+}
+
+.pagination-link {
+    padding: 8px 12px;
+    margin: 0 5px;
+    text-decoration: none;
+    color: #333;
+    background-color: #f1f1f1;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.pagination-link:hover {
+    background-color: #ddd;
+}
+
+.pagination-link.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.pagination-link:disabled {
+    color: #999;
+    pointer-events: none;
+}
+
+.table-container {
+    width: 95%;  /* Reduced from 100% to allow for margins */
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 1rem auto;  /* Changed to auto for horizontal centering */
+    padding-left: 15rem;  /* Added left padding */
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    white-space: nowrap;
+    font-size: 0.875rem;
+}
+
+.table th,
+.table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid #dee2e6;
+    vertical-align: middle;
+}
+
+.table thead th {
+    background-color: #f8f9fa;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(0,0,0,.075);
+}
+
+.coupon-action {
+    white-space: nowrap;
+}
+
+.coupon-action a {
+    color: inherit;
+    text-decoration: none;
+    padding: 0.25rem;
+}
+
+.coupon-action i {
+    font-size: 1rem;
+}
+
+@media screen and (max-width: 768px) {
+    .table-container {
+        width: 98%;  /* Slightly wider on mobile */
+        padding-left: 1rem;  /* Reduced padding on mobile */
     }
     
-    .table-container {
-        padding-left: 30px; /* Adds padding inside the container */
-        margin-left: 230px; /* Adds margin outside the container */
-        width: calc(100% - 30px); /* Ensures proper alignment if width is an issue */
-    }
-
     .table {
-        margin-left: 0; /* Reset margin if necessary */
+        font-size: 0.75rem;
     }
-    #formatCategory{
-        padding-left: 30px; /* Adds padding inside the container */
-        margin-left: 150px; /* Adds margin outside the container */
-        width: calc(100% - 30px); /* Ensures proper alignment if width is an issue */   
+    
+    .table th,
+    .table td {
+        padding: 0.35rem;
     }
+}
 </style>
+   
 
 
 
@@ -76,10 +154,7 @@
             <h2 class="text-white mx-5">
                 <%= title %>
             </h2>
-            <form action="/admin/coupons" method="get" class="form d-flex align-items-center">
-                <input type="text" name="search" placeholder="Search" class="form-input form-control me-2">
-                <input type="submit" class="btn btn-primary" value="Search">
-            </form>
+            
         </div>
         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCollection">
             Add Coupon
@@ -109,48 +184,32 @@
                     <tbody>
                         <% coupons.forEach((coupon, index)=> { %>
                             <tr scope="row">
-                                <td>
-                                    <%= index + 1 %>
-                                </td>
-                                <td>
-                                    <%= coupon.code %>
-                                </td>
-                                <td>
-                                    <%= coupon.discountType %>
-                                </td>
-                                <td>
-                                    <%= coupon.discountValue %>
-                                </td>
-                                <td>
-                                    <%= coupon.usageCount %>
-                                </td>
-                                <td>
-                                    <%= coupon.minimumOrderAmount %>
-                                </td>
-                                <td>
-                                    <%= new Date(coupon.startDate).toLocaleDateString() %>
-                                </td>
-                                <td>
-                                    <%= new Date(coupon.endDate).toLocaleDateString() %>
-                                </td>
-                                <td>
-                                    <%= coupon.isActive ? 'Active' : 'Blocked' %>
-                                </td>
+                                <td><%= index + 1 %></td>
+                                <td><%= coupon.code %></td>
+                                <td><%= coupon.discountType %></td>
+                                <td><%= coupon.discountValue %></td>
+                                <td><%= coupon.usageCount %></td>
+                                <td><%= coupon.minimumOrderAmount %></td>
+                                <td><%= new Date(coupon.startDate).toLocaleDateString() %></td>
+                                <td><%= new Date(coupon.endDate).toLocaleDateString() %></td>
+                                <td><%= coupon.isActive ? 'Active' : 'Blocked' %></td>
                                 <td class="coupon-action">
-                                    <a href="#" id="edit-collection-modal" data-bs-toggle="modal"
-                                        data-bs-target="#editCollection" onclick="editCoupon('<%= coupon.id %>')"><i
-                                            class="bi bi-pencil-square"></i></a>
+                                    <a href="#" id="edit-collection-modal" data-bs-toggle="modal" data-bs-target="#editCollection" onclick="editCoupon('<%= coupon.id %>')">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
                                     <a href="/admin/statuscoupon?id=<%= coupon.id %>&status=<%= coupon.isActive %>">
                                         <i class="bi bi-x-circle m-2"></i>
                                     </a>
-                                    <a href="#" onclick="confirmDelete('<%= coupon._id %>')"><i
-                                            class="bi bi-trash3"></i></a>
+                                    <a href="#" onclick="confirmDelete('<%= coupon._id %>')">
+                                        <i class="bi bi-trash3"></i>
+                                    </a>
                                 </td>
                             </tr>
-                            <% }) %>
+                        <% }) %>
                     </tbody>
                 </table>
-        
+            </div>
+       
     <!------------------------------ Add Coupon Modal ---------------------------->
 
   <!-- Add Coupon Modal -->
@@ -294,20 +353,28 @@
 </div>
 
 <!------------------------------------------------pagination-------------------------------------------------------->
-  <!-- Pagination -->
-  <div class="pagination">
-    <% if (currentPage > 1) { %>
-        <a href="/admin/coupons?page=<%= currentPage - 1 %>&search=<%= search %>">Prev</a>
-    <% } %>
-    
-    <% for (let i = 1; i <= totalPages; i++) { %>
-        <a href="/admin/coupons?page=<%= i %>&search=<%= search %>" class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
-    <% } %>
-    
-    <% if (currentPage < totalPages) { %>
-        <a href="/admin/coupons?page=<%= currentPage + 1 %>&search=<%= search %>">Next</a>
-    <% } %>
+<div class="pagination-container">
+    <div class="pagination-box">
+        <!-- Pagination -->
+        <div class="pagination">
+            <% if (currentPage > 1) { %>
+                <a href="/admin/coupons?page=<%= currentPage - 1 %>&search=<%= search %>" class="pagination-link">Prev</a>
+            <% } %>
+            
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <a href="/admin/coupons?page=<%= i %>&search=<%= search %>" 
+                   class="pagination-link <%= currentPage === i ? 'active' : '' %>">
+                   <%= i %>
+                </a>
+            <% } %>
+            
+            <% if (currentPage < totalPages) { %>
+                <a href="/admin/coupons?page=<%= currentPage + 1 %>&search=<%= search %>" class="pagination-link">Next</a>
+            <% } %>
+        </div>
+    </div>
 </div>
+
 
 
         <script>

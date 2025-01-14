@@ -110,6 +110,11 @@ const editCategory = async (req, res) => {
             return res.status(400).json({ message: 'Category with this name already exists' });
         }
 
+           // If the new name is the same as the existing name, return an alert
+           if (existingCategory && existingCategory.name.toLowerCase() === name.trim().toLowerCase()) {
+            return res.status(400).json({ message: 'Category name is not changed' });
+        }
+
         // Update the category by ID
         const updatedCategory = await categorySchema.findByIdAndUpdate(
             id,
@@ -133,27 +138,6 @@ const editCategory = async (req, res) => {
         return res.status(500).json({ message: 'An error occurred while updating the category' });
     }
 };
-
-
-
-// Render the edit form for a specific category
-const renderEditCategoryForm = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const category = await categorySchema.findById(id);
-
-        if (!category) {
-            return res.status(404).send('Category not found');
-        }
-
-        // Render the edit category form and pass the category details
-        res.render('admin/editCategory', { category });
-    } catch (error) {
-        console.error('Error rendering edit category form:', error);
-        res.status(500).send('Internal Server Error');
-    }
-};
-
 
 
 
@@ -222,7 +206,6 @@ const getCategoriesForUser = async (req, res) => {
 module.exports = {
     addCategory,
     editCategory,
-    renderEditCategoryForm,
     geteditCategories,
     getCategoriesForUser,
     blockCategory,

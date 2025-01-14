@@ -32,7 +32,6 @@ admin.get('/unblock/:ideee',isAdmin,adminController.unblockUser)
 admin.get('/addCategory', isAdmin,adminController.getCategories);
 admin.post('/addCategory', isAdmin,categoryController.addCategory);
 admin.get('/editCategory',isAdmin,categoryController.geteditCategories);
-admin.get('/editCategory/:id',isAdmin,categoryController.renderEditCategoryForm);
 admin.post('/editCategory/:id',isAdmin,categoryController.editCategory);
 admin.post('/categories/:id/block',isAdmin,categoryController.blockCategory);
 admin.post('/categories/:id/unblock',isAdmin,categoryController.unblockCategory);
