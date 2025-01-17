@@ -12,7 +12,6 @@ const orderSchema = require('../../model/orderSchema');
 const Category = require('../../model/categorySchema');
 
 //checkout validation
-
 exports.validateCheckout = async (req, res) => {
     try {
         if (!req.session.user) {
@@ -20,21 +19,42 @@ exports.validateCheckout = async (req, res) => {
         }
 
         const userId = req.session.user;
-        const cartDetails = await Cart.findOne({ userId }).populate('items.productId');
 
-        console.log("carDetails of validate checkout",cartDetails)
-
-        if (!cartDetails) {
-            return res.status(404).json({ success: false, message: 'Cart not found.' });
+        const cartDetails = await Cart.findOne({ userId })
+        .populate({
+            path: 'items.productId',
+            populate: {
+                path: 'category',
+                match: { isDeleted: false } // Filter products whose category is not deleted
+            }
+        });
+    
+    if (!cartDetails) {
+        return res.status(404).send('Cart not found');
+    }
+    
+    
+    const items = cartDetails.items;
+    if (items.length === 0) {
+        return res.redirect('/cart');
+    }
+    
+    // Remove products that belong to deleted categories and redirect if any such product is found
+    const validItems = items.filter(item => {
+        if (item.productId.category === null || (item.productId.category && item.productId.category.isDeleted)) {
+            return false; // Exclude items from deleted categories
         }
-
-        const items = cartDetails.items;
-        if (items.length === 0) {
-            return res.status(400).json({ success: false, message: 'Your cart is empty.' });
-        }
-
-        console.log("items of validate checkout",items)
-
+        return true;
+    });
+    
+    
+    console.log("category deleted",validItems)
+    
+    if (validItems.length === 0) {
+                     return res.status(400).json({ success: false, message: `Category is not available right now.` });
+    }
+    
+      // Remove products that are InActive
         for (const item of items) {
             const product = item.productId;
             if (!product.isActive) {
@@ -46,7 +66,7 @@ exports.validateCheckout = async (req, res) => {
             }
         }
 
-        // If all checks pass
+        // If all checks pass 
         res.status(200).json({ success: true, message: 'Validation successful' });
     } catch (error) {
         console.error('Error during checkout validation:', error);
@@ -61,7 +81,6 @@ exports.getCheckoutPage = async (req,res) => {
     try {
    
         if (!req.session.user) {
-            req.flash('error', "User not found, please log in again");
             return res.redirect('/login');
         }
       
@@ -72,28 +91,58 @@ exports.getCheckoutPage = async (req,res) => {
         return res.status(404).send('User not found');
     }
     
-    const cartDetails = await Cart.findOne({userId}).populate('items.productId');
-
-    if (!cartDetails) {
-        return res.status(404).send('Cart not found');
-    }
-    const items = cartDetails.items;
-    if (items.length === 0) {
-        return res.redirect('/cart');
-    }
-    for(const item of items){
-        if(!item.productId.isActive){
-            req.flash("error", "Product is not available, please remove it from the cart");
-            return res.redirect("/cart");
+    const cartDetails = await Cart.findOne({ userId })
+    .populate({
+        path: 'items.productId',
+        populate: {
+            path: 'category',
+            match: { isDeleted: false } // Filter products whose category is not deleted
         }
+    });
+
+if (!cartDetails) {
+    return res.status(404).send('Cart not found');
+}
+
+
+const items = cartDetails.items;
+if (items.length === 0) {
+    return res.redirect('/cart');
+}
+
+// Remove products that belong to deleted categories and redirect if any such product is found
+const validItems = items.filter(item => {
+    if (item.productId.category === null || (item.productId.category && item.productId.category.isDeleted)) {
+        return false; // Exclude items from deleted categories
     }
+    return true;
+});
+
+
+console.log("category deleted",validItems)
+
+if (validItems.length === 0) {
+    return res.redirect('/cart'); // Redirect if no valid items remain
+}
+
+
+
+// If the product is inactive, it redirects to the cart page and there checkout validation is done
+for (const item of validItems) {
+    if (!item.productId.isActive) {
+        return res.redirect("/cart");
+    }
+}
+
+
+
 const availableCoupons = await Coupon.find({
     isActive:true,
     endDate:{$gte:new Date()},
     minimumOrderAmount:{$lte:cartDetails.totalPrice}
 });
 
-console.log("getcheckoutpage",availableCoupons)
+
 
 const eligibleCoupons = availableCoupons.filter((coupon) =>{
    const couponUsage =  user.couponUsed.find((c) =>{
@@ -105,7 +154,7 @@ const eligibleCoupons = availableCoupons.filter((coupon) =>{
    return true
 });
 
-console.log("eligibleCoupons",eligibleCoupons)
+
 let wallet = await Wallet.findOne({ userID: userId });
 
 
@@ -114,7 +163,7 @@ if (!wallet) {
     wallet = { balance: 0, transaction: [] };
 }
 
-console.log(wallet,"wallet of getcheckoutpage");
+
 
 
 const addresses = user ? user.address : []
@@ -192,7 +241,10 @@ exports.placeOrder = async (req, res) => {
         const userId = req.session.user;
         const addressIndex = parseInt(req.params.address);
         const paymentMode = parseInt(req.params.payment);
+        console.log("paymentMode",paymentMode)
         const { razorpay_payment_id, payment_status } = req.body;
+
+        console.log(" payment_status from place order", payment_status)
 
         // Retrieve the user's cart
         const cart = await Cart.findOne({ userId }).populate('items.productId');
@@ -212,7 +264,9 @@ exports.placeOrder = async (req, res) => {
 
 
         const paymentDetails = ["Cash on Delivery", "Wallet", "Razorpay"];
-        if(paymentDetails[paymentMode] === 'Cash on delivery'){
+        console.log("paymentDetails length:", paymentDetails.length)
+        if(paymentDetails[paymentMode] === 'Cash on Delivery'){
+            console.log("paymentDetails[paymentMode]",paymentDetails[paymentMode])
             if(amountToDeduct > 1000){
           return res.status(400).json({sucess:false,message:'COD below 1000 only.'})
             }
@@ -239,6 +293,7 @@ exports.placeOrder = async (req, res) => {
         });
 
         await newOrder.save();
+        console.log("newOrder from place order",newOrder)
 
         // Handle wallet payment
         if (paymentDetails[paymentMode] === 'Wallet') {
@@ -263,10 +318,14 @@ exports.placeOrder = async (req, res) => {
         }
 
       
-          // Update the order's payment status
-          newOrder.paymentStatus = "Paid";
-          newOrder.paid = true;
-          await newOrder.save();
+        if (paymentMode !== 0) {
+            newOrder.paymentStatus = "Paid";
+            newOrder.paid = true;
+        }
+        await newOrder.save();
+
+        console.log("Updated newOrder", newOrder);
+
 
         // Update product stock
         for (let item of cart.items) {

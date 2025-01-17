@@ -2,6 +2,7 @@ const Cart = require('../../model/cartSchema');
 const Product = require('../../model/productSchema');
 const User = require('../../model/userSchema');
 const offerModel = require('../../model/offerSchema'); // Update the path as necessary
+const wishlistSchema=require('../../model/wishlistSchema')
 
 const mongoose = require('mongoose'); // Ensure mongoose is required
 
@@ -94,8 +95,8 @@ const findOffer = async (cart) => {
 const addToCart = async (req, res) => {
     console.log("Entered addToCart");
     const userId = req.session.user;
+        
     if (!userId) {
-        res.locals.alertMessage = "User is not logged in, please log in again."; //request specific
         return res.redirect('/cart');
     }
 
@@ -104,6 +105,26 @@ const addToCart = async (req, res) => {
 
     try {
         const product = await Product.findById(productId);
+    
+
+
+
+        //if a product is added to cart remove the product from wishlist
+
+          const wishlist = await wishlistSchema.findOne({ user: userId }).populate('products.productID');
+          console.log("wishlist9", wishlist); 
+          
+          if (!wishlist) {
+              console.log("Wishlist not found");
+          }
+
+          if (wishlist) {
+            wishlist.products = wishlist.products.filter(item => !item.productID.equals(product._id));
+            await wishlist.save();
+        }
+        console.log("Wishlist not found",wishlist);
+
+     
 
         if (!product) {
             res.locals.alertMessage = "Product not found.";
@@ -148,6 +169,7 @@ const addToCart = async (req, res) => {
                 productImage: product.imgArray[0] || '/path-to-default-image.jpg'
             });
         }
+ 
 
         // Calculate offers for the cart
         const { cartItems } = await findOffer(cart);
@@ -163,7 +185,7 @@ const addToCart = async (req, res) => {
        cart.totalPrice = cart.items.reduce((total, item) => total + (item.productPrice * item.productCount),0);
         // Save the cart to the database
         await cart.save();
-
+console.log("hello")
         return res.redirect('/cart');
     } catch (error) {
         console.error('Error adding to cart:', error.message);

@@ -148,7 +148,7 @@ const applyDateFilter = (filter) => {
                 OrderDate: new Date(data.createdAt).toLocaleDateString('en-GB'),
                 OrderAmount: `₹${data.payableAmount.toFixed(2)}`,
                 CouponDeduction: `₹${data.couponDiscount.toFixed(2)}`,
-                PaymentStatus: data.status,
+                PaymentStatus: data.paymentStatus,
                 PaymentMethod: data.paymentMethod,
             }));
 
@@ -217,7 +217,7 @@ const applyDateFilter = (filter) => {
                     new Date(data.createdAt).toLocaleDateString('en-GB'),
                     `₹${data.payableAmount.toFixed(2)}`,
                     `₹${data.couponDiscount.toFixed(2)}`,
-                    data.status,
+                    data.paymentStatus,
                     data.paymentMethod
                 ];
 
