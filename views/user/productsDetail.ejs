@@ -299,10 +299,10 @@
                         <% if (product.discount > 0) { %>
                             <div class="d-flex align-items-center gap-3">
                                 <p class="final-price" style="font-size: 2rem; font-weight: 700; color: rgb(26, 83, 25); margin: 0;">
-                                    Rs <%= product.finalPrice %>
+                                    Rs <%= product.finalPrice.toFixed(0)  %>
                                 </p>
                                 <p class="mb-0 text-muted text-decoration-line-through" style="font-size: 1.2rem;">
-                                    Rs <%= product.price %>
+                                    Rs <%= product.price.toFixed(0) %>
                                 </p>
                                 <span class="discount-badge" style="background-color: rgb(80, 141, 78); color: white; padding: 5px 10px; border-radius: 5px; font-weight: 600;">
                                     <%= product.discount %>% OFF
@@ -310,7 +310,7 @@
                             </div>
                         <% } else { %>
                             <p class="final-price" style="font-size: 2rem; font-weight: 700; color: rgb(26, 83, 25); margin: 0;">
-                                Rs <%= product.finalPrice %>
+                                Rs <%= product.finalPrice.toFixed(0)  %>
                             </p>
                         <% } %>
                     </div>

@@ -58,7 +58,7 @@
                                   <%=item.productId.name%>
                               </h5>
                               <p class="text-lg font-bold text-gray-900">
-                                <i class="fa-solid fa-indian-rupee-sign"></i><%= item.productPrice %> x <%= item.productCount %>
+                                <i class="fa-solid fa-indian-rupee-sign"></i><%= item.productPrice.toFixed(0) %> x <%= item.productCount.toFixed(0) %>
                               </p>
                           </div>
             
@@ -128,7 +128,7 @@
                         <% } %>
             
                         <!-- Payment Retry (For Pending orders and failed payment) -->
-                        <% if (item.status === 'Pending' && ! order.paymentStatus) { %>
+                        <% if (item.status === 'Pending' &&  order.paymentStatus === 'Pending') { %>
                        
                           <div class="flex flex-col items-center p-4 bg-red-100 rounded-lg shadow-lg space-y-4">
                             <p class="text-xl font-medium text-red-600">Oops! Payment Failed</p>
@@ -334,8 +334,9 @@
     
 
             document.getElementById('paymentMethod').textContent = order.paymentMethod;
-            document.getElementById('couponApplied').textContent =  `Rs ${order.couponDiscount}`
-           document.getElementById('totalPrice').textContent = order.payableAmount.toLocaleString();
+            document.getElementById('couponApplied').textContent = `Rs ${order.couponDiscount.toFixed(0)}`;
+            document.getElementById('totalPrice').textContent = order.payableAmount.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
 
             // Clear existing items
             const itemsTable = document.getElementById('itemsPurchased');
@@ -364,11 +365,12 @@
     </td>
     
     <!-- Product Price -->
-    <td class="px-6 py-4">
-        <span class="text-sm font-medium text-gray-900">
-            ₹${item.productPrice} × ${item.productCount}
-        </span>
-    </td>
+   <td class="px-6 py-4">
+    <span class="text-sm font-medium text-gray-900">
+        ₹${Math.floor(item.productPrice)} × ${item.productCount}
+    </span>
+</td>
+
     
     <!-- Discount -->
     <td class="px-6 py-4">
@@ -484,25 +486,26 @@ document.getElementById('cancelForm').addEventListener('submit', function(e) {
   .then(response => response.json())
   .then(data => {
     Swal.fire({
-      icon: 'success',  // Change this to 'error' for error messages
-      title: 'Success',
-      text: data.message,  // Display success message from server
-      confirmButtonText: 'OK',
+        icon: data.success ? 'success' : 'error', // Change based on success or failure
+        title: data.success ? 'Success' : 'Error',
+        text: data.message,  // Display the message returned from the backend
+        confirmButtonText: 'OK',
     }).then(() => {
-      closeModal();  // Close the modal
-      // Optionally refresh the page or update the UI
-      location.reload(); // Uncomment this if you want to refresh the page
+        closeModal();  // Close the modal
+        if (data.success) {
+            location.reload(); // Optionally refresh the page on success
+        }
     });
-  })
-  .catch(error => {
+})
+.catch(error => {
     console.error('Error:', error);
     Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'An error occurred while processing your request.',
-      confirmButtonText: 'OK'
+        icon: 'error',
+        title: 'Error',
+        text: 'An error occurred while processing your request.',
+        confirmButtonText: 'OK'
     });
-  });
+});
 });
 
 

@@ -18,6 +18,15 @@ const itemSchema = new mongoose.Schema({
     productImage: {
         type: String, // New field for storing the product image
     },
+    productName:{
+        type:String
+    },
+    productCategory:{
+        type:String
+    },
+    productDiscount: {
+        type: Number
+    },
 }, { _id: false, timestamps: true });
 
 const cartSchema = new mongoose.Schema({

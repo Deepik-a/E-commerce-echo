@@ -97,7 +97,7 @@ exports.generateOrderPDF = async (req, res) => {
 
         // Total Amount
         doc.fontSize(14)
-            .text(`Total Amount: ₹${order.totalPrice}`, 400, yPosition, { align: 'right' })
+            .text(`Total Amount: ₹${order.payableAmount}`, 400, yPosition, { align: 'right' })
             .moveDown(2);
 
         // Footer

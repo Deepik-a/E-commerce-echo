@@ -9,7 +9,7 @@ const couponController = require('../controller/adminController/couponController
 const orderController = require('../controller/adminController/orderController');
 const offerController = require('../controller/adminController/offerController');
 const  saleController=require('../controller/adminController/salesController')
-
+const  admincontroller=require('../controller/adminController/admindetails')
 
 const isAdmin = require('../middleware/adminSession');
 
@@ -81,8 +81,13 @@ admin.delete('/offer-management/:offerId',isAdmin, offerController.deleteOffer);
 admin.get('/salesReport',isAdmin,saleController.sales)
 admin.get('/exportReport',isAdmin,saleController.exportReport)
 
+//------------------------------------------dashboard-----------------------------------------------------
+// admin.get('/dashboard',isAdmin,adminController.dashboard);
+// admin.post('/dashboard',isAdmin,adminController.dashboard);
+// admin.get('dasboardFilter',isAdmin,adminController.dashboardFilter)
 
-
+//admin.post('/Dashboard',isAdmin,admincontroller.loginPost)
+admin.get('/Dastyuophboard',isAdmin,admincontroller.dashboardGet)
 
 
 

@@ -252,7 +252,7 @@
                                         
                                     </td>
                                     <td data-label="Product"><%= item.productId.name %></td>
-                                    <td data-label="Price">Rs <%= item.productPrice.toFixed(2) %></td>
+                                    <td data-label="Price">Rs <%= item.productPrice.toFixed(0) %></td>
                                     <td data-label="Quantity">
                                         <form class="update-quantity-form" data-product-id="<%= item.productId._id %>">
                                             <div class="quantity-control">
@@ -262,7 +262,7 @@
                                             </div>
                                         </form>
                                     </td>
-                                    <td data-label="Total">Rs <span class="item-total" data-price="<%= item.productPrice %>"><%= (item.productPrice * item.productCount).toFixed(2) %></span></td>
+                                    <td data-label="Total">Rs <span class="item-total" data-price="<%= item.productPrice %>"><%= (item.productPrice * item.productCount).toFixed(0) %></span></td>
                                     <td data-label="Action">
                                         <a href="/cart/remove/<%= item.productId._id %>" class="btn remove-btn">Remove</a>
                                     </td>
@@ -273,7 +273,7 @@
                 </div>
 
                 <div class="cart-footer">
-                    <h4 id="cart-total" class="total-amount">Total Amount: Rs <%= cart.items.reduce((total, item) => total + (item.productPrice * item.productCount), 0).toFixed(2) %></h4>
+                    <h4 id="cart-total" class="total-amount">Total Amount: Rs <%= cart.items.reduce((total, item) => total + (item.productPrice * item.productCount), 0).toFixed(0) %></h4>
                     <button id="checkout-btn" class="btn checkout-btn">Buy Now</button>
                 </div>
             <% } else { %>

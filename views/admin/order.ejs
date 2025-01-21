@@ -63,7 +63,7 @@
                                     <% const currentStatusIndex = statusOptions.indexOf(item.status); %>
                                     
                                     <% statusOptions.forEach((status, index) => { %>
-                                        <% if (item.status !== 'Cancelled' && item.status !== 'Requested' && item.status !== 'Rejected') { %> <!-- Add this check -->
+                                        <% if (item.status !== 'Cancelled' && item.status !== 'Requested' && item.status !== 'Rejected' && item.status !== 'Returned') { %> <!-- Add this check -->
                                             <button 
                                                 onclick="updateStatus('<%= order._id %>', '<%= item.productId._id %>', '<%= status %>')"
                                                 class="px-3 py-1 text-xs rounded-md <%= status === item.status ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-800 hover:bg-gray-200' %>"

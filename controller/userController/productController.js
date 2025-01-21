@@ -103,20 +103,46 @@ const getAllProducts = async (req, res) => {
     try {
         console.log("Fetching all products...");
 
-        // Fetch all products that are active and have a valid category (not deleted)
-        const products = await productSchema.find({
-            isActive: true,
-        }).populate('category');  // Populating the category
+        // Pagination parameters
+        const page = parseInt(req.query.page) || 1; // Default to page 1
+        const limit = parseInt(req.query.limit) || 5; // Default to 5 products per page
+        const skip = (page - 1) * limit;
 
-        // Filter products where category is not deleted
+        // Fetch products with pagination, filtering only active products and valid categories
+        const products = await productSchema
+            .find({ isActive: true })
+            .populate('category') // Populating the category
+            .skip(skip)
+            .limit(limit);
+
+        // Filter products where category exists and is not deleted
         const filteredProducts = products.filter(product => product.category && !product.category.isDeleted);
 
-        console.log("Fetched Products:", filteredProducts);
+        // Get total count of active products with valid categories
+        const totalProductsCount = await productSchema.countDocuments({
+            isActive: true,
+        });
 
+        // Fetch all non-deleted categories
         const categories = await categorySchema.find({ isDeleted: false });
-        res.render('user/AllProduct', { products: filteredProducts, categories });
+
+        // Calculate total pages
+        const totalPages = Math.ceil(totalProductsCount / limit);
+
+        console.log("Filtered Products:", filteredProducts);
+
+        // Render the AllProduct view with pagination details
+        res.render('user/AllProduct', {
+            products: filteredProducts,
+            categories,
+            currentPage: page,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1,
+            limit,
+        });
     } catch (error) {
-        console.log('Error fetching products: ', error);
+        console.error('Error fetching products:', error);
         res.status(500).send('Error fetching products');
     }
 };
@@ -124,67 +150,130 @@ const getAllProducts = async (req, res) => {
 
 
 
-const sortAllproducts= async (req, res) => {
-    console.log("sortAllProducts")
-    const categories = await categorySchema.find({ isDeleted: false });
-    let sortOption = {};
 
-    switch (req.query.sort) {
-        // case 'popularity':
-        //     sortOption = { popularity: -1 }; // Assuming you have a 'popularity' field in your products
-        //     break;
-        case 'price_low_high':
-            sortOption = { price: 1 }; // Sort by price ascending
-            break;
-        case 'price_high_low':
-            sortOption = { price: -1 }; // Sort by price descending
-            break;
-       // case 'ratings':
-          //  sortOption = { averageRating: -1 }; // Sort by ratings descending
-          //  break;
-       // case 'featured':
-           // sortOption = { featured: -1 }; // Assuming you have a 'featured' field
-           // break;
-        case 'new_arrivals':
-            sortOption = { createdAt: -1 }; // Assuming 'createdAt' field stores product creation date
-            break;
-        case 'az':
-            sortOption = { name: 1 }; // Sort alphabetically A-Z
-            break;
-        case 'za':
-            sortOption = { name: -1 }; // Sort alphabetically Z-A
-            break;
-        default:
-            sortOption = {}; // Default sort, no sorting
+const sortAllproducts = async (req, res) => {
+    try {
+        console.log("sortAllProducts");
+
+        const categories = await categorySchema.find({ isDeleted: false });
+        let sortOption = {};
+
+        // Determine the sorting option
+        switch (req.query.sort) {
+            case 'price_low_high':
+                sortOption = { price: 1 }; // Sort by price ascending
+                break;
+            case 'price_high_low':
+                sortOption = { price: -1 }; // Sort by price descending
+                break;
+            case 'new_arrivals':
+                sortOption = { createdAt: -1 }; // Newest first
+                break;
+            case 'az':
+                sortOption = { name: 1 }; // Alphabetically A-Z
+                break;
+            case 'za':
+                sortOption = { name: -1 }; // Alphabetically Z-A
+                break;
+            default:
+                sortOption = {}; // Default: no sorting
+        }
+
+        const page = parseInt(req.query.page) || 1; // Default to page 1
+        const limit = parseInt(req.query.limit) || 5; // Default to 5 products per page
+        const skip = (page - 1) * limit;
+
+        // Fetch and sort products with pagination
+        const products = await productSchema
+            .find({ isActive: true })
+            .sort(sortOption)
+            .skip(skip)
+            .limit(limit);
+
+        const totalProductsCount = await productSchema.countDocuments({ isActive: true });
+        const totalPages = Math.ceil(totalProductsCount / limit);
+
+        res.render('user/AllProduct', {
+            products,
+            categories,
+            currentPage: page,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1,
+            limit,
+            sort: req.query.sort, // Keep track of the sorting option
+        });
+    } catch (error) {
+        console.error("Error in sortAllProducts:", error);
+        res.status(500).send("Server Error");
     }
+};
 
-    const products = await productSchema.find().sort(sortOption);
-    res.render('user/AllProduct', { products,categories});
+const searchbyProducts = async (req, res) => {
+    try {
+        const searchQuery = req.body.search;
+        const categories = await categorySchema.find({ isDeleted: false });
+
+        // Check for special characters
+        const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+        if (specialCharRegex.test(searchQuery)) {
+            // Respond with "Sorry, not found" if special characters are present
+            return res.render("user/AllProduct", {
+                products: [],
+                message: "Sorry, not found!",
+                categories,
+                currentPage: 1,
+                totalPages: 0,
+                hasNextPage: false,
+                hasPrevPage: false,
+                limit: 5,
+                searchQuery, // Keep track of the invalid search query
+            });
+        }
+
+        const page = parseInt(req.query.page) || 1; // Default to page 1
+        const limit = parseInt(req.query.limit) || 5; // Default to 5 products per page
+        const skip = (page - 1) * limit;
+
+        // Perform a database search for products with pagination
+        const products = await productSchema
+            .find({
+                name: { $regex: searchQuery, $options: "i" }, // Case-insensitive search
+                isActive: true, // Ensure only active products are fetched
+            })
+            .skip(skip)
+            .limit(limit);
+
+        const totalProductsCount = await productSchema.countDocuments({
+            name: { $regex: searchQuery, $options: "i" },
+            isActive: true,
+        });
+        const totalPages = Math.ceil(totalProductsCount / limit);
+
+        // If no products found, show "no results" message
+        const message =
+            products.length === 0
+                ? "Sorry, no results found! Please check the spelling or try searching for something else."
+                : "";
+
+        res.render("user/AllProduct", {
+            products,
+            message,
+            categories,
+            currentPage: page,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1,
+            limit,
+            searchQuery, // Keep track of the search query for pagination
+        });
+    } catch (error) {
+        console.error("Error in searchbyProducts:", error);
+        res.status(500).send("Server Error");
+    }
 };
 
 
-const searchbyProducts= async (req, res) => {
-   
-        const searchQuery = req.body.search;
-    const categories = await categorySchema.find({ isDeleted: false });
-
-    
-        // Perform a database search for products
-        const products = await productSchema.find({
-            name: { $regex: searchQuery, $options: 'i' } // Case-insensitive search
-        });
-    
-        // If no products found, show "no results" message
-        const message = products.length === 0 ? 'Sorry, no results found! Please check the spelling or try searching for something else.' : '';
-    
-        // Render the all-products page with the search results
-        res.render('user/Allproduct', {
-            products: products,
-            message: message,
-            categories// Assuming you are fetching categories too
-        });
-    };
-    
 
 
 

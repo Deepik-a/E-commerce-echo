@@ -347,25 +347,31 @@
                     <button type="button" class="btn btn-success" data-bs-dismiss="modal">Close</button>
                 </div>
             <% } else { %>
-                <form action="/update-profile" method="post">
+                <form action="/update-profile" method="post" id="update-profile-form">
                     <div class="modal-body">
-                        <!-- Name Field -->
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Name</label>
-                            <input type="text" class="form-control" name="name" id="name" required maxlength="15"
-                                   value="<%= userDetail.name %>" placeholder="Name" >
-                        </div>
-                        <!-- Phone Field -->
-                        <div class="mb-3">
-                            <label for="phone" class="form-label">Phone</label>
-                            <input type="text" class="form-control" name="phone" id="phone" required 
-                                   value="<%= userDetail.phone %>" placeholder="Phone">
-                        </div>
+                      <!-- Name Field -->
+                      <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control" name="name" id="name" required maxlength="15"
+                               value="<%= userDetail.name %>" placeholder="Name" >
+                        <small id="name-error" class="text-danger d-none">Name can only contain letters and spaces.</small>
+                      </div>
+                  
+                      <!-- Phone Field -->
+                      <div class="mb-3">
+                        <label for="phone" class="form-label">Phone</label>
+                        <input type="text" class="form-control" name="phone" id="phone" required maxlength="10"
+                               value="<%= userDetail.phone %>" placeholder="Phone">
+                        <small id="phone-error" class="text-danger d-none">Phone must start with 5-9 and be exactly 10 digits.</small>
+                      </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-success">Update</button>
+                      <button type="submit" class="btn btn-success" id="update-btn" disabled>Update</button>
                     </div>
-                </form>
+                  </form>
+                  
+               
+                  
             <% } %>
         </div>
     </div>
@@ -419,55 +425,56 @@
                     <h4 class="mb-4">Add New Address</h4>
                     <form action="/add-address" method="post" novalidate id="addressForm">
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="building" class="form-label">Building/Apartment</label>
-                                <input type="text" name="building" class="form-control" id="building" placeholder="Building Name" required>
-                                <div class="invalid-feedback">Building/Apartment name is required.</div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="street" class="form-label">Street</label>
-                                <input type="text" name="street" class="form-control" id="street" placeholder="Street Name" required>
-                                <div class="invalid-feedback">Street name is required.</div>
-                            </div>
+                          <div class="col-md-6 mb-3">
+                            <label for="building" class="form-label">Building/Apartment</label>
+                            <input type="text" name="building" class="form-control" id="building" placeholder="Building Name" required>
+                            <div class="invalid-feedback">Building/Apartment name can only contain letters and numbers.</div>
+                          </div>
+                          <div class="col-md-6 mb-3">
+                            <label for="street" class="form-label">Street</label>
+                            <input type="text" name="street" class="form-control" id="street" placeholder="Street Name" required>
+                            <div class="invalid-feedback">Street name must only contain letters.</div>
+                          </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="city" class="form-label">City</label>
-                                <input type="text" name="city" class="form-control" id="city" placeholder="City" required>
-                                <div class="invalid-feedback">City is required.</div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="state" class="form-label">State</label>
-                                <input type="text" name="state" class="form-control" id="state" placeholder="State" required>
-                                <div class="invalid-feedback">State is required.</div>
-                            </div>
+                          <div class="col-md-6 mb-3">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" name="city" class="form-control" id="city" placeholder="City" required>
+                            <div class="invalid-feedback">City must only contain letters.</div>
+                          </div>
+                          <div class="col-md-6 mb-3">
+                            <label for="state" class="form-label">State</label>
+                            <input type="text" name="state" class="form-control" id="state" placeholder="State" required>
+                            <div class="invalid-feedback">State must only contain letters.</div>
+                          </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="country" class="form-label">Country</label>
-                                <input type="text" name="country" class="form-control" id="country" placeholder="Country" required>
-                                <div class="invalid-feedback">Country is required.</div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="pincode" class="form-label">Pincode</label>
-                                <input type="text" name="pincode" class="form-control" id="pincode" placeholder="Pincode" required pattern="\d{6}">
-                                <div class="invalid-feedback">Pincode must be a 6-digit number.</div>
-                            </div>
+                          <div class="col-md-6 mb-3">
+                            <label for="country" class="form-label">Country</label>
+                            <input type="text" name="country" class="form-control" id="country" placeholder="Country" required>
+                            <div class="invalid-feedback">Country must only contain letters.</div>
+                          </div>
+                          <div class="col-md-6 mb-3">
+                            <label for="pincode" class="form-label">Pincode</label>
+                            <input type="text" name="pincode" class="form-control" id="pincode" placeholder="Pincode" required pattern="\d{6}">
+                            <div class="invalid-feedback">Pincode must be a 6-digit number.</div>
+                          </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="phone" class="form-label">Phone</label>
-                                <input type="text" name="phone" value="<%= userDetail.phone %>" class="form-control" id="phone" placeholder="Phone Number" required pattern="\d{10}">
-                                <div class="invalid-feedback">Phone number must be a 10-digit number.</div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="landmark" class="form-label">Landmark</label>
-                                <input type="text" name="landmark" class="form-control" id="landmark" placeholder="Landmark">
-                                <div class="invalid-feedback">Landmark is required.</div>
-                            </div>
+                          <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">Phone</label>
+                            <input type="text" name="phone" value="<%= userDetail.phone %>" class="form-control" id="phone" placeholder="Phone Number" required>
+                            <div class="invalid-feedback">Phone number must start with 5-9 and be 10 digits long.</div>
+                          </div>
+                          <div class="col-md-6 mb-3">
+                            <label for="landmark" class="form-label">Landmark</label>
+                            <input type="text" name="landmark" class="form-control" id="landmark" placeholder="Landmark">
+                            <div class="invalid-feedback">Landmark must only contain letters.</div>
+                          </div>
                         </div>
                         <button type="submit" class="btn w-100" style="background-color: #1A5319;color: #e0e0e0;">Add Address</button>
-                    </form>
+                      </form>
+                      
                 </div>
         
                 <!-- Added Addresses -->
@@ -583,30 +590,57 @@
             
             
             <script>
-                // Real-Time Validation for add-address
                 document.getElementById('addressForm').addEventListener('input', function (e) {
-                    const input = e.target;
-                    if (input.checkValidity()) {
-                        input.classList.remove('is-invalid');
-                        input.classList.add('is-valid');
-                    } else {
-                        input.classList.remove('is-valid');
-                        input.classList.add('is-invalid');
-                    }
-                });
-            
-                document.getElementById('addressForm').addEventListener('submit', function (e) {
-                    const form = e.target;
-                    if (!form.checkValidity()) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        form.querySelectorAll('input').forEach((input) => {
-                            if (!input.checkValidity()) {
-                                input.classList.add('is-invalid');
-                            }
-                        });
-                    }
-                });
+  const input = e.target;
+  const value = input.value.trim();
+  let isValid = true;
+
+  // Validation rules
+  const alphaNumericRegex = /^[a-zA-Z0-9 ]+$/; // For building
+  const alphaRegex = /^[a-zA-Z ]+$/; // For street, city, state, country, landmark
+  const phoneRegex = /^[5-9][0-9]{9}$/; // For phone
+  const pincodeRegex = /^\d{6}$/; // For pincode
+
+  if (input.id === 'building' && !alphaNumericRegex.test(value)) {
+    isValid = false;
+  } else if (
+    ['street', 'city', 'state', 'country', 'landmark'].includes(input.id) &&
+    !alphaRegex.test(value)
+  ) {
+    isValid = false;
+  } else if (input.id === 'phone' && !phoneRegex.test(value)) {
+    isValid = false;
+  } else if (input.id === 'pincode' && !pincodeRegex.test(value)) {
+    isValid = false;
+  }
+
+  // Update input classes
+  if (isValid) {
+    input.classList.remove('is-invalid');
+    input.classList.add('is-valid');
+  } else {
+    input.classList.remove('is-valid');
+    input.classList.add('is-invalid');
+  }
+});
+
+document.getElementById('addressForm').addEventListener('submit', function (e) {
+  const form = e.target;
+  let isFormValid = true;
+
+  form.querySelectorAll('input').forEach((input) => {
+    if (!input.checkValidity() || input.classList.contains('is-invalid')) {
+      input.classList.add('is-invalid');
+      isFormValid = false;
+    }
+  });
+
+  if (!isFormValid) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+});
+
 
 
    // SweetAlert2 Confirmation for Delete Button
@@ -677,6 +711,49 @@ document.querySelectorAll('.editAddressBtn').forEach((button, index) => {
     });
 });
 
+
+
+                    const nameInput = document.getElementById('name');
+                    const phoneInput = document.getElementById('phone');
+                    const nameError = document.getElementById('name-error');
+                    const phoneError = document.getElementById('phone-error');
+                    const updateButton = document.getElementById('update-btn');
+                  
+                    // Regex for validation
+                    const nameRegex = /^[a-zA-Z ]+$/;
+                    const phoneRegex = /^[5-9][0-9]{9}$/;
+                  
+                    // Real-time validation function
+                    function validateForm() {
+                      let isValid = true;
+                  
+                      // Validate name
+                      if (!nameRegex.test(nameInput.value.trim())) {
+                        nameError.classList.remove('d-none');
+                        isValid = false;
+                      } else {
+                        nameError.classList.add('d-none');
+                      }
+                  
+                      // Validate phone
+                      if (!phoneRegex.test(phoneInput.value.trim())) {
+                        phoneError.classList.remove('d-none');
+                        isValid = false;
+                      } else {
+                        phoneError.classList.add('d-none');
+                      }
+                  
+                      // Enable or disable the update button based on validation
+                      updateButton.disabled = !isValid;
+                    }
+                  
+                    // Attach event listeners
+                    nameInput.addEventListener('input', validateForm);
+                    phoneInput.addEventListener('input', validateForm);
+                  
+                    // Initial validation check
+                    validateForm();
+                
 
             </script>
           

@@ -10,48 +10,127 @@
             background-color: #007BFF;
             border-color: #007BFF;
         }
+   /* Center the pagination container on the page */
+.pagination-container {
+    display: flex;
+    justify-content: center; /* Horizontal centering */
+    align-items: center;    /* Vertical centering */
+    position: absolute;     /* Position relative to the page */
+    top: 90%;               /* Center vertically */
+    left: 50%;              /* Center horizontally */
+    transform: translate(-50%, -50%); /* Adjust for exact center */
+    gap: 10px;              /* Space between pagination links */
+}
+
+/* Style for pagination links */
+.pagination-link {
+    display: inline-block;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #333;
+    background-color: #f9f9f9;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Active page styling */
+.pagination-link.active {
+    background-color: #007bff;
+    color: #fff;
+    font-weight: bold;
+    border-color: #007bff;
+}
+
+/* Hover effect for pagination links */
+.pagination-link:hover {
+    background-color: #0056b3;
+    color: #fff;
+}
+
+/* Add spacing between pagination links */
+.pagination-container .pagination-link:not(:last-child) {
+    margin-right: 5px;
+}
+
+.table-responsive {
+    max-width: 80%;
+    margin: 0 auto;
+}
+
+.table {
+    width: 100%; /* Ensure table adapts to the container's width */
+    table-layout: auto; /* Allow columns to adjust based on content */
+}
+
+
     </style>
 
 <!-- Navbar End -->
-<div class="container-fluid pt-4 px-4" style="margin-left: 250px;">
-  <div class="bg-light text-center rounded p-4">
-      <h4 class="mb-4">User Management</h4>
-      <table class="table table-bordered">
-          <thead class="table-primary">
-              <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">User Name</th>
-                  <th scope="col">Email</th>
-                  <th scope="col">Status</th>
-                  <th scope="col">Actions</th>
-              </tr>
-          </thead>
-          <tbody>
-              <% users.forEach((user, index) => { %>
-                  <tr>
-                      <th scope="row"><%= index + 1 %></th>
-                      <td><%= user.name %></td>
-                      <td><%= user.email %></td>
-                      <td>
-                          <% if (user.isBlocked) { %>
-                              <span class="badge bg-danger">Blocked</span>
-                          <% } else { %>
-                              <span class="badge bg-success">Active</span>
-                          <% } %>
-                      </td>
-                      <td>
-                          <% if (user.isBlocked) { %>
-                              <a href="#" class="btn btn-primary btn-sm" onclick="confirmUnblock('<%= user._id %>')">Unblock</a>
-                          <% } else { %>
-                              <a href="#" class="btn btn-primary btn-sm" onclick="confirmBlock('<%= user._id %>')">Block</a>
-                          <% } %>
-                      </td>
-                  </tr>
-              <% }) %>
-          </tbody>
-      </table>
+<div class="container-fluid pt-4 px-4">
+    <div class="bg-light text-center rounded p-4" style="max-width: 80%; margin: 0 auto;">
+        <h4 class="mb-4">User Management</h4>
+        <!-- Add a container with a smaller width -->
+        <div class="table-responsive" style="max-width: 80%; margin: 0 auto;">
+            <table class="table table-bordered" style="width: 100%;">
+                <thead class="table-primary">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">User Name</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% users.forEach((user, index) => { %>
+                        <tr>
+                            <th scope="row"><%= index + 1 %></th>
+                            <td><%= user.name %></td>
+                            <td><%= user.email %></td>
+                            <td>
+                                <% if (user.isBlocked) { %>
+                                    <span class="badge bg-danger">Blocked</span>
+                                <% } else { %>
+                                    <span class="badge bg-success">Active</span>
+                                <% } %>
+                            </td>
+                            <td>
+                                <% if (user.isBlocked) { %>
+                                    <a href="#" class="btn btn-primary btn-sm" onclick="confirmUnblock('<%= user._id %>')">Unblock</a>
+                                <% } else { %>
+                                    <a href="#" class="btn btn-primary btn-sm" onclick="confirmBlock('<%= user._id %>')">Block</a>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
   </div>
+  
+
+ 
+  <div class="pagination-container">
+    <% if (hasPrevPage) { %>
+        <a href="?page=<%= currentPage - 1 %>&limit=<%= limit %>" class="pagination-link">Previous</a>
+    <% } %>
+
+    <% for (let i = 1; i <= totalPages; i++) { %>
+        <a href="?page=<%= i %>&limit=<%= limit %>" 
+           class="pagination-link <%= i === currentPage ? 'active' : '' %>">
+           <%= i %>
+        </a>
+    <% } %>
+
+    <% if (hasNextPage) { %>
+        <a href="?page=<%= currentPage + 1 %>&limit=<%= limit %>" class="pagination-link">Next</a>
+    <% } %>
 </div>
+
+
+
 
 <!-- SweetAlert CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">

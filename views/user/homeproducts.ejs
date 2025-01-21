@@ -221,9 +221,9 @@ body{
                 <div class="card__precis d-flex align-items-center justify-content-between">
                     <!-- Price Section -->
                     <% if (product.discount > 0) { %>
-                        <span class="card__preci card__preci--now">Rs <%= product.finalPrice %></span>
+                        <span class="card__preci card__preci--now">Rs <%= product.finalPrice.toFixed(0)  %></span>
                     <% } else { %>
-                        <span class="card__preci card__preci--now">Rs <%= product.finalPrice %></span>
+                        <span class="card__preci card__preci--now">Rs <%= product.finalPrice.toFixed(0) %></span>
                     <% } %>
                     <!-- Wishlist Love Sign -->
                     <span>

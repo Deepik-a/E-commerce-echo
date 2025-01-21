@@ -211,9 +211,13 @@
                                   <% } else { %>
                                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                         <i class="fa fa-user"></i>
-                                        <span class="icon-text"><%= user.name.length > 8 ? user.name.substring(0, 8) : user.name %></span>
-
+                                        <% if (user.authMethod === 'local') { %>
+                                            <span class="icon-text">
+                                                <%= user.name.length > 8 ? user.name.substring(0, 8) : user.name %>
+                                            </span>
+                                        <% } %>
                                     </a>
+                                    
                                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                         <li><a class="dropdown-item" href="/">Home</a></li>
                                         <li><a class="dropdown-item" href="/userprofile">Profile</a></li>

@@ -281,11 +281,11 @@
 
                     <div class="product-pricing">
                         <% if (product.discount > 0) { %>
-                            <span class="final-price">Rs <%= product.finalPrice %></span>
-                            <span class="original-price">Rs <%= product.price %></span>
-                            <span class="discount-badge"><%= product.discount %>% OFF</span>
+                            <span class="final-price">Rs <%= product.finalPrice.toFixed(0)  %></span>
+                            <span class="original-price">Rs <%= product.price.toFixed(0)  %></span>
+                            <span class="discount-badge"><%= product.discount.toFixed(0)  %>% OFF</span>
                         <% } else { %>
-                            <span class="final-price">Rs <%= product.finalPrice %></span>
+                            <span class="final-price">Rs <%= product.finalPrice.toFixed(0)  %></span>
                         <% } %>
                         <form class="wishlist-form" data-id="<%= product._id %>">
                             <span type="button" class="wishlist-btn">

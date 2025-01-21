@@ -95,7 +95,7 @@ const findOffer = async (cart) => {
 const addToCart = async (req, res) => {
     console.log("Entered addToCart");
     const userId = req.session.user;
-        
+
     if (!userId) {
         return res.redirect('/cart');
     }
@@ -104,31 +104,19 @@ const addToCart = async (req, res) => {
     const MAX_QUANTITY_LIMIT = 10; // Maximum limit per product
 
     try {
-        const product = await Product.findById(productId);
-    
-
-
-
-        //if a product is added to cart remove the product from wishlist
-
-          const wishlist = await wishlistSchema.findOne({ user: userId }).populate('products.productID');
-          console.log("wishlist9", wishlist); 
-          
-          if (!wishlist) {
-              console.log("Wishlist not found");
-          }
-
-          if (wishlist) {
-            wishlist.products = wishlist.products.filter(item => !item.productID.equals(product._id));
-            await wishlist.save();
-        }
-        console.log("Wishlist not found",wishlist);
-
-     
-
+        // Fetch the product and populate the category reference
+        const product = await Product.findById(productId).populate('category');
         if (!product) {
+            console.error(`Product not found: ${productId}`);
             res.locals.alertMessage = "Product not found.";
             return res.redirect(`/product/${productId}`);
+        }
+
+        // Remove the product from the wishlist if it exists
+        const wishlist = await wishlistSchema.findOne({ user: userId }).populate('products.productID');
+        if (wishlist) {
+            wishlist.products = wishlist.products.filter(item => !item.productID.equals(product._id));
+            await wishlist.save();
         }
 
         // Check if the product is out of stock
@@ -139,7 +127,6 @@ const addToCart = async (req, res) => {
 
         // Fetch or create the cart
         let cart = await Cart.findOne({ userId }).populate('items.productId');
-
         if (!cart) {
             cart = new Cart({
                 userId,
@@ -148,9 +135,11 @@ const addToCart = async (req, res) => {
             });
         }
 
-        // Find or add the item in the cart
-        let cartItem = cart.items.find(item => item.productId.equals(product._id));
+        // Resolve category name as a string
+        const categoryName = product.category?.name || 'Unknown Category';
 
+        // Find the product in the cart and update or add it
+        let cartItem = cart.items.find(item => item.productId.equals(product._id));
         if (cartItem) {
             if (
                 cartItem.productCount + 1 > product.stock || 
@@ -158,18 +147,21 @@ const addToCart = async (req, res) => {
             ) {
                 res.locals.alertMessage = `Cannot add more than ${Math.min(product.stock, MAX_QUANTITY_LIMIT)} items to the cart.`;
                 return res.redirect('/cart');
-            } else {
-                cartItem.productCount += 1;
             }
+            cartItem.productCount += 1;
         } else {
             cart.items.push({
                 productId: product._id,
                 productCount: 1,
                 productPrice: product.finalPrice || product.price,
-                productImage: product.imgArray[0] || '/path-to-default-image.jpg'
+                productImage: product.imgArray[0] || '/path-to-default-image.jpg',
+                productName: product.name,
+                productCategory: categoryName,
+                productDiscount: product.discount,
             });
         }
- 
+
+        console.log(cart, "Cart after adding the product");
 
         // Calculate offers for the cart
         const { cartItems } = await findOffer(cart);
@@ -179,19 +171,27 @@ const addToCart = async (req, res) => {
             productId: item.product._id,
             productCount: item.productCount,
             productPrice: item.product.finalPrice || item.product.price,
-            productImage: item.product.imgArray[0] || '/path-to-default-image.jpg'
+            productImage: item.product.imgArray[0] || '/path-to-default-image.jpg',
+            productName: item.product.name,
+            productCategory: item.product.category?.name || 'Unknown Category',
+            productDiscount: item.product.discount,
         }));
 
-       cart.totalPrice = cart.items.reduce((total, item) => total + (item.productPrice * item.productCount),0);
-        // Save the cart to the database
+        // Update the total price of the cart
+        cart.totalPrice = cart.items.reduce((total, item) => total + (item.productPrice * item.productCount), 0);
+
+        // Save the updated cart
         await cart.save();
-console.log("hello")
+        console.log(cart, "Cart after final save");
+
+        console.log("Finished addToCart process");
         return res.redirect('/cart');
     } catch (error) {
-        console.error('Error adding to cart:', error.message);
+        console.error('Error adding to cart:', { userId, productId }, error.message);
         return res.status(500).send('Server Error');
     }
 };
+
 
 
 

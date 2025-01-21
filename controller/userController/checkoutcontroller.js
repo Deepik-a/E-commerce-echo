@@ -613,7 +613,7 @@ console.log("entered failed order paymentMethod",paymentMethod)
         cartItems.couponDiscount = 0;
         cartItems.couponId = null;
         cartItems.totalPrice = 0;
-        await cart.save();
+        await cartItems.save();
 
 
         // Render failed order page

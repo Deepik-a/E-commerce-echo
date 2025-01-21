@@ -26,7 +26,16 @@ const orderSchema = new mongoose.Schema({
         },
         productImage: {
             type: String,
-        },     
+        },   
+        productName:{
+            type:String
+        },
+        productCategory:{
+            type:String
+        },
+        productDiscount: {
+            type: Number
+        },  
         // Add individual status for each product
         status: {
             type: String,
@@ -89,6 +98,10 @@ const orderSchema = new mongoose.Schema({
         type:Boolean,
         default:false
     },
+    deliveryDate: {
+        type: Date,
+        required: false, // Optional field to capture delivery date
+    }
 },
 
 {
@@ -107,6 +120,19 @@ orderSchema.pre('save', function(next) {
     }
     next();
 });
+
+orderSchema.pre('save', async function(next) {
+    // Iterate through each item to find if any has status 'Delivered'
+    const deliveredItems = this.items.filter(item => item.status === 'Delivered');
+
+    if (deliveredItems.length > 0 && !this.deliveryDate) {
+        this.deliveryDate = new Date(); // Set the delivery date when at least one item's status is 'Delivered'
+    }
+
+    next();
+});
+
+
 
 module.exports = mongoose.model('orders', orderSchema);
 
