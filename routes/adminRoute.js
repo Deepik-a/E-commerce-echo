@@ -82,12 +82,12 @@ admin.get('/salesReport',isAdmin,saleController.sales)
 admin.get('/exportReport',isAdmin,saleController.exportReport)
 
 //------------------------------------------dashboard-----------------------------------------------------
-// admin.get('/dashboard',isAdmin,adminController.dashboard);
-// admin.post('/dashboard',isAdmin,adminController.dashboard);
-// admin.get('dasboardFilter',isAdmin,adminController.dashboardFilter)
+admin.get('/dashboard',isAdmin,adminController.dashboard);
+admin.post('/dashboard',isAdmin,adminController.dashboard);
+admin.get('dasboardFilter',isAdmin,adminController.dashboardFilter)
 
 //admin.post('/Dashboard',isAdmin,admincontroller.loginPost)
-admin.get('/Dastyuophboard',isAdmin,admincontroller.dashboardGet)
+admin.get('/gotodash',isAdmin,admincontroller.dashboardGet)
 
 
 

@@ -79,7 +79,7 @@ app.get('*',(req,res) =>{
   res.render('user/404')
 })
 // app.get('/',(req,res)=>{
-//   res.render("user/hloo")
+//   res.render("user/front")
 // })
 
 

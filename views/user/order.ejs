@@ -118,7 +118,7 @@
                               Return Order
                             </button>
                           </div>
-                        <% } else if (item.status !== 'Cancelled' && item.status !== 'Requested' && item.status !== 'Rejected') { %>
+                        <% } else if (item.status !== 'Cancelled' && item.status !== 'Requested' && item.status !== 'Rejected'&& item.status !== 'Returned' && order.paymentStatus !== 'Pending') { %>
                           <div class="flex flex-wrap gap-3 pt-4">
                             <button onclick="openModal('<%= order._id %>','<%= item.productId._id %>', 'cancel')" 
                                     class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors">

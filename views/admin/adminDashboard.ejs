@@ -1,5 +1,5 @@
-
-<div class="ml-[250px] p-6">
+<%- include('sidebar') %>
+<div class="p-6" style="margin-left: 250px;">
   <div style="display: flex; min-height: 100vh">
     <!-- Sidebar -->
 
@@ -203,7 +203,9 @@
             </select>
           </div>
         </div>
-
+        <a href="/admin//gotodash" class="nav-link bed-menu__item bed-menu__item--active">
+          <i class="fas fa-tachometer-alt me-2"></i>Top Selling Products and Categories
+        </a>
         <!-- Table for Top Selling Products -->
         <div class="overflow-x-auto bg-white rounded-lg shadow">
           <table class="min-w-full bg-white border border-gray-200">
@@ -250,8 +252,7 @@
               <% } %>
             </tbody>
           </table>
-        </div>
-
+        </div
         <div
           id="categories"
           data-categories="<%JSON.stringify(categories)%>"
@@ -260,7 +261,6 @@
       <!-- graph -->
     </div>
   </div>
-
   <!-- Chart Container -->
 
   <!-- Add ApexCharts CDN in the head of your HTML -->

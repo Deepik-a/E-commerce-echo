@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
+
+<%- include('sidebar') %>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,51 +12,13 @@
 
     <div class="lg:ml-64 p-6">
         <div class="flex flex-wrap justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold text-gray-800 mb-4 sm:mb-0">Admin Dashboard</h1>
-            
-            <form action="/admin/dashboard" method="get" class="flex flex-wrap space-y-2 sm:space-y-0 sm:space-x-4">
-                <select name="year" class="p-2 border rounded w-full sm:w-auto">
-                    <% years.forEach(year => { %>
-                        <option value="<%= year %>" <%= year === selectedYear ? 'selected' : '' %>>
-                            <%= year %>
-                        </option>
-                    <% }) %>
-                </select>
-                <select name="month" class="p-2 border rounded w-full sm:w-auto">
-                    <% months.forEach(month => { %>
-                        <option value="<%= month %>" <%= month === selectedMonth ? 'selected' : '' %>>
-                            <%= new Date(2000, month - 1).toLocaleString('default', { month: 'long' }) %>
-                        </option>
-                    <% }) %>
-                </select>
-                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded w-full sm:w-auto hover:bg-blue-600">
-                    Apply
-                </button>
-            </form>
-        </div>
-
-        <!-- Total Statistics Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-            <div class="bg-white p-6 rounded-lg shadow">
-                <h3 class="text-gray-500">Total Revenue</h3>
-                <p class="text-2xl font-bold text-green-600">$<%= totalStats.totalRevenue.toFixed(2) %></p>
-            </div>
-            <div class="bg-white p-6 rounded-lg shadow">
-                <h3 class="text-gray-500">Total Orders</h3>
-                <p class="text-2xl font-bold text-blue-600"><%= totalStats.totalOrders %></p>
-            </div>
-            <div class="bg-white p-6 rounded-lg shadow">
-                <h3 class="text-gray-500">Users</h3>
-                <p class="text-2xl font-bold text-purple-600"><%= totalStats.totalUsers %></p>
-            </div>
+            <h1 class="text-3xl font-bold text-gray-800 mb-4 sm:mb-0">Top Categories and Products</h1>
+      
         </div>
 
         <!-- Charts -->
         <div class="grid grid-cols-1 gap-6">
-            <div class="bg-white p-6 rounded-lg shadow">
-                <h2 class="text-xl font-semibold mb-4">Daily Sales</h2>
-                <canvas id="salesChart"></canvas>
-            </div>
+        
         </div>
 
         <div class="grid grid-cols-2 gap-6 w-full mt-6"> <!-- Grid with 2 columns -->
@@ -90,38 +52,13 @@
                 options: chartOptions
             });
         }
-
-        // Sales Chart
-        const salesData = <%- JSON.stringify(dailySales) %>;
-        const salesCtx = document.getElementById('salesChart').getContext('2d');
-        renderChart(salesCtx, {
-            type: 'line',
-            labels: salesData.map(item => item._id),
-            datasets: [{
-                label: 'Daily Revenue',
-                data: salesData.map(item => item.totalRevenue),
-                borderColor: 'rgb(75, 192, 192)',
-                tension: 0.5
-            }]
-        }, {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Revenue ($)'
-                    }
-                }
-            }
-        });
-
+    
         // Graph for Top Products (Doughnut)
         const topProducts = <%- JSON.stringify(topProducts) %>;
         const productNames = topProducts.map(product => product.productDetails.name);
         const productQuantities = topProducts.map(product => product.totalQuantity);
         const productRevenues = topProducts.map(product => product.totalRevenue);
-
+    
         renderChart(document.getElementById('productsChart').getContext('2d'), {
             type: 'doughnut',
             labels: productNames,
@@ -130,53 +67,51 @@
                     label: 'Quantity',
                     data: productQuantities,
                     backgroundColor: [
-    'rgba(240, 128, 128, 0.5)',  // Light Coral
-    'rgba(0, 191, 255, 0.5)',    // Deep Sky Blue
-    'rgba(60, 179, 113, 0.5)',   // Medium Sea Green
-    'rgba(255, 165, 0, 0.5)',    // Orange
-    'rgba(123, 104, 238, 0.5)'   // Medium Slate Blue
-],
-borderColor: [
-    'rgba(240, 128, 128, 1)',    // Coral
-    'rgba(0, 191, 255, 1)',      // Sky Blue
-    'rgba(60, 179, 113, 1)',     // Sea Green
-    'rgba(255, 165, 0, 1)',      // Orange
-    'rgba(123, 104, 238, 1)'     // Slate Blue
-],
-borderWidth: 2,
-
-
+                        'rgba(70, 130, 180, 0.5)',  // Steel Blue
+                        'rgba(0, 0, 255, 0.5)',     // Blue
+                        'rgba(30, 144, 255, 0.5)',  // Dodger Blue
+                        'rgba(100, 149, 237, 0.5)', // Cornflower Blue
+                        'rgba(135, 206, 235, 0.5)'  // Sky Blue
+                    ],
+                    borderColor: [
+                        'rgba(70, 130, 180, 1)',    // Steel Blue
+                        'rgba(0, 0, 255, 1)',       // Blue
+                        'rgba(30, 144, 255, 1)',    // Dodger Blue
+                        'rgba(100, 149, 237, 1)',   // Cornflower Blue
+                        'rgba(135, 206, 235, 1)'    // Sky Blue
+                    ],
+                    borderWidth: 2,
                 },
                 {
                     label: 'Revenue',
                     data: productRevenues,
                     backgroundColor: [
-    'rgba(240, 128, 128, 0.5)',  // Light Coral
-    'rgba(0, 191, 255, 0.5)',    // Deep Sky Blue
-    'rgba(60, 179, 113, 0.5)',   // Medium Sea Green
-    'rgba(255, 165, 0, 0.5)',    // Orange
-    'rgba(123, 104, 238, 0.5)'   // Medium Slate Blue
-],
-borderColor: [
-    'rgba(240, 128, 128, 1)',    // Coral
-    'rgba(0, 191, 255, 1)',      // Sky Blue
-    'rgba(60, 179, 113, 1)',     // Sea Green
-    'rgba(255, 165, 0, 1)',      // Orange
-    'rgba(123, 104, 238, 1)'     // Slate Blue
-],
+                        'rgba(70, 130, 180, 0.5)',  // Steel Blue
+                        'rgba(0, 0, 255, 0.5)',     // Blue
+                        'rgba(30, 144, 255, 0.5)',  // Dodger Blue
+                        'rgba(100, 149, 237, 0.5)', // Cornflower Blue
+                        'rgba(135, 206, 235, 0.5)'  // Sky Blue
+                    ],
+                    borderColor: [
+                        'rgba(70, 130, 180, 1)',    // Steel Blue
+                        'rgba(0, 0, 255, 1)',       // Blue
+                        'rgba(30, 144, 255, 1)',    // Dodger Blue
+                        'rgba(100, 149, 237, 1)',   // Cornflower Blue
+                        'rgba(135, 206, 235, 1)'    // Sky Blue
+                    ],
                     borderWidth: 2,
                 }
             ]
         }, {
             responsive: true
         });
-
+    
         // Graph for Top Categories (Doughnut)
         const topCategories = <%- JSON.stringify(topCategories) %>;
         const categoryNames = topCategories.map(category => category.categoryDetails.name);
         const categoryQuantities = topCategories.map(category => category.totalQuantity);
         const categoryRevenues = topCategories.map(category => category.totalRevenue);
-
+    
         renderChart(document.getElementById('categoriesChart').getContext('2d'), {
             type: 'doughnut',
             labels: categoryNames,
@@ -185,38 +120,38 @@ borderColor: [
                     label: 'Quantity',
                     data: categoryQuantities,
                     backgroundColor: [
-    'rgba(240, 128, 128, 0.5)',  // Light Coral
-    'rgba(0, 191, 255, 0.5)',    // Deep Sky Blue
-    'rgba(60, 179, 113, 0.5)',   // Medium Sea Green
-    'rgba(255, 165, 0, 0.5)',    // Orange
-    'rgba(123, 104, 238, 0.5)'   // Medium Slate Blue
-],
-borderColor: [
-    'rgba(240, 128, 128, 1)',    // Coral
-    'rgba(0, 191, 255, 1)',      // Sky Blue
-    'rgba(60, 179, 113, 1)',     // Sea Green
-    'rgba(255, 165, 0, 1)',      // Orange
-    'rgba(123, 104, 238, 1)'     // Slate Blue
-],
+                        'rgba(70, 130, 180, 0.5)',  // Steel Blue
+                        'rgba(0, 0, 255, 0.5)',     // Blue
+                        'rgba(30, 144, 255, 0.5)',  // Dodger Blue
+                        'rgba(100, 149, 237, 0.5)', // Cornflower Blue
+                        'rgba(135, 206, 235, 0.5)'  // Sky Blue
+                    ],
+                    borderColor: [
+                        'rgba(70, 130, 180, 1)',    // Steel Blue
+                        'rgba(0, 0, 255, 1)',       // Blue
+                        'rgba(30, 144, 255, 1)',    // Dodger Blue
+                        'rgba(100, 149, 237, 1)',   // Cornflower Blue
+                        'rgba(135, 206, 235, 1)'    // Sky Blue
+                    ],
                     borderWidth: 2,
                 },
                 {
                     label: 'Revenue',
                     data: categoryRevenues,
                     backgroundColor: [
-    'rgba(240, 128, 128, 0.5)',  // Light Coral
-    'rgba(0, 191, 255, 0.5)',    // Deep Sky Blue
-    'rgba(60, 179, 113, 0.5)',   // Medium Sea Green
-    'rgba(255, 165, 0, 0.5)',    // Orange
-    'rgba(123, 104, 238, 0.5)'   // Medium Slate Blue
-],
-borderColor: [
-    'rgba(240, 128, 128, 1)',    // Coral
-    'rgba(0, 191, 255, 1)',      // Sky Blue
-    'rgba(60, 179, 113, 1)',     // Sea Green
-    'rgba(255, 165, 0, 1)',      // Orange
-    'rgba(123, 104, 238, 1)'     // Slate Blue
-],
+                        'rgba(70, 130, 180, 0.5)',  // Steel Blue
+                        'rgba(0, 0, 255, 0.5)',     // Blue
+                        'rgba(30, 144, 255, 0.5)',  // Dodger Blue
+                        'rgba(100, 149, 237, 0.5)', // Cornflower Blue
+                        'rgba(135, 206, 235, 0.5)'  // Sky Blue
+                    ],
+                    borderColor: [
+                        'rgba(70, 130, 180, 1)',    // Steel Blue
+                        'rgba(0, 0, 255, 1)',       // Blue
+                        'rgba(30, 144, 255, 1)',    // Dodger Blue
+                        'rgba(100, 149, 237, 1)',   // Cornflower Blue
+                        'rgba(135, 206, 235, 1)'    // Sky Blue
+                    ],
                     borderWidth: 2,
                 }
             ]
@@ -224,5 +159,6 @@ borderColor: [
             responsive: true
         });
     </script>
+    
 </body>
 </html>
