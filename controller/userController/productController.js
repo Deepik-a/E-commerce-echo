@@ -132,7 +132,7 @@ const getAllProducts = async (req, res) => {
         console.log("Filtered Products:", filteredProducts);
 
         // Render the AllProduct view with pagination details
-        res.render('user/AllProduct', {
+        res.render('user/Allproduct', {
             products: filteredProducts,
             categories,
             currentPage: page,
