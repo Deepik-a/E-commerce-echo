@@ -3,11 +3,14 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('../model/userSchema');
+const dotenv=require('dotenv')
+dotenv.config()
+
 
 passport.use(new GoogleStrategy({
-  clientID: '1095042996703-inohst6l75viuroi9e67nd2ms49523pg.apps.googleusercontent.com',
-  clientSecret: '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',
-  callbackURL: 'http://localhost:1233/auth/google/callback'
+  clientID: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  callbackURL: process.env.GOOGLE_CALLBACK_URL
 }, async (accessToken, refreshToken, profile, done) => {
   try {
     // First, check if the user already exists by email
