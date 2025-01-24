@@ -58,7 +58,7 @@ const adminloginpost=async(req,res)=>{
     try{
         if(req.body.email===process.env.ADMIN_EMAIL && req.body.password===process.env.ADMIN_PASSWORD)
             req.session.admin=req.body.email
-  res.render("admin/Dashboard")
+  res.render("admin/DashboardDesign")
     } catch (error) {
         console.log(`error from login post ${error}`)
     }
