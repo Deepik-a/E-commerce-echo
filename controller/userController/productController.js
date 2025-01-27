@@ -108,57 +108,9 @@ const getAllProducts = async (req, res) => {
         const limit = parseInt(req.query.limit) || 5; // Default to 5 products per page
         const skip = (page - 1) * limit;
 
-        // Fetch products with pagination, filtering only active products and valid categories
-        const products = await productSchema
-            .find({ isActive: true })
-            .populate('category') // Populating the category
-            .skip(skip)
-            .limit(limit);
-
-        // Filter products where category exists and is not deleted
-        const filteredProducts = products.filter(product => product.category && !product.category.isDeleted);
-
-        // Get total count of active products with valid categories
-        const totalProductsCount = await productSchema.countDocuments({
-            isActive: true,
-        });
-
-        // Fetch all non-deleted categories
-        const categories = await categorySchema.find({ isDeleted: false });
-
-        // Calculate total pages
-        const totalPages = Math.ceil(totalProductsCount / limit);
-
-        console.log("Filtered Products:", filteredProducts);
-
-        // Render the AllProduct view with pagination details
-        res.render('user/Allproduct', {
-            products: filteredProducts,
-            categories,
-            currentPage: page,
-            totalPages,
-            hasNextPage: page < totalPages,
-            hasPrevPage: page > 1,
-            limit,
-        });
-    } catch (error) {
-        console.error('Error fetching products:', error);
-        res.status(500).send('Error fetching products');
-    }
-};
-
-
-
-
-
-const sortAllproducts = async (req, res) => {
-    try {
-        console.log("sortAllProducts");
-
-        const categories = await categorySchema.find({ isDeleted: false });
+        // Sorting options
         let sortOption = {};
 
-        // Determine the sorting option
         switch (req.query.sort) {
             case 'price_low_high':
                 sortOption = { price: 1 }; // Sort by price ascending
@@ -179,21 +131,121 @@ const sortAllproducts = async (req, res) => {
                 sortOption = {}; // Default: no sorting
         }
 
+        // Filter by category if provided
+        let filterOption = {};
+        if (req.query.category && req.query.category !== 'all') {
+            filterOption.category = req.query.category; // Apply category filter
+        }
+
+        // Fetch products with pagination, filtering by active status and valid category
+        const products = await productSchema
+            .find({ isActive: true, ...filterOption }) // Apply category filter here
+            .populate('category') // Populating the category
+            .sort(sortOption) // Apply sorting option
+            .skip(skip)
+            .limit(limit);
+
+        // Filter products to ensure category exists and is not deleted
+        const filteredProducts = products.filter(product => product.category && !product.category.isDeleted);
+
+        // Get total count of active products with valid categories
+        const totalProductsCount = await productSchema.countDocuments({
+            isActive: true,
+            ...filterOption, // Include category filter in count
+        });
+
+        // Fetch all non-deleted categories
+        const categories = await categorySchema.find({ isDeleted: false });
+
+        // Calculate total pages
+        const totalPages = Math.ceil(totalProductsCount / limit);
+
+        console.log("Filtered Products:", filteredProducts);
+
+        // Render the AllProduct view with pagination details and filters
+        res.render('user/Allproduct', {
+            products: filteredProducts,
+            categories,
+            currentPage: page,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1,
+            limit,
+            selectedSort: req.query.sort || 'price_low_high', // Keep track of selected sort
+            selectedCategory: req.query.category || 'all', // Keep track of selected category filter
+        });
+
+        console.log("sort req.query.sort",req.query.sort)
+        console.log("sort req.query.category",req.query.category)
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        res.status(500).send('Error fetching products');
+    }
+};
+
+
+
+const sortAllproducts = async (req, res) => {
+    try {
+        console.log("sortAllProducts");
+
+        // Fetch categories (if needed)
+        const categories = await categorySchema.find({ isDeleted: false });
+
+        // Set default sorting option
+        let sortOption = {};
+        let filterOption = {}; // Filter option will hold the category filter
+
+        // Determine the sorting option based on the query parameter
+        switch (req.query.sort) {
+            case 'price_low_high':
+                sortOption = { price: 1 }; // Sort by price ascending
+                break;
+            case 'price_high_low':
+                sortOption = { price: -1 }; // Sort by price descending
+                break;
+            case 'new_arrivals':
+                sortOption = { createdAt: -1 }; // Newest first
+                break;
+            case 'az':
+                sortOption = { name: 1 }; // Alphabetically A-Z
+                break;
+            case 'za':
+                sortOption = { name: -1 }; // Alphabetically Z-A
+                break;
+            default:
+                sortOption = {}; // Default: no sorting
+        }
+
+        // Check if category filter is applied
+        if (req.query.category && req.query.category !== 'all') {
+            filterOption.category = req.query.category;  // Apply category filter
+        }
+
+        // Pagination logic
         const page = parseInt(req.query.page) || 1; // Default to page 1
         const limit = parseInt(req.query.limit) || 5; // Default to 5 products per page
         const skip = (page - 1) * limit;
 
-        // Fetch and sort products with pagination
+        // Fetch products with category filter and sorting applied
         const products = await productSchema
-            .find({ isActive: true })
-            .sort(sortOption)
-            .skip(skip)
-            .limit(limit);
+            .find({ isActive: true, ...filterOption }) // Add category filter here
+            .sort(sortOption)  // Apply the sorting option
+            .skip(skip)  // Pagination logic: skip for the current page
+            .limit(limit)  // Limit the number of products per page
+            .populate('category'); // Optional: Populate category data if needed
 
-        const totalProductsCount = await productSchema.countDocuments({ isActive: true });
+        console.log("Fetched Products:", products);
+
+        // Count total products based on the filter to calculate pagination
+        const totalProductsCount = await productSchema.countDocuments({ isActive: true, ...filterOption });
         const totalPages = Math.ceil(totalProductsCount / limit);
 
-        res.render('user/AllProduct', {
+        console.log("Total Pages:", totalPages);
+        console.log(req.query.sort,"quer param of sort sortallproductd") 
+        console.log(req.query.category,"quer param of sort sortallproductd")
+        // Return JSON response with products, categories, pagination details, and applied filters
+        return res.json({
             products,
             categories,
             currentPage: page,
@@ -201,13 +253,19 @@ const sortAllproducts = async (req, res) => {
             hasNextPage: page < totalPages,
             hasPrevPage: page > 1,
             limit,
-            sort: req.query.sort, // Keep track of the sorting option
+            selectedSort: req.query.sort || 'price_low_high', // Keep track of selected sort
+            selectedCategory: req.query.category || 'all', // Keep track of selected category filter
         });
+          
+
     } catch (error) {
         console.error("Error in sortAllProducts:", error);
         res.status(500).send("Server Error");
     }
 };
+
+
+
 
 const searchbyProducts = async (req, res) => {
     try {

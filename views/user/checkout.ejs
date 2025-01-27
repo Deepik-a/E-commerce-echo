@@ -5,7 +5,8 @@
 <div class="container mx-auto my-8">
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
         <!-- Shipping and Payment Information -->
-        <div class="bg-white shadow-lg rounded-lg p-6 border border-[#14213d]">
+        <div class="bg-[url('/uploads/Green%20Watercolor%20Leaf%20Linktree%20Background.png')] bg-cover bg-center shadow-lg rounded-lg p-6 border border-[#14213d]">
+
             <a href="/userprofile?from=checkout">
                 <button class="bg-blue-500 text-white font-bold py-2 px-4 rounded">
                     Change Address
@@ -173,7 +174,7 @@
                         <i class="mdi mdi-arrow-left mr-2"></i>
                         Continue Shopping
                     </a>
-                    ebgund"<%= cartDetails.payableAmount.toFixed(0) %>"
+                   
                     
                     <form action="" method="post" id="place-order-form" class="w-full sm:w-auto">
                         <button type="submit" 
@@ -194,43 +195,72 @@
 
         <!-- Order Summary -->
 
-        <div class="bg-white shadow-lg rounded-lg p-6 border border-[#14213d]">
-            <div class="bg-gray-200 p-4 mb-4">
-                <h5 class="text-lg font-semibold text-[#14213d]">Order Summary <span class="float-right">#MN0124</span></h5>
+        <div class="bg-[url('/uploads/Green Watercolor Leaf Linktree Background.png')] shadow-lg rounded-lg p-6 border border-[#14213d]">
+
+
+            <!-- Order Summary Header -->
+            <div class="bg-gray-50 p-6 rounded-lg mb-6">
+                <h5 class="text-xl font-bold text-gray-800">Order Summary <span class="float-right text-gray-600">#MN0124</span></h5>
             </div>
-            <div class="overflow-x-auto">
-                <table class="min-w-full table-auto">
+        
+            <!-- Products Table -->
+            <div class="overflow-x-auto mb-8">
+                <table class="w-full table-auto">
                     <thead>
-                        <tr>
-                            <th class="text-left text-[#14213d] py-2">Product</th>
-                            <th class="text-left text-[#14213d] py-2">Product Desc</th>
-                            <th class="text-left text-[#14213d] py-2">Price</th>
+                        <tr class="border-b-2 border-gray-100">
+                            <th class="text-left text-gray-600 py-4 font-semibold">Product</th>
+                            <th class="text-left text-gray-600 py-4 font-semibold">Product Desc</th>
+                            <th class="text-left text-gray-600 py-4 font-semibold">Price</th>
                         </tr>
                     </thead>
                     <tbody>
                         <% cartDetails.items.forEach(item => { %>
-                        <tr>
-                            <th>
-                                <img src="<%= '/uploads/' +item.productImage%>" alt="<%= item.productId.name %>" class="avatar-lg rounded" style="max-width: 100px; height: 100px; object-fit: cover;">
-                            </th>
-                            <td>
-                                <h5 class="font-size-16 text-truncate"><%= item.productId.name %></h5>
-                                <p class="text-muted mb-0"><%= item.productPrice.toFixed(0) %> x <%= item.productCount %></p>
+                        <tr class="border-b border-gray-50">
+                            <td class="py-4">
+                                <img src="<%= '/uploads/' +item.productImage%>" alt="<%= item.productId.name %>" 
+                                     class="rounded-lg shadow-sm" style="max-width: 100px; height: 100px; object-fit: cover;">
                             </td>
-                            <td>Rs <%= (item.productPrice * item.productCount).toFixed(0) %></td>
+                            <td class="py-4">
+                                <h5 class="text-lg font-semibold text-gray-800"><%= item.productId.name %></h5>
+                                <p class="text-gray-500"><%= item.productPrice.toFixed(0) %> x <%= item.productCount %></p>
+                            </td>
+                            <td class="py-4 text-gray-800">Rs <%= (item.productPrice * item.productCount).toFixed(0) %></td>
                         </tr>
                         <% }) %>
-                        <tr class="bg-light">
-                            <td colspan="2">
-                                <h5 class="font-size-14 m-0">Total:</h5>
-                            </td>
-                            <td>Rs <%= cartDetails.items.reduce((total, item) => total + (item.productPrice * item.productCount), 0).toFixed(0) %></td>
-                        </tr>
                     </tbody>
-          
                 </table>
             </div>
+        
+            <!-- Price Breakdown -->
+            <div class="w-full bg-gray-50 rounded-xl p-6">
+                <h5 class="font-bold text-xl mb-6" style="color: rgb(26, 83, 25);">Price Breakdown</h5>
+                
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center pb-3 border-b border-gray-200">
+                        <span class="text-gray-600">Total Price:</span>
+                        <span style="color: rgb(26, 83, 25);">Rs <%= cartDetails.items.reduce((total, item) => total + (item.productPrice * item.productCount), 0).toFixed(0) %></span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center pb-3 border-b border-gray-200">
+                        <span class="text-gray-600">Coupon Discount:</span>
+                        <span id="coupon-discount" style="color: rgb(26, 83, 25);">Rs <%=cartDetails.couponDiscount > 0 ? cartDetails.couponDiscount : 0 %></span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center pb-3 border-b border-gray-200">
+                        <span class="text-gray-600">Delivery Charge:</span>
+                        <span style="color: rgb(26, 83, 25);">Free</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center pt-4">
+                        <span class="text-xl font-bold text-gray-800">Total:</span>
+                        <span id="payable-amount" class="text-xl font-bold" style="color: rgb(26, 83, 25);">Rs <%=cartDetails.payableAmount > 0 ? cartDetails.payableAmount.toFixed(0) :cartDetails.totalPrice.toFixed(0) %></span>
+                    </div>
+                </div>
+            </div>
         </div>
+    
+        </div>
+        
     </div>          
 </div>
 <!-- Button to Open the Modal -->

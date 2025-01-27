@@ -34,15 +34,22 @@
 
        /* Ensures the message is centered without overriding the footer */
     }
-
     .no-results-message {
-        color: rgb(26, 83, 25);
-        font-size: 1.5em;
-        font-weight: bold;
-        text-align: center;
-        margin-bottom: 100px;
-        margin-top: 100px;
-    }
+    background-image: url('../../public/assets/58373102_9346254.jpg'); /* Replace with the actual image URL */
+    background-size: cover; /* Ensures the image covers the entire element */
+    background-position: center; /* Centers the image */
+    background-repeat: no-repeat; /* Prevents the image from repeating */
+    height: 100vh; /* Makes the div fill the full viewport height */
+    display: flex; /* Enables flexbox layout */
+    justify-content: center; /* Centers the text horizontally */
+    align-items: flex-start; /* Aligns the text at the top */
+    padding-top: 20px; /* Adds spacing from the top */
+    color: rgb(26, 83, 25); /* Text color */
+    font-size: 1.5em; /* Font size */
+    font-weight: 900;
+    text-align: center; /* Centers the text */
+}
+
     /* Center the pagination container */
 .pagination-container {
     display: flex;
@@ -97,35 +104,33 @@
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
 
-        <!-- Filter Button -->
         <button class="btn dropdown-toggle" id="filterButton" type="button" data-bs-toggle="dropdown" aria-expanded="false">
             Filter
         </button>
-
+        
         <!-- Dropdown Menu for Categories -->
-        <ul id="categoryList" class="dropdown-menu" aria-labelledby="filterButton">
+        <ul id="categoryFilter" class="dropdown-menu" aria-labelledby="filterButton">
+            <li><a class="dropdown-item" href="javascript:void(0);" onclick="applyCategoryFilter('all')">All Categories</a></li>
             <% categories.forEach(category => { %>
-                <li><a class="dropdown-item" href="/categories/<%= category.name %>"><%= category.name %></a></li>
+                <li><a class="dropdown-item" href="javascript:void(0);" onclick="applyCategoryFilter('<%= category._id %>')" data-id="<%= category._id %>"><%= category.name %></a></li>
             <% }) %>
         </ul>
-
+        
+        
         <!-- Sort Dropdown -->
-        <div class="dropdown">
+        <div class="dropdown" id="sortFilter">
             <button style="background-color: rgb(26, 83, 25); color: rgb(214, 239, 216);" class="btn dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                 Sort By
             </button>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="sortDropdown">
-                <!-- <li><a class="dropdown-item" href="/products?sort=popularity">Popularity</a></li> -->
-                <li><a class="dropdown-item" href="/products?sort=price_low_high">Price: Low to High</a></li>
-                <li><a class="dropdown-item" href="/products?sort=price_high_low">Price: High to Low</a></li>
-                <!-- <li><a class="dropdown-item" href="/products?sort=ratings">Average Ratings</a></li> -->
-                <!-- <li><a class="dropdown-item" href="/products?sort=featured">Featured</a></li> -->
-                <li><a class="dropdown-item" href="/products?sort=new_arrivals">New Arrivals</a></li>
-                <li><a class="dropdown-item" href="/products?sort=az">A - Z</a></li>
-                <li><a class="dropdown-item" href="/products?sort=za">Z - A</a></li>
+                <li><a class="dropdown-item" href="javascript:void(0);" onclick="applySort('price_low_high')">Price: Low to High</a></li>
+                <li><a class="dropdown-item" href="javascript:void(0);" onclick="applySort('price_high_low')">Price: High to Low</a></li>
+                <li><a class="dropdown-item" href="javascript:void(0);" onclick="applySort('new_arrivals')">New Arrivals</a></li>
+                <li><a class="dropdown-item" href="javascript:void(0);" onclick="applySort('az')">A - Z</a></li>
+                <li><a class="dropdown-item" href="javascript:void(0);" onclick="applySort('za')">Z - A</a></li>
             </ul>
         </div>
-
+        
        
     </div>
 
@@ -134,7 +139,7 @@
    
 
     <!-- Products List -->
-    <div class="row g-4">
+    <div class="row g-4" id="productsList">
         <% products.forEach(product => { %>
             <div class="col-md-4 d-flex align-items-stretch">
                 <div class="card mb-4">
@@ -210,20 +215,21 @@
 <% } %>
 <div class="pagination-container">
     <% if (hasPrevPage) { %>
-        <a href="?page=<%= currentPage - 1 %>&limit=<%= limit %>" class="pagination-link">Previous</a>
+        <a href="?page=<%= currentPage - 1 %>&limit=<%= limit %>&category=<%= selectedCategory %>&sort=<%= selectedSort %>" class="pagination-link">Previous</a>
     <% } %>
 
     <% for (let i = 1; i <= totalPages; i++) { %>
-        <a href="?page=<%= i %>&limit=<%= limit %>" 
+        <a href="?page=<%= i %>&limit=<%= limit %>&category=<%= selectedCategory %>&sort=<%= selectedSort %>" 
            class="pagination-link <%= i === currentPage ? 'active' : '' %>">
            <%= i %>
         </a>
     <% } %>
 
     <% if (hasNextPage) { %>
-        <a href="?page=<%= currentPage + 1 %>&limit=<%= limit %>" class="pagination-link">Next</a>
+        <a href="?page=<%= currentPage + 1 %>&limit=<%= limit %>&category=<%= selectedCategory %>&sort=<%= selectedSort %>" class="pagination-link">Next</a>
     <% } %>
 </div>
+
 
 
 <!-- jQuery is not required for Bootstrap 5 -->
@@ -287,8 +293,100 @@
             });
         });
     });
-    </script>
+    let selectedCategoryId = 'all'; // Default category is 'all'
+let selectedSortOption = 'price_low_high'; // Default sorting option
+
+function applyCategoryFilter(categoryId) {
+    selectedCategoryId = categoryId; // Update the selected category
+    const currentPage = 1; // Reset to first page when applying a filter
+    updateProducts(selectedCategoryId, selectedSortOption, currentPage);
+}
+
+function applySort(sortOption) {
+    selectedSortOption = sortOption; // Update the selected sorting option
+    const currentPage = 1; // Reset to first page when sorting
+    updateProducts(selectedCategoryId, selectedSortOption, currentPage);
+}
+
+function updateProducts(categoryId, sortOption, page = 1) {
+    const limit = 2; // Default number of products per page
+
+    // Construct query string with category, sort, and pagination
+    const queryString = `/products?page=${page}&limit=${limit}&category=${categoryId}&sort=${sortOption}`;
     
+    console.log('Query String:', queryString);
 
+    // Make an AJAX request to fetch the filtered, sorted, and paginated products
+    fetch(queryString)
+        .then(response => response.json())
+        .then(data => {
+            const productsList = document.getElementById('productsList');
+            productsList.innerHTML = ''; // Clear existing products
 
-<%-include('footer') %>
+            if (data.products && data.products.length > 0) {
+                data.products.forEach(product => {
+                    const productItem = document.createElement('div');
+                    productItem.classList.add('col-md-4', 'd-flex', 'align-items-stretch');
+                    
+                    productItem.innerHTML = `
+                        <div class="card mb-4">
+                            <img src="/uploads/${product.imgArray[0]}" class="card-img-top" alt="${product.name}">
+
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">${product.name}</h5>
+                                
+                                <!-- Price Section -->
+                                <div class="product-pricing d-flex align-items-center justify-content-between" style="gap: 10px;">
+                                    ${
+                                        product.discount > 0 ?
+                                        `<p class="final-price" style="font-weight: bold;">Rs ${product.finalPrice.toFixed(0)}</p>
+                                         <p class="original-price" style="text-decoration: line-through;">Rs ${product.price.toFixed(0)}</p>
+                                         <p class="discount" style="background-color: rgb(191, 220, 190); color: rgb(26, 83, 25); font-weight: bold;">${product.discount}% OFF</p>` :
+                                        `<p class="final-price" style="font-weight: bold;">Rs ${product.finalPrice.toFixed(0)}</p>`
+                                    }
+                                </div>
+                                
+                                <!-- Wishlist Button -->
+                                <span>
+                                    <form class="wishlist-form" data-id="${product._id}" style="display: inline;">
+                                        <button type="button" class="btn btn-link wishlist-btn" style="padding: 0; background: none; border: none;">
+                                            <i class="fas fa-heart" style="color: red;"></i>
+                                        </button>
+                                    </form>
+                                </span>
+
+                                <!-- Stock Availability -->
+                                ${
+                                    product.isActive ? 
+                                    (product.stock > 0 ? 
+                                    `<p class="card-text">Stock: ${product.stock}</p>
+                                     <a href="/product/${product._id}" class="btn btn-outline-success" style="background-color: rgb(26, 83, 25);color:rgb(214, 239, 216);">Detailed View</a>` :
+                                    `<p class="card-text">Stock: 0</p>
+                                     <a href="#" class="btn btn-outline-danger" onclick="return false" style="background-color:red;color: white;">Out of Stock</a>`) :
+                                    `<p class="card-text text-danger">Product Not Available</p>
+                                     <a href="#" class="btn btn-outline-danger" onclick="return false" style="background-color:red;color: white;">Will Notify When Available</a>`
+                                }
+                            </div>
+                        </div>
+                    `;
+                    productsList.appendChild(productItem);
+                });
+            } else {
+                productsList.innerHTML = "<p>No products found.</p>";
+            }
+
+            // Update pagination dynamically
+            const paginationContainer = document.querySelector('.pagination-container');
+            paginationContainer.innerHTML = `
+                ${data.hasPrevPage ? `<a href="javascript:void(0)" onclick="updateProducts('${categoryId}', '${sortOption}', ${data.currentPage - 1})" class="pagination-link">Previous</a>` : ''}
+                ${Array.from({ length: data.totalPages }, (_, i) => 
+                    `<a href="javascript:void(0)" onclick="updateProducts('${categoryId}', '${sortOption}', ${i + 1})" class="pagination-link ${i + 1 === data.currentPage ? 'active' : ''}">${i + 1}</a>`
+                ).join('')}
+                ${data.hasNextPage ? `<a href="javascript:void(0)" onclick="updateProducts('${categoryId}', '${sortOption}', ${data.currentPage + 1})" class="pagination-link">Next</a>` : ''}
+            `;
+        })
+        .catch(error => {
+            console.error('Error fetching products:', error);
+        });
+}
+</script>

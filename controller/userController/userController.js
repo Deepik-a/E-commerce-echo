@@ -217,7 +217,7 @@ const loginpost = async (req, res) => {
     const user = await userSchema.findOne({ email });
     if (!user) {
       // Redirect if the user does not exist
-      return res.status(400).json({ message: 'User not found!' });
+      return res.status(400).json({ message: 'User not found!Please Signup' });
     }
 
     // Check if the user is blocked

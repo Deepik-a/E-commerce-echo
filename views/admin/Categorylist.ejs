@@ -216,31 +216,50 @@
                     <%= category.isDeleted ? 'Blocked' : 'Active' %>
                   </span>
                 </td>
-                <td data-label="Edit">
-                  <form class="edit-category-form" data-id="<%= category._id %>">
-                    <div class="form-group">
-                      <label for="categoryName-<%= category._id %>">Edit Category Name</label>
-                      <input type="text" 
-                             id="categoryName-<%= category._id %>" 
-                             name="name" 
-                             value="<%= category.name %>" 
-                           maxlength="25"
-                             class="form-control">
-                      <button type="submit" class="btn btn-primary">Update Category</button>
-                    </div>
-                  </form>
-                </td>
-                <td data-label="List/Unlist">
-                  <button 
-                    class="block-unblock-btn <%= category.isDeleted ? 'btn-success' : 'btn-danger' %>"
-                    data-id="<%= category._id %>" 
-                    data-action="<%= category.isDeleted ? 'unblock' : 'block' %>">
-                    <%= category.isDeleted ? 'Unblock' : 'Block' %>
-                  </button>
-                </td>
+          
+                <% if (
+                  category.name === "Bed Furnishers" || 
+                  category.name === "Mattressess" || 
+                  category.name === "Pillows"
+                ) { %>
+                  <!-- Display message for non-editable categories -->
+          
+                  <td data-label="Edit">
+                    <p class="text-muted">Cannot edit</p>
+                  </td>
+                  <td data-label="List/Unlist">
+                    <p class="text-muted">Cannot change</p>
+                  </td>
+                  
+                <% } else { %>
+                  <!-- Editable categories -->
+                  <td data-label="Edit">
+                    <form class="edit-category-form" data-id="<%= category._id %>">
+                      <div class="form-group">
+                        <label for="categoryName-<%= category._id %>">Edit Category Name</label>
+                        <input type="text" 
+                               id="categoryName-<%= category._id %>" 
+                               name="name" 
+                               value="<%= category.name %>" 
+                               maxlength="25"
+                               class="form-control">
+                        <button type="submit" class="btn btn-primary">Update Category</button>
+                      </div>
+                    </form>
+                  </td>
+                  <td data-label="List/Unlist">
+                    <button 
+                      class="block-unblock-btn <%= category.isDeleted ? 'btn-success' : 'btn-danger' %>"
+                      data-id="<%= category._id %>" 
+                      data-action="<%= category.isDeleted ? 'unblock' : 'block' %>">
+                      <%= category.isDeleted ? 'Unblock' : 'Block' %>
+                    </button>
+                  </td>
+                <% } %>
               </tr>
             <% }) %>
           </tbody>
+          
         </table>
       </div>
     </div>

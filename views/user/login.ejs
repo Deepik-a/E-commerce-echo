@@ -142,43 +142,72 @@
                         <div class="login-card">
                             <h2 class="text-center mb-4">Welcome Back</h2>
                             <form id="login-form">
-                                <div class="form-floating mb-4" >
-                                    <input type="text" class="form-control" id="form1Example13" name="email" value="dps63660@gmail.com" placeholder="Email address">
-                                    <label for="form1Example13">Email address</label>
-                                </div>
-    
                                 <div class="form-floating mb-4">
-                                    <input type="password" class="form-control" id="form1Example23" name="password" value="Deepika@123" placeholder="Password">
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="form1Example13"
+                                        name="email"
+                                        value="dps63660@gmail.com"
+                                        placeholder="Email address"
+                                    />
+                                    <label for="form1Example13">Email address</label>
+                                    <small id="email-error" class="text-danger d-none">Please enter a valid Gmail address.</small>
+                                </div>
+                            
+                                <div class="form-floating mb-4 position-relative">
+                                    <input
+                                        type="password"
+                                        class="form-control"
+                                        id="form1Example23"
+                                        name="password"
+                                        value="Deepika@123"
+                                        placeholder="Password"
+                                    />
                                     <label for="form1Example23">Password</label>
                                     <button
-                                    type="button"
-                                    id="toggle-password"
-                                    class="btn  position-absolute"
-                                    style="top: 50%; right: 10px; transform: translateY(-50%);background-color:#508d4e"
-                                  >
-                                    <i class="fas fa-eye"></i>
-                                  </button>
+                                        type="button"
+                                        id="toggle-password"
+                                        class="btn position-absolute"
+                                        style="top: 50%; right: 10px; transform: translateY(-50%); background-color: #508d4e;"
+                                    >
+                                        <i class="fas fa-eye"></i>
+                                    </button>
                                 </div>
-    
+                            
                                 <div class="d-flex justify-content-end mb-4">
                                     <a href="/forgotpassword" class="text-decoration-none">Forgot password?</a>
                                 </div>
-    
-                                <button type="submit" class="btn btn-custom btn-lg w-100 mb-4 animate__animated animate__pulse">
+                            
+                                <button
+                                    type="submit"
+                                    class="btn btn-custom btn-lg w-100 mb-4 animate__animated animate__pulse"
+                                    id="submit-btn"
+                                >
                                     Login
                                 </button>
-    
+                            
                                 <div class="text-center mb-4">
-                                    <p>Don't have an account? <a href="/signup" class="text-decoration-none">Sign up</a></p>
+                                    <p>
+                                        Don't have an account?
+                                        <a href="/signup" class="text-decoration-none">Sign up</a>
+                                    </p>
                                 </div>
-    
+                            
                                 <div class="separator mb-4">OR</div>
-    
-                                <a class="btn btn-lg w-100 d-flex align-items-center justify-content-center gap-2" style="background-color: #1A5319;color: aliceblue;" id="google" href="/auth/google" role="button">
+                            
+                                <a
+                                    class="btn btn-lg w-100 d-flex align-items-center justify-content-center gap-2"
+                                    style="background-color: #1a5319; color: aliceblue;"
+                                    id="google"
+                                    href="/auth/google"
+                                    role="button"
+                                >
                                     <i class="fab fa-google"></i>
                                     Continue with Google
                                 </a>
                             </form>
+                            
                         </div>
                     </div>
                 </div>
@@ -191,59 +220,83 @@
 
    
     <script>
-        document.getElementById("login-form").addEventListener("submit", async function(e) {
+        // Email Validation Logic
+        const emailInput = document.getElementById("form1Example13");
+        const emailError = document.getElementById("email-error");
+        const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+    
+        // Real-time email validation
+        emailInput.addEventListener("input", () => {
+            if (gmailRegex.test(emailInput.value)) {
+                emailError.classList.add("d-none");
+                emailInput.classList.remove("is-invalid");
+                emailInput.classList.add("is-valid");
+            } else {
+                emailError.classList.remove("d-none");
+                emailInput.classList.add("is-invalid");
+                emailInput.classList.remove("is-valid");
+            }
+        });
+    
+        // Form Submission Logic
+        document.getElementById("login-form").addEventListener("submit", async function (e) {
             e.preventDefault(); // Prevent default form submission
-
-            const email = document.querySelector("[name=email]").value;
+    
+            const email = emailInput.value;
             const password = document.querySelector("[name=password]").value;
-
+    
+            // Check if email is valid
+            if (!gmailRegex.test(email)) {
+                emailError.classList.remove("d-none");
+                emailInput.classList.add("is-invalid");
+                return; // Stop further execution if email is invalid
+            }
+    
             try {
-                const response = await fetch('/login', {
-                    method: 'POST',
+                const response = await fetch("/login", {
+                    method: "POST",
                     headers: {
-                        'Content-Type': 'application/json',
+                        "Content-Type": "application/json",
                     },
                     body: JSON.stringify({ email, password }),
                 });
-
+    
                 const result = await response.json(); // Assuming your backend returns JSON response
-
+    
                 if (response.ok) {
                     // Successful login
-                    window.location.href = "/login"
+                    window.location.href = "/login";
                 } else {
                     // Handle error from backend
                     Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: result.message || 'Something went wrong!',
+                        icon: "error",
+                        title: "Oops...",
+                        text: result.message || "Something went wrong!",
                     });
                 }
             } catch (error) {
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Server Error',
-                    text: 'An error occurred. Please try again later.',
+                    icon: "error",
+                    title: "Server Error",
+                    text: "An error occurred. Please try again later.",
                 });
             }
         });
-
-
-
-        //toggle password
+    
+        // Toggle Password Visibility Logic
         const passwordInput = document.getElementById("form1Example23");
-  const togglePasswordButton = document.getElementById("toggle-password");
-  const toggleIcon = togglePasswordButton.querySelector("i");
-
-  togglePasswordButton.addEventListener("click", () => {
-    // Toggle password visibility
-    const isPasswordVisible = passwordInput.type === "text";
-    passwordInput.type = isPasswordVisible ? "password" : "text";
-
-    // Update the icon
-    toggleIcon.classList.toggle("fa-eye", isPasswordVisible);
-    toggleIcon.classList.toggle("fa-eye-slash", !isPasswordVisible);
-  });
+        const togglePasswordButton = document.getElementById("toggle-password");
+        const toggleIcon = togglePasswordButton.querySelector("i");
+    
+        togglePasswordButton.addEventListener("click", () => {
+            // Toggle password visibility
+            const isPasswordVisible = passwordInput.type === "text";
+            passwordInput.type = isPasswordVisible ? "password" : "text";
+    
+            // Update the icon
+            toggleIcon.classList.toggle("fa-eye", isPasswordVisible);
+            toggleIcon.classList.toggle("fa-eye-slash", !isPasswordVisible);
+        });
     </script>
     
 
