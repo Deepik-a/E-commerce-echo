@@ -18,7 +18,7 @@ const home = async (req, res) => {
         console.log('User is blocked, redirecting to /account-blocked');
         req.session.user = null; // Clear the session
         req.flash('error', 'Your account has been blocked by the admin.');
-        return res.redirect('/account-blocked'); // Redirect to the blocked account page
+        return res.redirect('/account-blocked'); // Redirect to the blocked account page -------
       }
     }
    const product = await productSchema.find({

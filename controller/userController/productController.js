@@ -358,7 +358,7 @@ const searchbyProducts = async (req, res) => {
             limit,
             searchQuery,
             selectedCategory,  // Include the selected category in the response hello
-            selectedSort,       // Include the selected sort in the response  achu is good
+            selectedSort,       // Include the selected sort in the response 
         });
     } catch (error) {
         console.error("Error in searchbyProducts:", error);
