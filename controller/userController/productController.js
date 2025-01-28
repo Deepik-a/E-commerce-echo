@@ -281,7 +281,7 @@ const searchbyProducts = async (req, res) => {
         // Check for special characters in the search query
         const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
         if (specialCharRegex.test(searchQuery)) {
-            return res.render("user/AllProduct", {
+            return res.render("user/Allproduct", {
                 products: [],
                 message: "Sorry, not found!",
                 categories,
