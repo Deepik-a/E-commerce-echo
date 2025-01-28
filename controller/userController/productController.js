@@ -373,7 +373,7 @@ const searchbyProducts = async (req, res) => {
 
 
 
-
+    
 
 module.exports = {
     getProductsByCategory,
