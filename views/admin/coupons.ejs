@@ -225,8 +225,16 @@
                     <!-- Coupon Code -->
                     <div class="mb-3">
                         <label for="code" class="form-label">Coupon Code</label>
-                        <input type="text" class="form-control" id="code" name="code" required>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="code" 
+                            name="code" 
+                            maxlength="12" 
+                            minlength="4" 
+                            required>
                     </div>
+                    
                     
                     <!-- Discount Type -->
                     <div class="mb-3">
@@ -240,12 +248,12 @@
                     <!-- Discount Value -->
                     <div class="mb-3">
                         <label for="discountValue" class="form-label">Discount Value</label>
-                        <input type="number" class="form-control" id="discountValue" name="discountValue" required>
+                        <input type="text" class="form-control" id="discountValue" name="discountValue"  required>
                     </div>
                            <!--  Coupon Usage count -->
                            <div class="mb-3">
                             <label for="usageCount" class="form-label">Coupon Usage Count</label>
-                            <input type="number" class="form-control" id="usageCount" name="usageCount" required>
+                            <input type="text" class="form-control" id="usageCount" name="usageCount" required>
                         </div>
                     
                     <!-- Start Date -->
@@ -263,13 +271,13 @@
                     <!-- Minimum Order Amount -->
                     <div class="mb-3">
                         <label for="minimumOrderAmount" class="form-label">Minimum Order Amount</label>
-                        <input type="number" class="form-control" id="minimumOrderAmount" name="minimumOrderAmount" required>
+                        <input type="text" class="form-control" id="minimumOrderAmount" name="minimumOrderAmount" required>
                     </div>
 
                     <!-- Max Order Amount (conditionally shown) -->
                     <div class="mb-3" id="maxOrderAmountWrapper" style="display: none;">
                         <label for="maxOrderAmount" class="form-label">Maximum Discount Amount</label>
-                        <input type="number" class="form-control" id="maxOrderAmount" name="maxDiscountAmount">
+                        <input type="tex" class="form-control" id="maxOrderAmount" name="maxDiscountAmount">
                     </div>
                    
                     <!-- Submit Button -->
@@ -297,13 +305,13 @@
                     <!-- Coupon Code -->
                     <div class="mb-3">
                         <label for="editCode" class="form-label">Coupon Code</label>
-                        <input type="text" class="form-control" id="editCode" name="code" required>
+                        <input type="text" class="form-control" id="editCode" name="code"  >
                     </div>
                     
                     <!-- Discount Type -->
                     <div class="mb-3">
                         <label for="editDiscountType" class="form-label">Discount Type</label>
-                        <select class="form-control" id="editDiscountType" name="discountType" required>
+                        <select class="form-control" id="editDiscountType" name="discountType"  required>
                             <option value="Percentage">Percentage</option>
                             <option value="Fixed">Fixed</option>
                         </select>
