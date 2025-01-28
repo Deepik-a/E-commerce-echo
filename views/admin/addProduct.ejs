@@ -29,21 +29,21 @@
       <!-- Price -->
       <div>
         <label for="price" class="block">Price</label>
-        <input type="number" id="price" name="price" class="border border-gray-300 p-2 w-full" min="0" />
+        <input type="text" id="price" name="price" class="border border-gray-300 p-2 w-full" min="0" />
         <p id="priceError" class="text-red-500 text-sm" aria-live="assertive"></p>
       </div>
   
       <!-- Discount -->
       <div>
         <label for="discount" class="block">Discount</label>
-        <input type="number" id="discount" name="discount" class="border border-gray-300 p-2 w-full" min="0" />
+        <input type="text" id="discount" name="discount" class="border border-gray-300 p-2 w-full" min="0" />
         <p id="discountError" class="text-red-500 text-sm" aria-live="assertive"></p>
       </div>
   
       <!-- Stock -->
       <div>
         <label for="stock" class="block">Stock</label>
-        <input type="number" id="stock" name="stock" class="border border-gray-300 p-2 w-full" min="0" />
+        <input type="text" id="stock" name="stock" class="border border-gray-300 p-2 w-full" min="0" />
         <p id="stockError" class="text-red-500 text-sm" aria-live="assertive"></p>
       </div>
   
@@ -213,7 +213,7 @@
       // Description validation
       const description = document.getElementById("description").value;
       const descriptionError = document.getElementById("descriptionError");
-      if (description.length < 10 || description.length > 1000) {
+      if (description.length < 10 || description.length > 1000 || /[^a-zA-Z0-9 ]/.test(description)) {
         descriptionError.textContent = "Product description must be between 10 and 1000 characters.";
         isValid = false;
       } else {
@@ -253,7 +253,7 @@
       // Discount validation
       const discount = parseInt(document.getElementById("discount").value);
       const discountError = document.getElementById("discountError");
-      if (isNaN(discount) || discount < 0 || discount > 100) {
+      if (isNaN(discount) || discount < 0 || discount > 90) {
         discountError.textContent = "Discount must be a percentage between 0 and 100.";
         isValid = false;
       } else {

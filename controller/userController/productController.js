@@ -45,6 +45,8 @@ const getProductDetail = async (req, res) => {
         match: { isDeleted: false }, // Only include categories where isDeleted is false
     });
 
+
+
     if (!product || !product.category) {
         return res.status(404).render('404', { message: 'Product or category not found' });
     }
@@ -272,10 +274,13 @@ const searchbyProducts = async (req, res) => {
         const searchQuery = req.body.search;
         const categories = await categorySchema.find({ isDeleted: false });
 
-        // Check for special characters
+        // Extract the selected category and sort from query params
+        const selectedCategory = req.query.category || 'all';
+        const selectedSort = req.query.sort || 'price_low_high'; // Default to 'price_low_high' if no sort is selected
+
+        // Check for special characters in the search query
         const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
         if (specialCharRegex.test(searchQuery)) {
-            // Respond with "Sorry, not found" if special characters are present
             return res.render("user/AllProduct", {
                 products: [],
                 message: "Sorry, not found!",
@@ -285,30 +290,58 @@ const searchbyProducts = async (req, res) => {
                 hasNextPage: false,
                 hasPrevPage: false,
                 limit: 5,
-                searchQuery, // Keep track of the invalid search query
+                searchQuery,
+                selectedCategory,
+                selectedSort, // Pass selected sort to the response
             });
         }
 
-        const page = parseInt(req.query.page) || 1; // Default to page 1
-        const limit = parseInt(req.query.limit) || 5; // Default to 5 products per page
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 5;
         const skip = (page - 1) * limit;
 
-        // Perform a database search for products with pagination
+        // Build the query filter, including the category if specified
+        const filter = {
+            name: { $regex: searchQuery, $options: "i" },
+            isActive: true,
+        };
+
+        if (selectedCategory !== 'all') {
+            filter.category = selectedCategory;  // Apply the selected category filter
+        }
+
+        // Determine the sorting option based on selectedSort
+        let sortOption = {};
+        switch (selectedSort) {
+            case 'price_low_high':
+                sortOption = { price: 1 }; // Sort by price ascending
+                break;
+            case 'price_high_low':
+                sortOption = { price: -1 }; // Sort by price descending
+                break;
+            case 'new_arrivals':
+                sortOption = { createdAt: -1 }; // Newest first
+                break;
+            case 'az':
+                sortOption = { name: 1 }; // Alphabetically A-Z
+                break;
+            case 'za':
+                sortOption = { name: -1 }; // Alphabetically Z-A
+                break;
+            default:
+                sortOption = {}; // Default: no sorting
+        }
+
+        // Perform the search with category filter and sorting applied
         const products = await productSchema
-            .find({
-                name: { $regex: searchQuery, $options: "i" }, // Case-insensitive search
-                isActive: true, // Ensure only active products are fetched
-            })
+            .find(filter)
+            .sort(sortOption)  // Apply the sorting option
             .skip(skip)
             .limit(limit);
 
-        const totalProductsCount = await productSchema.countDocuments({
-            name: { $regex: searchQuery, $options: "i" },
-            isActive: true,
-        });
+        const totalProductsCount = await productSchema.countDocuments(filter);
         const totalPages = Math.ceil(totalProductsCount / limit);
 
-        // If no products found, show "no results" message
         const message =
             products.length === 0
                 ? "Sorry, no results found! Please check the spelling or try searching for something else."
@@ -323,13 +356,17 @@ const searchbyProducts = async (req, res) => {
             hasNextPage: page < totalPages,
             hasPrevPage: page > 1,
             limit,
-            searchQuery, // Keep track of the search query for pagination
+            searchQuery,
+            selectedCategory,  // Include the selected category in the response
+            selectedSort,       // Include the selected sort in the response
         });
     } catch (error) {
         console.error("Error in searchbyProducts:", error);
         res.status(500).send("Server Error");
     }
 };
+
+
 
 
 

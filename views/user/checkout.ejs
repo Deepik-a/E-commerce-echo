@@ -320,130 +320,170 @@ function selectAddress(element,index){
  
 }        
 
+orderPlacementBtn.addEventListener('click', async (e) => {
+    e.preventDefault();
+    console.log("Prevented submitting");
 
-orderPlacementBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            console.log('prevented submitting')
-            if (selectedAddressIndex === null) {
-                Swal.fire({
-                    icon: "warning",
-                    title: "Please select a shipping address.",
-                    text: "Select one"
-                });
-                return;
-            }
-            if (selectedPaymentMethod === null) {
-                Swal.fire({
-                    icon: "warning",
-                    title: "Please select a payment method.",
-                    text: "Select one"
-                });
-                return;
-            }
-            if (selectedPaymentMethod === 2) {
-                openRazorpayPayment();
-            } else {
-                placeOrder(selectedAddressIndex, selectedPaymentMethod);
-            }
+    // Check for selected address
+    if (selectedAddressIndex === null) {
+        Swal.fire({
+            icon: "warning",
+            title: "Please select a shipping address.",
+            text: "Select one"
         });
+        return;
+    }
 
-        function openRazorpayPayment() {
-            const URL = `/payment-render/${totalAmount}`;
-            fetch(URL, {
+    // Check for selected payment method
+    if (selectedPaymentMethod === null) {
+        Swal.fire({
+            icon: "warning",
+            title: "Please select a payment method.",
+            text: "Select one"
+        });
+        return;
+    }
+
+    // Check if Razorpay is selected
+    if (selectedPaymentMethod === 2) {
+        openRazorpayPayment();
+    } else {
+        // Validate and place the order for other payment methods
+        try {
+            const response = await fetch(`/place-order/${selectedAddressIndex}/${selectedPaymentMethod}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
-                }
-            })
-                .then(res => {
-                    if (!res.ok) {
-                        throw new Error("Cannot render the payment page");
-                    }
-                    return res.json();
+                },
+                body: JSON.stringify({
+                    payment_status: "Pending"
                 })
-                .then(data => {
-                    if (data.orderID) {
-                        const options = {
-                            key: "rzp_test_KDYrLJHnu3O9Ip",
-                            amount: totalAmount,
-                            currency: "INR",
-                            name: "Echo Emporium",
-                            order_id: data.orderID,
-                            handler: function (response) {
-                                //const couponCode = document.getElementById('couponCode').value.trim();
-                                const URL = `/place-order/${selectedAddressIndex}/${selectedPaymentMethod}`;
-                                fetch(URL, {
-                                    method: "POST",
-                                    headers: {
-                                        'Content-Type': "application/json"
-                                    },
-                                    body: JSON.stringify({
-                                        razorpay_payment_id: response.razorpay_payment_id,
-                                        razorpay_order_id: response.razorpay_order_id,
-                                        razorpay_signature: response.razorpay_signature,
-                                        payment_status:'Paid'
-                                        // couponCode: couponCode
-                                    })
-                                }).then((res) => {
-                                    if (res.redirected)
-                                        window.location.href = res.url
-                                    if (!res.ok) {
-                                        throw new Error("Order placement failed");
-                                    }
-                                    return res.json();
-                                }).then(data => {
-                                    if (data.success) {
-                                        window.location.href = "/conform-order";
-                                    } else {
-                                        Swal.fire({
-                                            icon: "error",
-                                            title: "Order Placement Failed",
-                                            text: data.message
-                                        });
-                                    }
-                                }).catch(err => {
-                                    console.error("Error on Razorpay payment callback:", err);
+            });
+
+            if (response.redirected) {
+                window.location.href = response.url;
+                return;
+            }
+
+            const data = await response.json();
+            if (data.success) {
+                window.location.href = "/conform-order";
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Order Placement Failed",
+                    text: data.message
+                });
+            }
+        } catch (err) {
+            console.error("Error during order placement:", err);
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "An error occurred while placing the order."
+            });
+        }
+    }
+});
+
+function openRazorpayPayment() {
+    const URL = `/payment-render/${totalAmount}`;
+    fetch(URL, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+        .then((res) => {
+            if (!res.ok) {
+                throw new Error("Cannot render the payment page");
+            }
+            return res.json();
+        })
+        .then((data) => {
+            if (data.orderID) {
+                const options = {
+                    key: "rzp_test_KDYrLJHnu3O9Ip",
+                    amount: totalAmount,
+                    currency: "INR",
+                    name: "Echo Emporium",
+                    order_id: data.orderID,
+                    handler: function (response) {
+                        fetch(`/place-order/${selectedAddressIndex}/${selectedPaymentMethod}`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_signature: response.razorpay_signature,
+                                payment_status: "Paid"
+                            })
+                        })
+                            .then((res) => {
+                                if (res.redirected) {
+                                    window.location.href = res.url;
+                                    return;
+                                }
+
+                                return res.json();
+                            })
+                            .then((data) => {
+                                if (data.success) {
+                                    window.location.href = "/conform-order";
+                                } else {
                                     Swal.fire({
                                         icon: "error",
-                                        title: "Error",
-                                        text: "An error occurred while processing the order."
+                                        title: "Order Placement Failed",
+                                        text: data.message
                                     });
+                                }
+                            })
+                            .catch((err) => {
+                                console.error("Error on Razorpay payment callback:", err);
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Error",
+                                    text: "An error occurred while processing the order."
                                 });
-                            },
-                            prefill: {
-                                name: username,
-                                email: email,
-                                contact: phone
-                            },
-                            notes: {
-                                address: "Razorpay Corporate Office"
-                            },
-                            theme: {
-                                color: "#6351CE"
-                            }
-                        };
-                        const rzp1 = new Razorpay(options);
-                        rzp1.on('payment.failed', function (response) { 
-                           
-                            console.error("Payment Failed:", response);
-
-                            const failedOrderUrl = `/failed-order?address=${selectedAddressIndex}&paymentMethod=${selectedPaymentMethod}`;
-                            window.location.href = failedOrderUrl;
-                        });
-                        rzp1.open();
-                    } else {
-                        throw new Error("Order ID not received");
+                            });
+                    },
+                    prefill: {
+                        name: username,
+                        email: email,
+                        contact: phone
+                    },
+                    notes: {
+                        address: "Razorpay Corporate Office"
+                    },
+                    theme: {
+                        color: "#6351CE"
                     }
-                })
-                .catch(error => {
-                    Swal.fire({
-                        icon: "error",
-                        title: "Error on loading payment method",
-                        text: error.message
-                    });
-                    console.error("Error during payment initiation:", error);
+                };
+
+                const rzp1 = new Razorpay(options);
+                rzp1.on("payment.failed", function (response) {
+                    console.error("Payment Failed:", response);
+
+                    const failedOrderUrl = `/failed-order?address=${selectedAddressIndex}&paymentMethod=${selectedPaymentMethod}`;
+                    window.location.href = failedOrderUrl;
                 });
-        }
+                rzp1.open();
+            } else {
+                throw new Error("Order ID not received");
+            }
+        })
+        .catch((error) => {
+            Swal.fire({
+                icon: "error",
+                title: "Error on loading payment method",
+                text: error.message
+            });
+            console.error("Error during payment initiation:", error);
+        });
+}
+
 
         window.onload = function () {
         // Add event listeners after the DOM is fully loaded
