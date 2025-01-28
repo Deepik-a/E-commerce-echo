@@ -58,6 +58,7 @@ console.log(req.body,"req.body of add coupon ")
         return res.status(400).json({ message: 'For percentage discounts, maxDiscountAmount must be greater than 0' });
     }
 
+
     try {
         // Check if coupon code already exists
         const existingCoupon = await Coupon.findOne({ code });

@@ -97,57 +97,76 @@ exports.viewReturnReason = async (req,res) =>{
 }
 
 
-exports.postViewReason = async(req,res) =>{
-    const {orderId,productId} = req.params;
-    const {action} = req.body;
-    console.log(`action = ${action}`)
+exports.postViewReason = async (req, res) => {
+    const { orderId, productId } = req.params;
+    const { action } = req.body;
+    console.log(`action = ${action}`);
+
     try {
         const order = await Order.findById(orderId);
         const userId = await User.findById(order.userId);
-        const item = order.items.find(item => item.productId._id.toString() === productId);
-    console.log(`item = ${item}`)
-        if(item){
-            if(action === 'approve'){
+        const item = order.items.find(item => item.productId.toString() === productId);
+
+        console.log(`item = ${JSON.stringify(item)}`);
+
+        if (item) {
+            let refundAmount = item.productPrice * item.productCount;
+
+            // If action is 'approve', credit the refund amount for the returned product to the wallet
+            if (action === 'approve') {
                 item.status = 'Returned';
-                const userWallet = await Wallet.findOne({userID:userId});
-                if(userWallet){
-                    userWallet.balance = (userWallet.balance || 0) + order.payableAmount;
+
+                // Apply coupon discount to the refund amount proportionally (if applicable)
+                if (order.couponCode && order.couponDiscount > 0) {
+                    const totalProducts = order.items.length;
+                    const couponDiscountPerProduct = order.couponDiscount / totalProducts;
+                    const couponDiscountApplicable = couponDiscountPerProduct * item.productCount;
+
+                    refundAmount -= couponDiscountApplicable;  // Adjust refund amount by coupon
+                    console.log(`refundAmount after coupon adjustment: ₹${refundAmount}`);
+                }
+
+                // Handle Wallet credit
+                const userWallet = await Wallet.findOne({ userID: userId });
+
+                if (userWallet) {
+                    // Add refund amount to wallet
+                    userWallet.balance = (userWallet.balance || 0) + refundAmount;
                     userWallet.transaction.push({
-                        wallet_amount: order.payableAmount,
+                        wallet_amount: refundAmount,
                         order_id: order.orderId,
                         transactionType: 'Credited',
                         transaction_date: new Date()
                     });
                     await userWallet.save();
-                }else{
+                } else {
                     await Wallet.create({
                         userID: order.userId,
-                        balance: order.payableAmount,
+                        balance: refundAmount,
                         transaction: [{
-                            wallet_amount: order.payableAmount,
+                            wallet_amount: refundAmount,
                             order_id: order.orderId,
                             transactionType: 'Credited',
                             transaction_date: new Date()
                         }]
-                    });   
+                    });
                 }
-               
-               
-            }else if(action == 'reject'){   
-                item.status = "Rejected"
-        
-      
-            }else{
-                res.status(400).send('Invalid action');
+
+                console.log('Refund credited to wallet');
+            } else if (action === 'reject') {
+                item.status = 'Rejected';
+                console.log('Product rejection status updated');
+            } else {
+                return res.status(400).send('Invalid action');
             }
-        }else{
-            res.status(404).send('Item not found');
+        } else {
+            return res.status(404).send('Item not found');
         }
 
         await order.save();
-
-        res.redirect('/admin/orders')
+        res.redirect('/admin/orders');
     } catch (error) {
-        console.log(`error from postViewReason ${error}`)
+        console.log(`error from postViewReason: ${error}`);
+        res.status(500).send('Internal Server Error');
     }
-}
+};

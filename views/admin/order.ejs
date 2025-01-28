@@ -138,56 +138,55 @@
 
 
 <!-- Modal -->
-
 <div id="modalBackground" class="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity z-40 hidden"></div>
 <div id="orderModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
-    <div class="relative w-full max-w-4xl bg-white rounded-xl shadow-2xl">
+    <div class="relative w-full max-w-lg h-[80vh] bg-white rounded-xl shadow-2xl overflow-hidden">
         <!-- Header -->
-        <h2 class="text-2xl font-semibold text-gray-900 p-6 border-b border-gray-200">Order Details</h2>
+        <h2 class="text-xl font-semibold text-gray-900 p-3 border-b border-gray-200">Order Details</h2>
 
-        <!-- Main Content -->
-        <div class="p-6">
+        <!-- Scrollable Content -->
+        <div class="p-3 overflow-y-auto h-full">
             <!-- Two Column Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
                 <!-- Left Column -->
                 <div>
-                    <div class="mb-4">
+                    <div class="mb-2">
                         <p class="font-medium text-gray-900">Order ID: <span id="orderId" class="text-gray-700"></span></p>
                         <p class="font-medium text-gray-900">Order Date: <span id="orderDate" class="text-gray-700"></span></p>
                     </div>
 
-                    <div class="mt-6">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Shipping Address</h3>
+                    <div class="mt-3">
+                        <h3 class="text-sm font-semibold text-gray-900 mb-1">Shipping Address</h3>
                         <p id="shippingAddress" class="text-gray-700"></p>
                     </div>
                 </div>
 
                 <!-- Right Column -->
                 <div>
-                    <div class="mb-4">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Payment Method</h3>
+                    <div class="mb-2">
+                        <h3 class="text-sm font-semibold text-gray-900 mb-1">Payment Method</h3>
                         <p id="paymentMethod" class="text-gray-700"></p>
                     </div>
-                    <div class="mb-4">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Coupon Discount</h3>
+                    <div class="mb-2">
+                        <h3 class="text-sm font-semibold text-gray-900 mb-1">Coupon Discount</h3>
                         <p id="couponApplied" class="text-gray-700"></p>
                     </div>
                 </div>
             </div>
 
             <!-- Items Table -->
-            <div class="mt-8">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Items Purchased</h3>
+            <div class="mt-4">
+                <h3 class="text-sm font-semibold text-gray-900 mb-2">Items Purchased</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full">
                         <thead>
                             <tr class="bg-gray-50">
-                                <th class="px-6 py-3 text-left text-lg font-medium text-gray-700">Product</th>
-                                <th class="px-6 py-3 text-left text-lg font-medium text-gray-700">Image</th>
-                                <th class="px-6 py-3 text-left text-lg font-medium text-gray-700">Quantity</th>
-                                <th class="px-6 py-3 text-left text-lg font-medium text-gray-700">Price</th>
-                                <th class="px-6 py-3 text-left text-lg font-medium text-gray-700">Discount</th>
-                                <th class="px-6 py-3 text-left text-lg font-medium text-gray-700">Status</th>
+                                <th class="px-3 py-2 text-left text-sm font-medium text-gray-700">Product</th>
+                                <th class="px-3 py-2 text-left text-sm font-medium text-gray-700">Image</th>
+                                <th class="px-3 py-2 text-left text-sm font-medium text-gray-700">Quantity</th>
+                                <th class="px-3 py-2 text-left text-sm font-medium text-gray-700">Price</th>
+                                <th class="px-3 py-2 text-left text-sm font-medium text-gray-700">Discount</th>
+                                <th class="px-3 py-2 text-left text-sm font-medium text-gray-700">Status</th>
                             </tr>
                         </thead>
                         <tbody id="itemsPurchased" class="divide-y divide-gray-200">
@@ -198,21 +197,24 @@
             </div>
 
             <!-- Footer -->
-            <div class="mt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div class="mt-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                 <!-- Total Price -->
-                <p class="text-lg md:mb-0">
+                <p class="text-sm">
                     <span class="font-semibold text-gray-900">Total Price:</span>
                     <span class="ml-2">&#8377;<span id="totalPrice" class="text-gray-900"></span></span>
                 </p>
 
                 <!-- Close Button -->
-                <button onclick="closeModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors duration-200">
+                <button onclick="closeModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200">
                     Close
                 </button>
             </div>
         </div>
     </div>
 </div>
+
+
+
 
 
 

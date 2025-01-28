@@ -243,7 +243,7 @@
                     
                     <div class="flex justify-between items-center pb-3 border-b border-gray-200">
                         <span class="text-gray-600">Coupon Discount:</span>
-                        <span id="coupon-discount" style="color: rgb(26, 83, 25);">Rs <%=cartDetails.couponDiscount > 0 ? cartDetails.couponDiscount : 0 %></span>
+                        <span id="coupon-discount" style="color: rgb(26, 83, 25);">Rs <%=cartDetails.couponDiscount > 0 ? cartDetails.couponDiscount.toFixed(0): 0 %></span>
                     </div>
                     
                     <div class="flex justify-between items-center pb-3 border-b border-gray-200">
