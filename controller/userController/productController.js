@@ -347,7 +347,7 @@ const searchbyProducts = async (req, res) => {
                 ? "Sorry, no results found! Please check the spelling or try searching for something else."
                 : "";
 
-        res.render("user/AllProduct", {
+        res.render("user/Allproduct", {
             products,
             message,
             categories,
