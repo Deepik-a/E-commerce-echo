@@ -357,7 +357,7 @@ const searchbyProducts = async (req, res) => {
             hasPrevPage: page > 1,
             limit,
             searchQuery,
-            selectedCategory,  // Include the selected category in the response
+            selectedCategory,  // Include the selected category in the response hello
             selectedSort,       // Include the selected sort in the response
         });
     } catch (error) {
@@ -373,7 +373,7 @@ const searchbyProducts = async (req, res) => {
 
 
 
-    
+
 
 module.exports = {
     getProductsByCategory,
