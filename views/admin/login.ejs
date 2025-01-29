@@ -68,16 +68,16 @@
             <div class="col-md-12 mb-4">
                 <img src="../../public/assets/logo.png" class="img-fluid" alt="Logo">
             </div>
-            <form action="/admin/login" method="post" >
+            <form id="login-form">
                 <!-- Email input -->
                 <div class="form-outline">
-                    <input type="email" name="email" value="admin@gmail.com" id="form1Example13" class="form-control form-control-lg" />
+                    <input type="text" name="email" id="form1Example13" class="form-control form-control-lg" />
                     <label class="form-label" for="form1Example13">Email address</label>
                 </div>
 
                 <!-- Password input -->
                 <div class="form-outline">
-                    <input type="password"  value = "admin@123" name="password"id="form1Example23" class="form-control form-control-lg" />
+                    <input type="text" name="password" id="form1Example23" class="form-control form-control-lg" />
                     <label class="form-label" for="form1Example23">Password</label>
                 </div>
 
@@ -89,6 +89,56 @@
         </div>
     </div>
 </section>
+
+<!-- Include SweetAlert2 script -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    // Handling form submission
+    const form = document.getElementById('login-form');
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();  // Prevent the default form submission
+
+        const email = form.email.value;
+        const password = form.password.value;
+
+        // Send a POST request to the backend with email and password
+        const response = await fetch('/admin/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password }),
+        });
+
+        const data = await response.json();
+
+        // Handle different responses based on the status code
+        if (response.status === 401) {
+            // Invalid credentials, show SweetAlert error
+            Swal.fire({
+                icon: 'error',
+                title: 'Login Failed',
+                text: data.message || 'Invalid email or password.',
+            });
+        } else if (response.status === 200) {
+            window.location.href = '/admin/enterdashboard'; 
+           
+        } else {
+            // Something went wrong (e.g., 500 error), show SweetAlert error
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message || 'Something went wrong. Please try again later.',
+            });
+        }
+    });
+</script>
+
+
+
+
 
 <%- include('footer') %>
 

@@ -19,6 +19,7 @@ const isAdmin = require('../middleware/adminSession');
 admin.get('/login',adminController.admin)
 admin.post('/login',adminController.adminloginpost)
 admin.get('/logout',isAdmin,adminController.logout)
+admin.get('/enterdashboard',isAdmin,adminController.getdashboard)
 
 
 

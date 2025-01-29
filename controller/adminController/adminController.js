@@ -54,14 +54,28 @@ const unblockUser = async (req, res) => {
 
 
 
-const adminloginpost=async(req,res)=>{
-    try{
-        if(req.body.email===process.env.ADMIN_EMAIL && req.body.password===process.env.ADMIN_PASSWORD)
-            req.session.admin=req.body.email
-  res.render("admin/DashboardDesign")
-    } catch (error) {
-        console.log(`error from login post ${error}`)
-    }
+const adminloginpost = async (req, res) => {
+  try {
+      if (req.body.email === process.env.ADMIN_EMAIL && req.body.password === process.env.ADMIN_PASSWORD) {
+          req.session.admin = req.body.email;
+          console.log('Login successful, rendering dashboard');               
+          res.status(200).json({ message: "Login suuceesfull"});
+      } else {
+          res.status(401).json({ message: "Invalid email or password" });
+      }
+  } catch (error) {
+      console.log(`Error from login post: ${error}`);
+      res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+const getdashboard=(req,res)=>{
+  try{
+      res.render('admin/DashboardDesign')
+}catch(error){
+  console.log(`error while rendering admin DashboardDesign Page${error}`)
+}
 }
 
 const listuser = async (req, res) => {
@@ -586,7 +600,8 @@ const dashboard = async(req, res)  =>{
         adminloginpost,
         getCategories,
         logout,
-        dashboardFilter
+        dashboardFilter,
+        getdashboard
     }
     
     
