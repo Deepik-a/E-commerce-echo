@@ -203,7 +203,7 @@
       // Product Name validation
       const productName = document.getElementById("productName").value;
       const productNameError = document.getElementById("productNameError");
-      if (productName.length < 3 || productName.length > 50 || /[^a-zA-Z0-9 ]/.test(productName)) {
+      if (productName.length < 3 || productName.length > 50) {
         productNameError.textContent = "Product name must be between 3 and 50 characters and contain no special characters.";
         isValid = false;
       } else {

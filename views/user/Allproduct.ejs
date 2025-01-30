@@ -309,7 +309,7 @@ function applySort(sortOption) {
 }
 
 function updateProducts(categoryId, sortOption, page = 1) {
-    const limit = 2; // Default number of products per page
+    const limit = 5; // Default number of products per page
 
     // Construct query string with category, sort, and pagination
     const queryString = `/products?page=${page}&limit=${limit}&category=${categoryId}&sort=${sortOption}`;
